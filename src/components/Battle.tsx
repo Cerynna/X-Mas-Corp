@@ -1008,6 +1008,14 @@ export function Battle({ character, monsterLevel, onBattleEnd, onExit }: BattleP
                   : 'Vous avez échappé au combat'}
               </RewardItem>
             </RewardsList>
+            <BattleLog>
+              <BattleLogTitle>📜 Journal de Combat</BattleLogTitle>
+              {[...battleState.battleLog].reverse().map((entry) => (
+                <LogEntry key={entry.id} $type={entry.type}>
+                  {entry.message}
+                </LogEntry>
+              ))}
+            </BattleLog>
             <WowButton onClick={handleContinue}>Retour</WowButton>
           </VictoryPanel>
         </BattleArena>

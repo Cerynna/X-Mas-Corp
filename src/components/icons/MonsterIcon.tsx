@@ -1048,7 +1048,6 @@ export const BanditIcon: React.FC<MonsterIconProps> = ({
 export const FireElementalIcon: React.FC<MonsterIconProps> = ({
   primaryColor = '#EF4444',
   secondaryColor = '#DC2626',
-  accentColor = '#FBBF24',
   size = 48,
 }) => (
   <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">

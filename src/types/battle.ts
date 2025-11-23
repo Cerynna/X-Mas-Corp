@@ -69,7 +69,7 @@ export const calculateDamage = (
     critChance?: number;
     equipment?: EquippedItems;
   },
-  defender: { armor: number; stamina?: number },
+  defender: { armor: number; stamina?: number; level: number },
   isAbility: boolean = false,
   abilityDamage: number = 0,
   isMonster: boolean = false
@@ -107,13 +107,14 @@ export const calculateDamage = (
     isMonster: isMonster ? 1 : 2,
     defender: defender.armor * 0.01,
   });
-  const damageReduction = Math.abs((isMonster ? 1 : 2) - defender.armor * 0.01);
+  const damageReduction =
+    defender.armor * (isMonster ? 1 : defender.level) * 0.1;
   console.log("Calcul des dégâts :", {
     baseDamage,
     damageReduction,
     defenderArmor: defender.armor,
   });
-  const finalDamage = Math.max(1, Math.floor(baseDamage * damageReduction));
+  const finalDamage = Math.max(1, Math.floor(baseDamage - damageReduction));
   console.log("Dégâts finaux après réduction :", finalDamage);
 
   return {

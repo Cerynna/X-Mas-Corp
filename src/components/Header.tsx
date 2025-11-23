@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useAuth, useCharacter } from '../contexts';
-import { logOut } from '../firebase';
+// import { logOut } from '../firebase';
 import { WowButton } from './';
 
 const HeaderContainer = styled.header`

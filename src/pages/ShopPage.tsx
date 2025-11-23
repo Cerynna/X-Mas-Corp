@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Shop as ShopComponent } from '../components/Shop';
 import { useCharacter } from '../contexts/useCharacter';
+import type { Character } from '../firebase';
 
 const ShopContainer = styled.div`
   width: 100%;
@@ -12,17 +13,18 @@ const ShopContainer = styled.div`
 export function ShopPage() {
   const { character, updateCharacter } = useCharacter();
 
-  const handlePurchase = (updatedCharacter: any) => {
+  const handlePurchase = (updatedCharacter: Character) => {
     updateCharacter(updatedCharacter);
   };
 
   const handleClose = () => {
     // Navigation handled by router, no need to close
   };
+  if (!character) return null;
 
   return (
     <ShopContainer>
-      <ShopComponent 
+      <ShopComponent
         character={character}
         onPurchase={handlePurchase}
         onClose={handleClose}

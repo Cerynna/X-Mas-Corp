@@ -2,7 +2,7 @@ import React from 'react';
 import { SwordIcon, StaffIcon, DaggerIcon, AxeIcon, BowIcon } from './WeaponIcon';
 import { HelmetIcon, ChestplateIcon, LeggingsIcon, BootsIcon } from './ArmorIcon';
 import { RingIcon, AmuletIcon, NecklaceIcon, BraceletIcon, CrownIcon } from './JewelryIcon';
-import { getQualityColors, type ItemQuality } from './qualityColors';
+import { type ItemQuality } from './qualityColors';
 
 interface ItemIconProps {
   itemType: string; // 'weapon', 'head', 'chest', 'legs', 'boots', 'jewelry'
@@ -14,7 +14,6 @@ interface ItemIconProps {
 export const ItemIcon: React.FC<ItemIconProps> = ({
   itemType,
   itemName = '',
-  quality = 'common',
   size = 24,
 }) => {
   const nameLower = itemName.toLowerCase();
