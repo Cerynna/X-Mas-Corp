@@ -293,7 +293,7 @@ export const MONSTER_TEMPLATES: MonsterTemplate[] = [
     baseHealth: 350,
     baseDamage: 40,
     baseArmor: 35,
-    experienceReward: 800,
+    experienceReward: 16000,
     goldReward: 75,
     abilities: [
       {
@@ -317,7 +317,7 @@ export const MONSTER_TEMPLATES: MonsterTemplate[] = [
     baseHealth: 400,
     baseDamage: 45,
     baseArmor: 40,
-    experienceReward: 820,
+    experienceReward: 20000,
     goldReward: 100,
     abilities: [
       {
@@ -339,7 +339,7 @@ export const MONSTER_TEMPLATES: MonsterTemplate[] = [
     baseHealth: 600,
     baseDamage: 55,
     baseArmor: 50,
-    experienceReward: 1200,
+    experienceReward: 25000,
     goldReward: 150,
     abilities: [
       {
@@ -368,7 +368,7 @@ export const MONSTER_TEMPLATES: MonsterTemplate[] = [
     baseHealth: 1000,
     baseDamage: 70,
     baseArmor: 60,
-    experienceReward: 2500,
+    experienceReward: 30000,
     goldReward: 250,
     abilities: [
       {

@@ -195,7 +195,7 @@ export const CharacterProvider = ({ children }: CharacterProviderProps) => {
           break;
         case 'agility':
           data.attackPower = Math.floor(updatedStats.agility * 1.2);
-          data.critChance = (data.critChance ?? character.critChance ?? 0) + updatedStats.agility * 1.05;
+          data.critChance = updatedStats.agility * .05;
           break;
         case 'intellect':
           data.spellPower = Math.floor(updatedStats.intellect * 1.2);

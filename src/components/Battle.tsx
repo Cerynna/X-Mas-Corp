@@ -869,7 +869,7 @@ export function Battle({ character, monsterLevel, onBattleEnd, onExit }: BattleP
             break;
           case 'agility':
             updatedCharacter.attackPower = Math.floor(updatedStats.agility * 1.2);
-            updatedCharacter.critChance += updatedStats.agility * 1.05;
+            updatedCharacter.critChance = updatedStats.agility * .05;
             break;
           case 'intellect':
             updatedCharacter.spellPower = Math.floor(updatedStats.intellect * 1.2);

@@ -75,9 +75,9 @@ export const calculateDamage = (
   isMonster: boolean = false
 ): { damage: number; critical: boolean } => {
   // Dégâts de base (utiliser attackPower pour les joueurs, damage pour les monstres)
-  let attackerDamage = attacker.attackPower ?? attacker.damage ?? 0;
-  let strength = attacker.strength ?? 0;
-  let critChanceStat = attacker.critChance ?? 0;
+  const attackerDamage = attacker.attackPower ?? attacker.damage ?? 0;
+  const strength = attacker.strength ?? 0;
+  const critChanceStat = attacker.critChance ?? 0;
 
   // // Ajouter les stats des équipements si présent
   // if (attacker.equipment) {

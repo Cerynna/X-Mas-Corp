@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/X-Mas-Corp/', // Chemin pour GitHub Pages
   plugins: [react()],
   server: {
     port: 4000,
