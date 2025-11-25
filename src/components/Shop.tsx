@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { WowButton } from './';
-import type { Character } from '../firebase/database';
 import { getAvailablePotions, addPotionToInventory, type Potion } from '../types/shop';
-import { getShopEquipment, QUALITY_COLORS, QUALITY_NAMES, type EquipmentItem } from '../types/equipment';
-import { ItemIconWithQuality, PotionIconWithQuality } from './icons';
+import { PotionIconWithQuality } from './icons';
 import Money from './Money';
+import { EquipmentShop } from './Shop/EquipmentShop';
+import type { Character } from '../types/character';
 
 // Mapper les qualités de potion vers les qualités d'item
 
@@ -123,10 +123,10 @@ const PotionDescription = styled.div`
   color: ${({ theme }) => theme.colors.neutral.silver};
 `;
 
-const PotionLevel = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: ${({ theme }) => theme.colors.winter.iceBlue};
-`;
+// const PotionLevel = styled.div`
+//   font-size: ${({ theme }) => theme.fontSizes.xs};
+//   color: ${({ theme }) => theme.colors.winter.iceBlue};
+// `;
 
 const QuantitySelector = styled.div`
   display: flex;
@@ -191,12 +191,13 @@ interface ShopProps {
 }
 
 export function Shop({ character, onPurchase }: ShopProps) {
-  const [category, setCategory] = useState<'potions' | 'equipment'>('potions');
+  const [category, setCategory] = useState<'potions' | 'equipment'>('equipment');
   const [potionFilter, setPotionFilter] = useState<'all' | 'health' | 'mana'>('all');
-  const [equipmentSlotFilter, setEquipmentSlotFilter] = useState<'all' | 'weapon' | 'head' | 'chest' | 'legs' | 'boots' | 'jewelry'>('all');
-  const [equipmentLevelFilter, setEquipmentLevelFilter] = useState<'all' | 'available' | 'current'>('all');
+  // const [equipmentSlotFilter, setEquipmentSlotFilter] = useState<'all' | 'weapon' | 'head' | 'chest' | 'legs' | 'boots' | 'jewelry'>('all');
+  // const [equipmentLevelFilter, setEquipmentLevelFilter] = useState<'all' | 'available' | 'current'>('all');
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   // const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+
 
   const availablePotions = getAvailablePotions(
     character.level,
@@ -204,27 +205,27 @@ export function Shop({ character, onPurchase }: ShopProps) {
   );
 
   // Filtrer l'équipement selon les filtres sélectionnés
-  const allEquipment = getShopEquipment(character.level);
-  const availableEquipment = allEquipment.filter(item => {
-    // Filtre par emplacement
-    if (equipmentSlotFilter !== 'all' && item.slot !== equipmentSlotFilter) {
-      return false;
-    }
+  // const allEquipment = getShopEquipment(character.level);
+  // const availableEquipment = allEquipment.filter(item => {
+  //   // Filtre par emplacement
+  //   if (equipmentSlotFilter !== 'all' && item.slot !== equipmentSlotFilter) {
+  //     return false;
+  //   }
 
-    // Filtre par niveau
-    if (equipmentLevelFilter === 'available' && item.level > character.level) {
-      return false;
-    }
-    if (equipmentLevelFilter === 'current') {
-      const minLevel = Math.max(1, character.level - 5);
-      const maxLevel = character.level + 5;
-      if (item.level < minLevel || item.level > maxLevel) {
-        return false;
-      }
-    }
+  //   // Filtre par niveau
+  //   if (equipmentLevelFilter === 'available' && item.level > character.level) {
+  //     return false;
+  //   }
+  //   if (equipmentLevelFilter === 'current') {
+  //     const minLevel = Math.max(1, character.level - 5);
+  //     const maxLevel = character.level + 5;
+  //     if (item.level < minLevel || item.level > maxLevel) {
+  //       return false;
+  //     }
+  //   }
 
-    return true;
-  });
+  //   return true;
+  // });
 
   const getQuantity = (potionId: string) => quantities[potionId] || 1;
 
@@ -263,41 +264,41 @@ export function Shop({ character, onPurchase }: ShopProps) {
     setQuantities(prev => ({ ...prev, [potion.id]: 1 }));
   };
 
-  const handlePurchaseEquipment = (item: EquipmentItem) => {
-    const totalCost = item.price || 0;
+  // const handlePurchaseEquipment = (item: EquipmentItem) => {
+  //   const totalCost = item.price || 0;
 
-    if (character.gold < totalCost) {
-      // setMessage({ text: `Pas assez d'or ! Il vous faut ${totalCost} pièces.`, type: 'error' });
-      // setTimeout(() => setMessage(null), 3000);
-      return;
-    }
+  //   if (character.gold < totalCost) {
+  //     // setMessage({ text: `Pas assez d'or ! Il vous faut ${totalCost} pièces.`, type: 'error' });
+  //     // setTimeout(() => setMessage(null), 3000);
+  //     return;
+  //   }
 
-    if (character.level < item.level) {
-      // setMessage({ text: `Niveau ${item.level} requis !`, type: 'error' });
-      // setTimeout(() => setMessage(null), 3000);
-      return;
-    }
+  //   if (character.level < item.level) {
+  //     // setMessage({ text: `Niveau ${item.level} requis !`, type: 'error' });
+  //     // setTimeout(() => setMessage(null), 3000);
+  //     return;
+  //   }
 
-    // Ajouter l'item au sac
-    const bagItems = character.bagItems || [];
-    bagItems.push({
-      itemId: item.id,
-      item: item,
-    });
+  //   // Ajouter l'item au sac
+  //   const bagItems = character.bagItems || [];
+  //   bagItems.push({
+  //     itemId: item.id,
+  //     item: item,
+  //   });
 
-    const updatedCharacter: Character = {
-      ...character,
-      gold: character.gold - totalCost,
-      bagItems: bagItems,
-    };
+  //   const updatedCharacter: Character = {
+  //     ...character,
+  //     gold: character.gold - totalCost,
+  //     bagItems: bagItems,
+  //   };
 
-    onPurchase(updatedCharacter);
-    // setMessage({
-    //   text: `Vous avez acheté ${item.name} pour ${totalCost} 💰`,
-    //   type: 'success',
-    // });
-    // setTimeout(() => setMessage(null), 3000);
-  };
+  //   onPurchase(updatedCharacter);
+  //   // setMessage({
+  //   //   text: `Vous avez acheté ${item.name} pour ${totalCost} 💰`,
+  //   //   type: 'success',
+  //   // });
+  //   // setTimeout(() => setMessage(null), 3000);
+  // };
 
   return (
     <ShopContainer>
@@ -389,100 +390,104 @@ export function Shop({ character, onPurchase }: ShopProps) {
       )}
 
       {category === 'equipment' && (
-        <>
-          <CategoryTabs>
-            <CategoryTab $active={equipmentSlotFilter === 'all'} onClick={() => setEquipmentSlotFilter('all')}>
-              Tous
-            </CategoryTab>
-            <CategoryTab $active={equipmentSlotFilter === 'weapon'} onClick={() => setEquipmentSlotFilter('weapon')}>
-              ⚔️ Arme
-            </CategoryTab>
-            <CategoryTab $active={equipmentSlotFilter === 'head'} onClick={() => setEquipmentSlotFilter('head')}>
-              🪖 Tête
-            </CategoryTab>
-            <CategoryTab $active={equipmentSlotFilter === 'chest'} onClick={() => setEquipmentSlotFilter('chest')}>
-              🛡️ Torse
-            </CategoryTab>
-            <CategoryTab $active={equipmentSlotFilter === 'legs'} onClick={() => setEquipmentSlotFilter('legs')}>
-              👖 Jambes
-            </CategoryTab>
-            <CategoryTab $active={equipmentSlotFilter === 'boots'} onClick={() => setEquipmentSlotFilter('boots')}>
-              👢 Bottes
-            </CategoryTab>
-            <CategoryTab $active={equipmentSlotFilter === 'jewelry'} onClick={() => setEquipmentSlotFilter('jewelry')}>
-              💍 Bijoux
-            </CategoryTab>
-          </CategoryTabs>
-
-          <CategoryTabs>
-            <CategoryTab $active={equipmentLevelFilter === 'all'} onClick={() => setEquipmentLevelFilter('all')}>
-              Tous niveaux
-            </CategoryTab>
-            <CategoryTab $active={equipmentLevelFilter === 'available'} onClick={() => setEquipmentLevelFilter('available')}>
-              ✅ Équipables
-            </CategoryTab>
-            <CategoryTab $active={equipmentLevelFilter === 'current'} onClick={() => setEquipmentLevelFilter('current')}>
-              📊 ±5 niveaux
-            </CategoryTab>
-          </CategoryTabs>
-
-          <PotionsGrid>
-            {availableEquipment.map(item => {
-              const canAfford = character.gold >= (item.price || 0);
-              const canEquip = character.level >= item.level;
-
-              return (
-                <PotionCard key={item.id} $affordable={canAfford && canEquip}>
-                  <PotionHeader>
-                    <ItemIconWithQuality
-                      itemType={item.slot}
-                      itemName={item.name}
-                      quality={item.quality}
-                      size={56}
-                    />
-                    <PotionInfo>
-                      <PotionName style={{ color: QUALITY_COLORS[item.quality] }}>
-                        {item.name}
-                      </PotionName>
-                    </PotionInfo>
-                  </PotionHeader>
-
-                  <PotionDescription style={{ color: QUALITY_COLORS[item.quality] }}>
-                    {QUALITY_NAMES[item.quality]}
-                  </PotionDescription>
-
-                  <PotionDescription>
-                    {Object.entries(item.stats).map(([stat, value]) => (
-                      <div key={stat}>
-                        +{value} {stat === 'attackPower' ? 'Puissance' :
-                          stat === 'spellPower' ? 'Magie' :
-                            stat === 'critChance' ? 'Crit' :
-                              stat === 'strength' ? 'Force' :
-                                stat === 'agility' ? 'Agilité' :
-                                  stat === 'intellect' ? 'Intelligence' :
-                                    stat === 'stamina' ? 'Endurance' :
-                                      stat === 'armor' ? 'Armure' : stat}
-                      </div>
-                    ))}
-                  </PotionDescription>
-
-                  <PotionLevel>Niveau {item.level}</PotionLevel>
-
-                  <WowButton
-                    onClick={() => handlePurchaseEquipment(item)}
-                    disabled={!canAfford || !canEquip}
-                    $fullWidth
-                    $size="small"
-                    $variant="primary"
-                  >
-                    {!canEquip ? `Niveau ${item.level} requis` : !canAfford ? 'Trop cher' : `${item.price} 💰`}
-                  </WowButton>
-                </PotionCard>
-              );
-            })}
-          </PotionsGrid>
-        </>
+        <EquipmentShop />
+        // 
       )}
     </ShopContainer>
   );
 }
+
+
+// <>
+//   <CategoryTabs>
+//     <CategoryTab $active={equipmentSlotFilter === 'all'} onClick={() => setEquipmentSlotFilter('all')}>
+//       Tous
+//     </CategoryTab>
+//     <CategoryTab $active={equipmentSlotFilter === 'weapon'} onClick={() => setEquipmentSlotFilter('weapon')}>
+//       ⚔️ Arme
+//     </CategoryTab>
+//     <CategoryTab $active={equipmentSlotFilter === 'head'} onClick={() => setEquipmentSlotFilter('head')}>
+//       🪖 Tête
+//     </CategoryTab>
+//     <CategoryTab $active={equipmentSlotFilter === 'chest'} onClick={() => setEquipmentSlotFilter('chest')}>
+//       🛡️ Torse
+//     </CategoryTab>
+//     <CategoryTab $active={equipmentSlotFilter === 'legs'} onClick={() => setEquipmentSlotFilter('legs')}>
+//       👖 Jambes
+//     </CategoryTab>
+//     <CategoryTab $active={equipmentSlotFilter === 'boots'} onClick={() => setEquipmentSlotFilter('boots')}>
+//       👢 Bottes
+//     </CategoryTab>
+//     <CategoryTab $active={equipmentSlotFilter === 'jewelry'} onClick={() => setEquipmentSlotFilter('jewelry')}>
+//       💍 Bijoux
+//     </CategoryTab>
+//   </CategoryTabs>
+
+//   <CategoryTabs>
+//     <CategoryTab $active={equipmentLevelFilter === 'all'} onClick={() => setEquipmentLevelFilter('all')}>
+//       Tous niveaux
+//     </CategoryTab>
+//     <CategoryTab $active={equipmentLevelFilter === 'available'} onClick={() => setEquipmentLevelFilter('available')}>
+//       ✅ Équipables
+//     </CategoryTab>
+//     <CategoryTab $active={equipmentLevelFilter === 'current'} onClick={() => setEquipmentLevelFilter('current')}>
+//       📊 ±5 niveaux
+//     </CategoryTab>
+//   </CategoryTabs>
+
+//   <PotionsGrid>
+//     {availableEquipment.map(item => {
+//       const canAfford = character.gold >= (item.price || 0);
+//       const canEquip = character.level >= item.level;
+
+//       return (
+//         <PotionCard key={item.id} $affordable={canAfford && canEquip}>
+//           <PotionHeader>
+//             <ItemIconWithQuality
+//               itemType={item.slot}
+//               itemName={item.name}
+//               quality={item.quality}
+//               size={56}
+//             />
+//             <PotionInfo>
+//               <PotionName style={{ color: QUALITY_COLORS[item.quality] }}>
+//                 {item.name}
+//               </PotionName>
+//             </PotionInfo>
+//           </PotionHeader>
+
+//           <PotionDescription style={{ color: QUALITY_COLORS[item.quality] }}>
+//             {QUALITY_NAMES[item.quality]}
+//           </PotionDescription>
+
+//           <PotionDescription>
+//             {Object.entries(item.stats).map(([stat, value]) => (
+//               <div key={stat}>
+//                 +{value} {stat === 'attackPower' ? 'Puissance' :
+//                   stat === 'spellPower' ? 'Magie' :
+//                     stat === 'critChance' ? 'Crit' :
+//                       stat === 'strength' ? 'Force' :
+//                         stat === 'agility' ? 'Agilité' :
+//                           stat === 'intellect' ? 'Intelligence' :
+//                             stat === 'stamina' ? 'Endurance' :
+//                               stat === 'armor' ? 'Armure' : stat}
+//               </div>
+//             ))}
+//           </PotionDescription>
+
+//           <PotionLevel>Niveau {item.level}</PotionLevel>
+
+//           <WowButton
+//             onClick={() => handlePurchaseEquipment(item)}
+//             disabled={!canAfford || !canEquip}
+//             $fullWidth
+//             $size="small"
+//             $variant="primary"
+//           >
+//             {!canEquip ? `Niveau ${item.level} requis` : !canAfford ? 'Trop cher' : `${item.price} 💰`}
+//           </WowButton>
+//         </PotionCard>
+//       );
+//     })}
+//   </PotionsGrid>
+// </>

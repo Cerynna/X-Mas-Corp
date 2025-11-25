@@ -5,7 +5,7 @@ import { useCharacter } from "../../contexts";
 import { useItemTooltip } from "../../hooks/useItemTooltip";
 import { cleanBagsItems } from "../../utils/bags";
 import { useEffect, useState } from "react";
-import type { EquipementsType } from "../../firebase";
+import type { EquipementsType } from "../../types/equipmentSlots";
 
 
 const EquipmentGrid = styled.div`

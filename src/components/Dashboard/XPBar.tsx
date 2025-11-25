@@ -80,15 +80,6 @@ const XPBarText = styled.div`
 export function XPBar() {
   const { character } = useCharacter();
   if (!character) return null;
-
-  // Calculer l'XP pour le niveau actuel
-  // La formule d'XP est : 100 * 1.5^(level - 1)
-  // const xpForThisLevel = character.level > 1
-  // ? Math.floor(100 * Math.pow(1.5, character.level - 2))
-  // : 0;
-  // const xpForNextLevel = character.experienceToNextLevel;
-  // const xpGainedInLevel = character.experience - xpForThisLevel;
-  // const xpNeededForLevel = xpForNextLevel - xpForThisLevel;
   const xpProgress = character.experience / character.experienceToNextLevel * 100;
   return <XPBarContainer>
     <XPBarLabel>

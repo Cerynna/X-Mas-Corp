@@ -13,6 +13,7 @@ import { Exploration } from './pages/Exploration';
 import { ShopPage } from './pages/ShopPage';
 import { Bestiary } from './pages/Bestiary';
 import { LeaderBoard } from './pages/LeaderBoard';
+import { ShopProvider } from './contexts/ShopContext';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -113,17 +114,19 @@ function AppContent() {
       <AppContainer>
         <ChatProvider>
           <MembersProvider>
-            <Header showActions={true} />
-            <MainContent>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/exploration" element={<Exploration />} />
-                <Route path="/shop" element={<ShopPage />} />
-                <Route path="/bestiary" element={<Bestiary />} />
-                <Route path="/leaderboard" element={<LeaderBoard />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </MainContent>
+            <ShopProvider>
+              <Header showActions={true} />
+              <MainContent>
+                <Routes>
+                  <Route path="/" element={<ShopPage />} />
+                  <Route path="/exploration" element={<Exploration />} />
+                  <Route path="/shop" element={<ShopPage />} />
+                  <Route path="/bestiary" element={<Bestiary />} />
+                  <Route path="/leaderboard" element={<LeaderBoard />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </MainContent>
+            </ShopProvider>
           </MembersProvider>
         </ChatProvider>
       </AppContainer>

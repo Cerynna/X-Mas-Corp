@@ -1,0 +1,27 @@
+name: Ensure 15 Shop Items
+
+on:
+  schedule:
+    - cron: '0 8 * * *' # Tous les jours à 8h UTC
+  workflow_dispatch: # Permet de lancer manuellement
+
+jobs:
+  ensure-shop-items:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install firebase-admin
+
+      - name: Create service account key
+        run: echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > serviceAccountKey.json
+
+      - name: Run ensureShopItems script
+        run: node scripts/ensureShopItem.js

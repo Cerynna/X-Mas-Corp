@@ -1,8 +1,9 @@
 import { createContext, useCallback, useEffect, useState, type ReactNode } from "react";
-import { AddMpList, deleteDocument, getMembers, onCollectionChange, type Character } from "../firebase";
+import { deleteDocument, onCollectionChange } from "../firebase";
 import styled from "styled-components";
-import { CLASSES } from "../types/character";
+import { CLASSES, type Character, type WowClass } from "../types/character";
 import { useCharacter } from "./useCharacter";
+import { AddMpList, getMembers } from "../firebase/models/members";
 
 interface MembersContextType {
   members: Character[] | null;
@@ -163,7 +164,7 @@ export function MembersProvider({ children }: { children: ReactNode }) {
                   : "⚪"}
               </MemberItemConnected>
               <MemberItemLevel>{member.level}</MemberItemLevel>
-              <MemberItemName $color={CLASSES[member.class].color}>{member.name}</MemberItemName>
+              <MemberItemName $color={CLASSES[member.class as WowClass].color}>{member.name}</MemberItemName>
               {character && character.id !== member.id && (
                 <MemberItemTools>
                   {character.isAdmin && (

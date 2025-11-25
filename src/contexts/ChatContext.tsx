@@ -1,8 +1,10 @@
 import { createContext, useCallback, useEffect, useState, type ReactNode } from "react";
 import React from "react";
 import styled from "styled-components";
-import { getMessagesByChannel, onCollectionChange, removeMpList, sendMessageToChannel } from "../firebase";
 import { useCharacter } from "./useCharacter";
+import { getMessagesByChannel, sendMessageToChannel } from "../firebase/models/messages";
+import { onCollectionChange } from "../firebase";
+import { removeMpList } from "../firebase/models/members";
 
 interface ChatContextType {
     showChat: () => void;

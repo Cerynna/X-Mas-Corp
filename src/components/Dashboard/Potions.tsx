@@ -3,7 +3,8 @@ import { SectionTitle } from "../../pages/Dashboard";
 import { consumePotionFromInventory, POTIONS, type Potion, type PotionQuality } from "../../types/shop";
 import { PotionIconWithQuality, type ItemQuality } from "../icons";
 import { useCharacter, useTooltip } from "../../contexts";
-import { BuffEffectInfos, type BuffEffect } from "../../firebase";
+import { BuffEffectInfos, type BuffEffect } from "../../types/buffs";
+import type { CharacterInventoryPotion } from "../../types/character";
 
 
 
@@ -86,10 +87,10 @@ export function Potions() {
 
         const qualityToDuration = (potion: Potion) => {
             switch (potion.quality) {
-                case 'minor': return 1000 * 60 * 30; // 30 minutes
-                case 'lesser': return 1000 * 60 * 35; // 35 minutes
-                case 'normal': return 1000 * 60 * 40; // 40 minutes
-                case 'greater': return 1000 * 60 * 45; // 45 minutes
+                case 'minor': return 1000 * 60 * 10; // 10 minutes
+                case 'lesser': return 1000 * 60 * 20; // 20 minutes
+                case 'normal': return 1000 * 60 * 30; // 30 minutes
+                case 'greater': return 1000 * 60 * 40; // 40 minutes
                 case 'superior': return 1000 * 60 * 50; // 50 minutes
                 case 'ultimate': return 1000 * 60 * 60; // 60 minutes
                 default: return 0;
@@ -146,7 +147,7 @@ export function Potions() {
         <SectionTitle>🧪 Potions</SectionTitle>
         {character.inventory?.potions && character.inventory.potions.length > 0 ? (
             <PotionList>
-                {character.inventory.potions.map((inventoryPotion, index) => {
+                {character.inventory.potions.map((inventoryPotion: CharacterInventoryPotion, index: number) => {
                     const potionData = POTIONS.find(p => p.id === inventoryPotion.potionId);
                     if (!potionData) return null;
 
@@ -161,10 +162,7 @@ export function Potions() {
                                         title: potionData.name,
                                         description: potionData.description,
                                         quality: mapPotionQualityToItemQuality(potionData.quality),
-                                        stats: {
-                                            'Type': potionData.type === 'health' ? 'Santé' : 'Mana',
-                                            'Restaure': `${potionData.restoreAmount} ${potionData.type === 'health' ? 'PV' : 'Mana'}`
-                                        }
+                                        level: potionData.requiredLevel,
                                     }, { x: e.clientX, y: e.clientY });
                                 }}
                                 onMouseLeave={hideTooltip}

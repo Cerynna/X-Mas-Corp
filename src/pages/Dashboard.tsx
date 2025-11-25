@@ -42,11 +42,22 @@ const TopSection = styled.div`
 `;
 
 
-export const SectionTitle = styled.h3`
+export const SectionTitle = styled.div`
   color: ${({ theme }) => theme.colors.primary.gold};
   font-size: ${({ theme }) => theme.fontSizes.xl};
+  font-family: ${({ theme }) => theme.fonts.primary};
   margin-bottom: ${({ theme }) => theme.spacing.md};
   text-shadow: ${({ theme }) => theme.shadows.glow.gold};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  span{
+    font-family: ${({ theme }) => theme.fonts.secondary};
+    font-size: ${({ theme }) => theme.fontSizes.base};
+    text-shadow: none;
+    color: ${({ theme }) => theme.colors.text.primary};
+  }
 `;
 
 

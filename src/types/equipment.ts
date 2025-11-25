@@ -1,7 +1,12 @@
 // Système d'équipement du personnage
-
-import type { Character } from "../firebase";
-import { CLASSES, type ClassInfo } from "./character";
+import { randomUUID } from "../utils/randomUUID";
+import {
+  CLASSES,
+  type Character,
+  type ClassInfo,
+  type WeaponType,
+  type WowClass,
+} from "./character";
 
 export type ItemQuality =
   | "poor"
@@ -321,54 +326,195 @@ export const SHOP_EQUIPMENT: EquipmentItem[] = [
   },
 ];
 
-// Générateur de loot aléatoire basé sur le niveau
-export const generateLoot = (
-  monsterLevel: number,
-  player: Character
-): EquipmentItem | null => {
-  // console.log("player in generateLoot", player);
+const qualityMultiplier: Record<ItemQuality, number> = {
+  poor: 0.5,
+  common: 1.0,
+  uncommon: 1.5,
+  rare: 2.5,
+  epic: 4.0,
+  legendary: 6.0,
+};
+const itemTypesText = {
+  plate: "en Plaque",
+  mail: "en Mailles",
+  leather: "en Cuir",
+  cloth: "en Tissu",
+};
+const icons = {
+  weapon: "⚔️",
+  head: "👑",
+  chest: "🛡️",
+  legs: "👖",
+  boots: "👢",
+  jewelry: "💍",
+};
+const qualityPriceMultiplier: Record<ItemQuality, number> = {
+  poor: 0.5,
+  common: 1.0,
+  uncommon: 2.0,
+  rare: 5.0,
+  epic: 12.0,
+  legendary: 30.0,
+};
 
-  // 30% de chance de drop
-  if (Math.random() > 0.3) return null;
+const weaponNames: Record<WeaponType, Record<ItemQuality, string[]>> = {
+  sword: {
+    poor: ["Épée rouillée", "Lame ébréchée"],
+    common: ["Épée courte", "Lame simple"],
+    uncommon: ["Lame tranchante", "Épée solide"],
+    rare: ["Épée de chevalier", "Lame runique"],
+    epic: ["Lame de dragon", "Épée mystique"],
+    legendary: ["Excalibur", "Lame éternelle"],
+  },
+  axe: {
+    poor: ["Hache usée", "Hache ébréchée"],
+    common: ["Hache de guerre", "Hache solide"],
+    uncommon: ["Hache tranchante", "Hache de bataille"],
+    rare: ["Hache runique", "Hache de champion"],
+    epic: ["Hache de dragon", "Hache mystique"],
+    legendary: ["Hache des rois", "Hache éternelle"],
+  },
+  mace: {
+    poor: ["Marteau usé", "Marteau ébréché"],
+    common: ["Marteau de guerre", "Marteau solide"],
+    uncommon: ["Marteau lourd", "Marteau de bataille"],
+    rare: ["Marteau runique", "Marteau de champion"],
+    epic: ["Marteau de dragon", "Marteau mystique"],
+    legendary: ["Marteau des rois", "Marteau éternel"],
+  },
+  bow: {
+    poor: ["Arc cassé", "Arc usé"],
+    common: ["Arc court", "Arc solide"],
+    uncommon: ["Arc long", "Arc précis"],
+    rare: ["Arc elfique", "Arc de maître"],
+    epic: ["Arc de dragon", "Arc mystique"],
+    legendary: ["Arc des rois", "Arc éternel"],
+  },
+  staff: {
+    poor: ["Bâton cassé", "Bâton usé"],
+    common: ["Bâton de novice", "Bâton solide"],
+    uncommon: ["Bâton d'apprenti", "Bâton enchanté"],
+    rare: ["Bâton mystique", "Bâton de sorcier"],
+    epic: ["Bâton de dragon", "Bâton céleste"],
+    legendary: ["Bâton des rois", "Bâton éternel"],
+  },
+};
 
-  // Import dynamique pour éviter les cycles
-  let classInfo: ClassInfo | null = null;
-  if (player.class) {
-    try {
-      classInfo = CLASSES[player.class];
-    } catch {
-      classInfo = null;
-    }
+const itemNames = {
+  weapon: {
+    poor: ["Épée rouillée", "Bâton cassé", "Dague ébréchée"],
+    common: ["Épée courte", "Hache de bucheron", "Bâton de novice"],
+    uncommon: ["Lame tranchante", "Marteau lourd", "Arc solide"],
+    rare: ["Épée de chevalier", "Hache runique", "Bâton mystique"],
+    epic: ["Lame de dragon", "Marteau de foudre", "Arc de phoenix"],
+    legendary: ["Excalibur", "Mjolnir", "Frostmourne"],
+  },
+  head: {
+    poor: ["Bonnet", "Chapeau"],
+    common: ["Casque", "Capuche"],
+    uncommon: ["Heaume", "Coiffe"],
+    rare: ["Couronne", "Casque renforcé"],
+    epic: ["Heaume de dragon", "Couronne céleste"],
+    legendary: ["Couronne des rois", "Masque éternel"],
+  },
+  chest: {
+    poor: ["Tunique", "Gilet"],
+    common: ["Plastron", "Robe"],
+    uncommon: ["Cuirasse", "Armure"],
+    rare: ["Armure renforcée", "Robe enchantée"],
+    epic: ["Cuirasse céleste", "Armure de dragon"],
+    legendary: ["Armure des rois", "Cuirasse éternel"],
+  },
+  legs: {
+    poor: ["Pantalon", "Braies"],
+    common: ["Jambières", "Pantalon renforcé"],
+    uncommon: ["Grèves", "Cuissardes"],
+    rare: ["Jambières renforcée", "Grèves renforcée"],
+    epic: ["Cuissardes de dragon", "Jambières céleste"],
+    legendary: ["Grèves des rois", "Cuissardes éternel"],
+  },
+  boots: {
+    poor: ["Sandales", "Bottes"],
+    common: ["Solerets", "Souliers"],
+    uncommon: ["Bottes renforcées", "Sandales solides"],
+    rare: ["Souliers enchantées", "Solerets de bataille"],
+    epic: ["Bottes de dragon", "Solerets céleste"],
+    legendary: ["Bottes des rois", "Solerets éternels"],
+  },
+  jewelry: {
+    poor: ["Ficelle nouée", "Caillou poli"],
+    common: ["Anneau de bronze", "Collier simple"],
+    uncommon: ["Anneau d'argent", "Collier enchassé"],
+    rare: ["Anneau d'or", "Amulette magique"],
+    epic: ["Anneau de dragon", "Talisman céleste"],
+    legendary: ["Anneau des rois", "Amulette éternels"],
+  },
+};
+
+
+
+const calculatePrice = (level: number, quality: ItemQuality) => {
+  return Math.floor(level * qualityPriceMultiplier[quality] * 100);
+};
+
+const generatorNameItem = (
+  slot: EquipmentSlot,
+  quality: ItemQuality,
+  classInfo: ClassInfo
+) => {
+  const nameOptions = itemNames[slot][quality];
+  let name = "";
+
+  if (slot === "weapon" && classInfo && classInfo.weaponType) {
+    // Choisir un type d'arme compatible avec la classe
+    const possibleWeapons = classInfo.weaponType.filter(
+      (wt) => weaponNames[wt] && weaponNames[wt][quality]
+    );
+    const chosenWeaponType = possibleWeapons[
+      Math.floor(Math.random() * possibleWeapons.length)
+    ] as WeaponType;
+    name =
+      weaponNames[chosenWeaponType][quality][
+        Math.floor(
+          Math.random() * weaponNames[chosenWeaponType][quality].length
+        )
+      ];
+  } else if (slot === "jewelry") {
+    name = `${nameOptions[Math.floor(Math.random() * nameOptions.length)]}`;
+  } else {
+    name = `${nameOptions[Math.floor(Math.random() * nameOptions.length)]} ${
+      itemTypesText[classInfo ? classInfo.armorType : "cloth"]
+    }`;
   }
+  return name;
+};
 
-  // Déterminer la qualité selon le niveau
-  let quality: ItemQuality;
-  const qualityRoll = Math.random();
-
-  if (monsterLevel < 10) {
+const calculateQuality = (level: number, qualityRoll: number): ItemQuality => {
+  let quality: ItemQuality = "poor";
+  if (level < 10) {
     if (qualityRoll < 0.5) quality = "poor";
     else if (qualityRoll < 0.85) quality = "common";
     else if (qualityRoll < 0.99) quality = "uncommon";
     else quality = "legendary";
-  } else if (monsterLevel < 20) {
+  } else if (level < 20) {
     if (qualityRoll < 0.3) quality = "poor";
     else if (qualityRoll < 0.6) quality = "common";
     else if (qualityRoll < 0.85) quality = "uncommon";
     else if (qualityRoll < 0.98) quality = "rare";
     else quality = "legendary";
-  } else if (monsterLevel < 30) {
+  } else if (level < 30) {
     if (qualityRoll < 0.3) quality = "common";
     else if (qualityRoll < 0.6) quality = "uncommon";
     else if (qualityRoll < 0.85) quality = "rare";
     else if (qualityRoll < 0.97) quality = "epic";
     else quality = "legendary";
-  } else if (monsterLevel > 49) {
+  } else if (level > 49) {
     if (qualityRoll < 0.3) quality = "common";
     else if (qualityRoll < 0.6) quality = "uncommon";
     else if (qualityRoll < 0.85) quality = "rare";
     else if (qualityRoll < 0.9) quality = "epic";
     else quality = "legendary";
-  } else if (monsterLevel > 59) {
+  } else if (level > 59) {
     if (qualityRoll < 0.3) quality = "common";
     else if (qualityRoll < 0.6) quality = "uncommon";
     else if (qualityRoll < 0.85) quality = "rare";
@@ -380,7 +526,10 @@ export const generateLoot = (
     else if (qualityRoll < 0.95) quality = "epic";
     else quality = "legendary";
   }
+  return quality;
+};
 
+const randomSlotEquipment = () => {
   const slots: EquipmentSlot[] = [
     "weapon",
     "head",
@@ -389,22 +538,20 @@ export const generateLoot = (
     "boots",
     "jewelry",
   ];
-  const slot = slots[Math.floor(Math.random() * slots.length)];
+  return slots[Math.floor(Math.random() * slots.length)];
+};
 
-  const qualityMultiplier: Record<ItemQuality, number> = {
-    poor: 0.5,
-    common: 1.0,
-    uncommon: 1.5,
-    rare: 2.5,
-    epic: 4.0,
-    legendary: 6.0,
-  };
-
+const calculateEquipmentStats = (
+  slot: EquipmentSlot,
+  classInfo: ClassInfo,
+  monsterLevel: number,
+  quality: ItemQuality,
+  luck: number
+) => {
+  const stats: EquipmentStats = {};
   const baseStatValue = Math.floor(
     monsterLevel * 0.8 * qualityMultiplier[quality]
   );
-  const stats: EquipmentStats = {};
-
   // Générer les stats selon le slot et la classe
   if (slot === "weapon") {
     // Weapon: primaryStat + attackPower/spellPower + crit
@@ -463,153 +610,67 @@ export const generateLoot = (
       stats.stamina = Math.floor(baseStatValue * 0.7);
     }
     // Crit chance proc
-    if (Math.random() < 0.15) {
+    let critChanceRoll = 0.15;
+
+    if (luck > 1) {
+      critChanceRoll += (luck - 1) * 0.2; // Bonus de 5% par point de chance au-delà de 100%
+    }
+
+    if (Math.random() > critChanceRoll) {
       stats.critChance = Math.floor(
         baseStatValue * (0.08 + Math.random() * 0.15)
       );
     }
   }
+  return stats;
+};
 
-  const itemTypesText = {
-    plate: "en Plaque",
-    mail: "en Mailles",
-    leather: "en Cuir",
-    cloth: "en Tissu",
-  };
+// Générateur de loot aléatoire basé sur le niveau
+export const generateLoot = (
+  level: number,
+  player: Character
+): EquipmentItem | null => {
+  const classInfo: ClassInfo =
+    CLASSES[player.class as WowClass] || CLASSES["warrior"];
+  const luck: number =
+    player.buffs?.reduce((acc, buff) => {
+      if (buff.effect === "luck") {
+        return acc + buff.amount / 100;
+      }
+      return acc;
+    }, 0) || 0;
+  const qualityRoll = Math.random() + luck > 1 ? (luck - 1) * 0.08 : 0.0;
 
-  // Noms aléatoires selon la qualité et le slot
-  const itemNames = {
-    weapon: {
-      poor: ["Épée rouillée", "Bâton cassé", "Dague ébréchée"],
-      common: ["Épée courte", "Hache de bucheron", "Bâton de novice"],
-      uncommon: ["Lame tranchante", "Marteau lourd", "Arc solide"],
-      rare: ["Épée de chevalier", "Hache runique", "Bâton mystique"],
-      epic: ["Lame de dragon", "Marteau de foudre", "Arc de phoenix"],
-      legendary: ["Excalibur", "Mjolnir", "Frostmourne"],
-    },
-    head: {
-      poor: ["Bonnet", "Chapeau"],
-      common: ["Casque", "Capuche"],
-      uncommon: ["Heaume", "Coiffe"],
-      rare: ["Couronne", "Casque renforcé"],
-      epic: ["Heaume de dragon", "Couronne céleste"],
-      legendary: ["Couronne des rois", "Masque éternel"],
-    },
-    chest: {
-      poor: ["Tunique", "Gilet"],
-      common: ["Plastron", "Robe"],
-      uncommon: ["Cuirasse", "Armure"],
-      rare: ["Armure renforcée", "Robe enchantée"],
-      epic: ["Cuirasse céleste", "Armure de dragon"],
-      legendary: ["Armure des rois", "Cuirasse éternel"],
-    },
-    legs: {
-      poor: ["Pantalon", "Braies"],
-      common: ["Jambières", "Pantalon renforcé"],
-      uncommon: ["Grèves", "Cuissardes"],
-      rare: ["Jambières renforcée", "Grèves renforcée"],
-      epic: ["Cuissardes de dragon", "Jambières céleste"],
-      legendary: ["Grèves des rois", "Cuissardes éternel"],
-    },
-    boots: {
-      poor: ["Sandales", "Bottes"],
-      common: ["Solerets", "Souliers"],
-      uncommon: ["Bottes renforcées", "Sandales solides"],
-      rare: ["Souliers enchantées", "Solerets de bataille"],
-      epic: ["Bottes de dragon", "Solerets céleste"],
-      legendary: ["Bottes des rois", "Solerets éternels"],
-    },
-    jewelry: {
-      poor: ["Ficelle nouée", "Caillou poli"],
-      common: ["Anneau de bronze", "Collier simple"],
-      uncommon: ["Anneau d'argent", "Collier enchassé"],
-      rare: ["Anneau d'or", "Amulette magique"],
-      epic: ["Anneau de dragon", "Talisman céleste"],
-      legendary: ["Anneau des rois", "Amulette éternels"],
-    },
-  };
+  if (Math.random() > 0.3 + luck) return null;
+  return generateRandomItem(level, qualityRoll, classInfo, luck);
+};
 
-  const nameOptions = itemNames[slot][quality];
-  const name = `${
-    nameOptions[Math.floor(Math.random() * nameOptions.length)]
-  } ${itemTypesText[classInfo ? classInfo.armorType : "cloth"]}`;
-
-  const icons = {
-    weapon: "⚔️",
-    head: "👑",
-    chest: "🛡️",
-    legs: "👖",
-    boots: "👢",
-    jewelry: "💍",
-  };
-
-  // Calculer le prix basé sur le niveau et la qualité
-  const qualityPriceMultiplier: Record<ItemQuality, number> = {
-    poor: 0.5,
-    common: 1.0,
-    uncommon: 2.0,
-    rare: 5.0,
-    epic: 12.0,
-    legendary: 30.0,
-  };
-
-  // Progression linéaire des stats d'équipement
-  const statPerLevel = 1; // Chaque niveau ajoute +1 à chaque stat principale
-  const equipLevel = monsterLevel;
-  const scaledStats: EquipmentStats = { ...stats };
-  Object.keys(scaledStats).forEach((key) => {
-    if (typeof scaledStats[key as keyof EquipmentStats] === "number") {
-      scaledStats[key as keyof EquipmentStats] =
-        (scaledStats[key as keyof EquipmentStats] || 0) +
-        equipLevel * statPerLevel;
-    }
-  });
-
-  const basePrice = equipLevel * 10; // 10 gold par niveau
-  const itemPrice = Math.floor(basePrice * qualityPriceMultiplier[quality]);
+export const generateRandomItem = (
+  level: number,
+  qualityRoll: number,
+  classInfo: ClassInfo,
+  luck: number
+): EquipmentItem => {
+  const quality: ItemQuality = calculateQuality(qualityRoll, level);
+  const slot = randomSlotEquipment();
+  const stats: EquipmentStats = calculateEquipmentStats(
+    slot,
+    classInfo,
+    level,
+    quality,
+    luck
+  );
+  const name = generatorNameItem(slot, quality, classInfo);
+  const price = calculatePrice(level, quality);
 
   return {
-    id: `${slot}-${quality}-${Date.now()}-${Math.random()}`,
+    id: `${slot}-${quality}-${Date.now()}-${randomUUID()}`,
     name,
     slot,
     quality,
-    level: equipLevel,
-    stats: scaledStats,
+    level,
+    stats,
     icon: icons[slot],
-    price: itemPrice, // Ajout du prix calculé
+    price,
   };
-};
-
-// Calculer les stats totales de l'équipement
-export const calculateEquipmentStats = (
-  equipped: EquippedItems
-): EquipmentStats => {
-  const totalStats: EquipmentStats = {
-    strength: 0,
-    agility: 0,
-    intellect: 0,
-    stamina: 0,
-    attackPower: 0,
-    spellPower: 0,
-    armor: 0,
-    critChance: 0,
-  };
-
-  Object.values(equipped).forEach((item) => {
-    if (item && item.stats) {
-      Object.entries(item.stats).forEach(([stat, value]) => {
-        if (typeof value === "number") {
-          totalStats[stat as keyof EquipmentStats] =
-            (totalStats[stat as keyof EquipmentStats] || 0) + value;
-        }
-      });
-    }
-  });
-
-  return totalStats;
-};
-
-// Obtenir les items de boutique disponibles pour un niveau
-export const getShopEquipment = (level: number): EquipmentItem[] => {
-  return SHOP_EQUIPMENT.filter((item) => item.level <= level && item.price);
 };

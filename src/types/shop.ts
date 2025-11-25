@@ -2,7 +2,7 @@
 
 import { orderBy } from "es-toolkit";
 import type { ItemQuality } from "../components/icons";
-import { BuffEffectInfos, type BuffEffect } from "../firebase";
+import { BuffEffectInfos, type BuffEffect } from "./buffs";
 
 export type PotionType = "health" | "mana" | "effect";
 export type PotionQuality =
@@ -190,9 +190,9 @@ export const POTIONS: Potion[] = [
   {
     id: "elixir-of-strength",
     name: "Élixir de force",
-    description: "Augmente temporairement la force de 20% pendant 30 minutes",
+    description: "Augmente temporairement la force de 20% pendant 10 minutes",
     type: "effect",
-    quality: "minor",
+    quality: "normal",
     icon: "🧪" + BuffEffectInfos["strength" as BuffEffect].emoji,
     restoreAmount: 0,
     restorePercent: 20,
@@ -202,9 +202,9 @@ export const POTIONS: Potion[] = [
   {
     id: "elixir-of-luck",
     name: "Élixir de chance",
-    description: "Augmente temporairement la chance de 20% pendant 30 minutes",
+    description: "Augmente temporairement la chance de 20% pendant 10 minutes",
     type: "effect",
-    quality: "minor",
+    quality: "normal",
     icon: "🧪" + BuffEffectInfos["luck" as BuffEffect].emoji,
     restoreAmount: 0,
     restorePercent: 20,
@@ -213,30 +213,30 @@ export const POTIONS: Potion[] = [
   },
 
   // Potions du dev
-  // {
-  //   id: "health-dev",
-  //   name: "Élixir de vie du Dev",
-  //   description: "Restaure 100% de la vie maximale",
-  //   type: "health",
-  //   quality: "ultimate",
-  //   icon: "💎",
-  //   restoreAmount: 0,
-  //   restorePercent: 100,
-  //   price: 9999999,
-  //   requiredLevel: 0,
-  // },
-  // {
-  //   id: "mana-dev",
-  //   name: "Élixir de mana du Dev",
-  //   description: "Restaure 100% du mana maximum",
-  //   type: "mana",
-  //   quality: "ultimate",
-  //   icon: "💎",
-  //   restoreAmount: 0,
-  //   restorePercent: 100,
-  //   price: 9999999,
-  //   requiredLevel: 0,
-  // },
+  {
+    id: "health-dev",
+    name: "Élixir de vie du Dev",
+    description: "Restaure 100% de la vie maximale",
+    type: "health",
+    quality: "ultimate",
+    icon: "💎",
+    restoreAmount: 0,
+    restorePercent: 100,
+    price: 9999999,
+    requiredLevel: 0,
+  },
+  {
+    id: "mana-dev",
+    name: "Élixir de mana du Dev",
+    description: "Restaure 100% du mana maximum",
+    type: "mana",
+    quality: "ultimate",
+    icon: "💎",
+    restoreAmount: 0,
+    restorePercent: 100,
+    price: 9999999,
+    requiredLevel: 0,
+  },
 ];
 
 // Obtenir les potions disponibles pour un niveau donné

@@ -2,7 +2,6 @@ import { createContext, useState } from 'react';
 import type { ReactNode } from 'react';
 import styled from 'styled-components';
 import type { EquipmentItem } from '../types/equipment';
-// import { ItemIcon } from '../components/icons';
 
 interface TooltipContent {
     title: string;
@@ -197,15 +196,18 @@ export function TooltipProvider({ children }: { children: ReactNode }) {
                                 ))}
                             </TooltipStats>
                         )}
-                        <TooltipStat>
-                            <TooltipStatKey>level</TooltipStatKey>
-                            <TooltipStatValue>{content.level}</TooltipStatValue>
-                            {content.equiped &&
-                                <TooltipStatEquiped $colorText={Number(content.level) > Number(content.equiped.level) ? 'green' : 'red'}>
-                                    {`${content.equiped.level}`}
-                                </TooltipStatEquiped>
-                            }
-                        </TooltipStat>
+                        {(content.level && content.level > 0) ? (
+                            <TooltipStat>
+                                <TooltipStatKey>level</TooltipStatKey>
+                                <TooltipStatValue>{content.level}</TooltipStatValue>
+                                {content.equiped &&
+                                    <TooltipStatEquiped $colorText={Number(content.level) > Number(content.equiped.level) ? 'green' : 'red'}>
+                                        {`${content.equiped.level}`}
+                                    </TooltipStatEquiped>
+                                }
+                            </TooltipStat>
+                        ) : ""}
+
                     </TooltipBox>
                 </TooltipContainer>
             )}

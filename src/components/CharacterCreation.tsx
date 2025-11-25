@@ -10,8 +10,8 @@ import type {
 import {
   getRacesByFaction,
   getClassesForRace,
-  calculateBaseStats
 } from '../types/character';
+import { calculateBaseStats } from '../utils/player';
 
 const Container = styled.div`
   min-height: 100vh;

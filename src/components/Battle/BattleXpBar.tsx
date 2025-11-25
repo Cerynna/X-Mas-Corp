@@ -1,7 +1,8 @@
 
 import styled from "styled-components";
-import type { Character } from "../../firebase";
 import type { BattleState } from "../../types/battle";
+import type { Character } from "../../types/character";
+
 
 interface BattleXpBarProps {
     character: Character;

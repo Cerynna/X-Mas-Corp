@@ -135,6 +135,11 @@ export function Header({ showActions = true }: HeaderProps) {
                   </Link>
                   <Link to="/leaderboard">
                     <WowButton $size="small" $variant="secondary">
+                      🏅
+                    </WowButton>
+                  </Link>
+                  <Link to="/achievements">
+                    <WowButton $size="small" $variant="secondary">
                       🏆
                     </WowButton>
                   </Link>

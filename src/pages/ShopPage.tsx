@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Shop as ShopComponent } from '../components/Shop';
 import { useCharacter } from '../contexts/useCharacter';
-import type { Character } from '../firebase';
+import type { Character } from '../types/character';
 
 const ShopContainer = styled.div`
   width: 100%;

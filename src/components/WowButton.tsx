@@ -59,7 +59,7 @@ export const WowButton = styled.button<WowButtonProps>`
   }
 
   &:hover {
-    transform: translateY(-2px);
+    // transform: translateY(-2px);
     box-shadow: ${({ theme }) => theme.shadows.glow.gold};
 
     &::before {

@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { WowButton } from '..';
-import type { Character } from '../../firebase/database';
 import { generateMonster } from '../../types/monsters';
 import type { ClassAbility, WowClass } from '../../types/abilities';
 import { getAvailableAbilities, calculateManaCost, getAbilityIconUrl } from '../../types/abilities';
@@ -24,9 +23,12 @@ import Money from '../Money';
 import { BattleXpBar } from './BattleXpBar';
 import { ActionPanel, ActionTitle, BattleArena, BattleContainer, BattleField, BattleLog, BattleLogTitle, Combatant, CombatantIcon, CombatantName, EmojiIcon, FloatingTextContainer, FloatingTextItem, HealthBar, HealthFill, HealthText, IconButton, LogEntry, ManaBar, ManaFill, ManaText, MonsterIconContainer, RewardItem, RewardMoney, RewardsList, SpellIcon, VictoryPanel, VictoryTitle, } from './Battle.style';
 import type { ZoneType } from '../../types/zone';
+import { useAbilityTooltip } from '../../hooks/useAbilityTooltip';
+import type { Character } from '../../types/character';
+import { useCharacter } from '../../contexts';
+
 
 interface BattleProps {
-  character: Character;
   monsterLevel: number;
   zone: ZoneType;
   onBattleEnd: (updatedCharacter: Character, loot?: EquipmentItem) => void;
@@ -41,13 +43,15 @@ interface FloatingText {
   target: 'player' | 'monster';
 }
 
-export function Battle({ character, monsterLevel, zone, onBattleEnd, onExit }: BattleProps) {
+export function Battle({ monsterLevel, zone, onBattleEnd, onExit }: BattleProps) {
+  const { character } = useCharacter();
   const [battleState, setBattleState] = useState<BattleState>(() => {
     const monster = generateMonster(monsterLevel, zone);
     return initBattle(character, monster);
   });
   const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
   const [isActionPending, setIsActionPending] = useState(false);
+  const { showAbilityTooltip, hideTooltip } = useAbilityTooltip();
 
   // Fonction pour ajouter un texte flottant
   const addFloatingText = useCallback((text: string, type: FloatingText['type'], target: 'player' | 'monster') => {
@@ -205,25 +209,18 @@ export function Battle({ character, monsterLevel, zone, onBattleEnd, onExit }: B
     ];
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      console.log(e.key)
       if (e.key === "&") {
         handleAttack();
       }
-
       availableAbilities.forEach((ability, index) => {
         if (e.key === touchKeys[index]) {
           handleUseAbility(ability);
         }
       })
-
-
-
     };
-    // window.addEventListener('keyup', handleKeyUp);
     window.addEventListener('keydown', handleKeyUp);
 
     return () => {
-      // window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('keydown', handleKeyUp);
     };
   }, [handleAttack, handleUseAbility, availableAbilities]);
@@ -382,6 +379,15 @@ export function Battle({ character, monsterLevel, zone, onBattleEnd, onExit }: B
             <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
               <IconButton
                 onClick={handleAttack}
+                onMouseEnter={(event) => showAbilityTooltip({
+                  id: 'basic-attack',
+                  name: 'Attaque',
+                  icon: '⚔️',
+                  description: 'Une attaque de base contre l\'ennemi.',
+                  baseManaCost: 0,
+                  unlockLevel: 1,
+                }, event)}
+                onMouseLeave={hideTooltip}
                 disabled={battleState.turn !== 'player' || isActionPending}
                 $disabled={battleState.turn !== 'player' || isActionPending}
                 $variant="primary"
@@ -397,6 +403,8 @@ export function Battle({ character, monsterLevel, zone, onBattleEnd, onExit }: B
                   <IconButton
                     key={ability.id}
                     onClick={() => handleUseAbility(ability)}
+                    onMouseEnter={(event) => showAbilityTooltip(ability, event)}
+                    onMouseLeave={hideTooltip}
                     disabled={!canUse}
                     $disabled={!canUse}
                     $variant="primary"
@@ -412,6 +420,15 @@ export function Battle({ character, monsterLevel, zone, onBattleEnd, onExit }: B
               })}
               <IconButton
                 onClick={handleDefend}
+                onMouseEnter={(event) => showAbilityTooltip({
+                  id: 'basic-defend',
+                  name: 'Défense',
+                  icon: '🛡️',
+                  description: 'Une action de défense pour réduire les dégâts reçus de 50%.',
+                  baseManaCost: 0,
+                  unlockLevel: 1,
+                }, event)}
+                onMouseLeave={hideTooltip}
                 disabled={battleState.turn !== 'player' || isActionPending}
                 $disabled={battleState.turn !== 'player' || isActionPending}
                 $variant="secondary"
@@ -421,6 +438,15 @@ export function Battle({ character, monsterLevel, zone, onBattleEnd, onExit }: B
               </IconButton>
               <IconButton
                 onClick={handleFlee}
+                onMouseEnter={(event) => showAbilityTooltip({
+                  id: 'basic-flee',
+                  name: 'Fuir',
+                  icon: '🏃‍♂️',
+                  description: 'Fuyez pauvre fou ! Tentez votre chance pour échapper au combat.',
+                  baseManaCost: 0,
+                  unlockLevel: 1,
+                }, event)}
+                onMouseLeave={hideTooltip}
                 disabled={battleState.turn !== 'player' || isActionPending}
                 $disabled={battleState.turn !== 'player' || isActionPending}
                 $variant="danger"
@@ -432,14 +458,23 @@ export function Battle({ character, monsterLevel, zone, onBattleEnd, onExit }: B
             {/* Potions à droite */}
             <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
               {battleState.player.inventory && battleState.player.inventory.potions.length > 0 && (
-                battleState.player.inventory.potions.map((item) => {
-                  const potion = POTIONS.find(p => p.id === item.potionId);
+                battleState.player.inventory.potions.map((item: { potionId: string; quantity: number }) => {
+                  const potion = POTIONS.filter(p => p.type !== "effect").find(p => p.id === item.potionId);
                   if (!potion || item.quantity <= 0) return null;
                   const canUse = battleState.turn === 'player' && !isActionPending;
                   return (
                     <IconButton
                       key={item.potionId}
                       onClick={() => handleUsePotion(item.potionId)}
+                      onMouseEnter={(event) => showAbilityTooltip({
+                        id: potion.id,
+                        name: potion.name,
+                        description: potion.description,
+                        icon: potion.icon,
+                        baseManaCost: 0,
+                        unlockLevel: 0,
+                      }, event)}
+                      onMouseLeave={hideTooltip}
                       disabled={!canUse}
                       $disabled={!canUse}
                       $variant={potion.type === 'health' ? 'danger' : 'secondary'}

@@ -1,5 +1,10 @@
 // Types et constantes pour le système de personnages WoW
 
+import type { BagsItemsType } from "./bags";
+import type { BuffType } from "./buffs";
+import type { ChatChannel } from "./chat";
+import type { EquipementsType } from "./equipmentSlots";
+
 export type Faction = "alliance" | "horde";
 
 export type WowClass =
@@ -32,7 +37,8 @@ export type HordeRace =
 
 export type WowRace = AllianceRace | HordeRace;
 
-type ArmorType = "cloth" | "leather" | "mail" | "plate";
+export type ArmorType = "cloth" | "leather" | "mail" | "plate";
+export type WeaponType = "sword" | "axe" | "mace" | "bow" | "staff";
 
 // Informations sur les classes
 export interface ClassInfo {
@@ -50,6 +56,7 @@ export interface ClassInfo {
   };
   energyName: string;
   armorType: ArmorType;
+  weaponType: WeaponType[];
 }
 
 // Informations sur les races
@@ -85,6 +92,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     },
     energyName: "🔥 Rage",
     armorType: "plate",
+    weaponType: ["sword", "axe", "mace"],
   },
   paladin: {
     id: "paladin",
@@ -102,6 +110,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     },
     energyName: "💙 Mana",
     armorType: "plate",
+    weaponType: ["sword", "mace"],
   },
   hunter: {
     id: "hunter",
@@ -118,6 +127,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     },
     energyName: "🎯 Focus",
     armorType: "mail",
+    weaponType: ["bow"],
   },
   rogue: {
     id: "rogue",
@@ -135,6 +145,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     },
     energyName: "⚡ Énergie",
     armorType: "leather",
+    weaponType: ["sword"],
   },
   priest: {
     id: "priest",
@@ -152,6 +163,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     },
     energyName: "💙 Mana",
     armorType: "cloth",
+    weaponType: ["staff"],
   },
   shaman: {
     id: "shaman",
@@ -168,6 +180,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     },
     energyName: "💙 Mana",
     armorType: "mail",
+    weaponType: ["mace", "staff"],
   },
   mage: {
     id: "mage",
@@ -185,6 +198,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     },
     energyName: "💙 Mana",
     armorType: "cloth",
+    weaponType: ["staff"],
   },
   warlock: {
     id: "warlock",
@@ -202,6 +216,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     },
     energyName: "💙 Mana",
     armorType: "cloth",
+    weaponType: ["staff"],
   },
   druid: {
     id: "druid",
@@ -219,6 +234,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     },
     energyName: "💙 Mana",
     armorType: "leather",
+    weaponType: ["staff", "mace"],
   },
   "death-knight": {
     id: "death-knight",
@@ -236,7 +252,16 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     },
     energyName: "🌀 Runes",
     armorType: "plate",
+    weaponType: ["sword", "axe", "mace"],
   },
+};
+
+export const randomClassInfo = (): ClassInfo => {
+  return CLASSES[
+    (Object.keys(CLASSES) as WowClass[])[
+      Math.floor(Math.random() * Object.keys(CLASSES).length)
+    ]
+  ];
 };
 
 // Races disponibles
@@ -369,57 +394,70 @@ export interface CharacterStats {
   critChance?: number;
 }
 
-export const calculateBaseStats = (
-  classId: WowClass,
-  raceId: WowRace
-): CharacterStats => {
-  const classInfo = CLASSES[classId];
-  const raceInfo = RACES[raceId];
-  // console.log("Calculating base stats for class:", classInfo, " race:", raceInfo);
+export interface CharacterInventoryPotion {
+  potionId: string;
+  quantity: number;
+}
 
-  // Stats de base (niveau 1)
-  const baseStrength = 10;
-  const baseAgility = 10;
-  const baseIntellect = 10;
-  const baseStamina = 10;
-  const baseArmor = 10;
+export interface Character {
+  id?: string;
+  userId: string;
+  name: string;
+  faction: "alliance" | "horde";
+  level: number;
+  experience: number;
+  experienceToNextLevel: number;
+  isAdmin?: boolean;
 
-  const strength = baseStrength + (raceInfo.bonuses.strength || 0);
-  const agility = baseAgility + (raceInfo.bonuses.agility || 0);
-  const intellect = baseIntellect + (raceInfo.bonuses.intellect || 0);
-  const stamina = baseStamina + (raceInfo.bonuses.stamina || 0);
-  const armor =
-    baseArmor + Math.floor((agility + stamina + strength + intellect) / 4);
+  status?: "online" | "offline" | "in-battle";
+  score?: number;
 
-  const energyName = classInfo.energyName;
+  // Classe et race
+  class: WowClass;
+  race: WowRace;
 
-  const health = classInfo.baseHP * 10;
-  const energy = classInfo.baseMP * 5;
-  let critChance = 0;
+  // Stats de combat
+  health: number;
+  maxHealth: number;
+  mana: number;
+  maxMana: number;
 
-  switch (classInfo.primaryStat) {
-    case "strength":
-      critChance += 5 * strength;
-      break;
-    case "agility":
-      // Les voleurs et chasseurs gagnent plus d'agilité
-      critChance += 7 * agility;
-      break;
-    case "intellect":
-      // Les mages et prêtres gagnent plus d'intellect
-      critChance += 5 * intellect;
-      break;
-  }
+  // Attributs principaux
+  strength: number;
+  agility: number;
+  intellect: number;
+  stamina: number;
 
-  return {
-    health,
-    energy,
-    strength,
-    agility,
-    intellect,
-    stamina,
-    armor,
-    energyName,
-    critChance,
+  // Stats dérivées
+  attackPower: number;
+  spellPower: number;
+  armor: number;
+  critChance: number;
+
+  // Progression
+  guildId?: string;
+  achievements: string[];
+  gold: number;
+  defeatedMonsters: number;
+  totalDamageDealt: number;
+
+  // Inventaire (potions)
+  inventory?: {
+    potions: Array<CharacterInventoryPotion>;
   };
-};
+
+  // Équipement (stocke l'item complet, pas juste l'ID)
+  equipment?: EquipementsType;
+
+  // Items dans le sac (loot)
+  bagItems?: Array<BagsItemsType>;
+
+  chatChannel: ChatChannel[];
+
+  buffs?: BuffType[];
+
+  // Timestamps
+  createdAt?: number;
+  updatedAt?: number;
+  lastBattleAt?: number;
+}

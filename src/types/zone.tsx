@@ -30,7 +30,7 @@ export const ZONES: ZoneType[] = [
     name: "Camp de Voleurs",
     description:
       "Un campement caché dans la forêt, habité par des bandits et des Murlocs.",
-    levelRange: [5, 15],
+    levelRange: [5, 10],
     monstersId: ["bandit", "murloc", "thief", "giant-rat"],
     componentIcon: BanditCampIcon,
   },
@@ -65,7 +65,7 @@ export const ZONES: ZoneType[] = [
     name: "La Terre des Géants",
     description:
       "Un territoire vaste et imposant, habité par des créatures gigantesques.",
-    levelRange: [25, 32],
+    levelRange: [25, 35],
     monstersId: ["giant", "ice-giant", "troll-brute"],
     componentIcon: GiantsLandIcon,
   }

@@ -1,4 +1,17 @@
 import React, { useEffect, useState } from "react";
+import { useCharacter } from "../../contexts";
+import { clearOldBuffs } from "../../utils/player";
+import styled from "styled-components";
+
+const BuffTimerContainer = styled.div`
+margin-top: -16px;
+background: rgba(0, 0, 0, 0.5);
+padding: 2px;
+border-radius: 4px;
+color: white;
+font-weight: bold;
+font-size: 0.8rem;
+`;
 
 interface BuffTimerProps {
     expiresAt: number; // timestamp en ms
@@ -11,30 +24,36 @@ function formatDuration(ms: number) {
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
 
-    let result = "";
+    // Toujours deux chiffres pour MM et SS
+    const pad = (n: number) => n.toString().padStart(2, "0");
+
     if (hours > 0) {
-        result += `${hours}:`;
+        return `${hours}:${pad(minutes)}:${pad(seconds)}`;
+    } else {
+        return `${pad(minutes)}:${pad(seconds)}`;
     }
-    if (minutes > 0 || hours > 0) {
-        result += `${hours > 0 && minutes < 10 ? "0" : ""}${minutes}:`;
-    }
-    result += `${(seconds < 10 && (minutes > 0 || hours > 0)) ? "0" : ""}${seconds}`;
-    return result;
 }
 
 export const BuffTimer: React.FC<BuffTimerProps> = ({ expiresAt }) => {
+    const { character, updateCharacter } = useCharacter();
     const [remaining, setRemaining] = useState(expiresAt - Date.now());
 
     useEffect(() => {
-        if (remaining <= 0) return;
+        if (remaining <= 0) {
+            if (!character) return;
+            const newBuffs = clearOldBuffs(character);
+            character.buffs = newBuffs;
+            updateCharacter(character);
+            return;
+        }
         const interval = setInterval(() => {
             setRemaining(expiresAt - Date.now());
         }, 1000);
         return () => clearInterval(interval);
-    }, [expiresAt, remaining]);
+    }, [expiresAt, remaining, character, updateCharacter]);
 
-    return <span style={{
+    return <BuffTimerContainer style={{
         fontSize: '0.8rem',
         color: remaining <= 60000 ? 'red' : 'inherit',
-    }}>{formatDuration(remaining)}</span>;
+    }}>{formatDuration(remaining)}</BuffTimerContainer>;
 };

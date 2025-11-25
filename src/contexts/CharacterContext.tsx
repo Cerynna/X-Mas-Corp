@@ -1,17 +1,14 @@
 import { createContext, useEffect, useState, useCallback } from 'react';
 import type { User } from 'firebase/auth';
 import { useAuth } from './useAuth';
-import type { Character } from '../firebase/database';
-import type { WowClass, WowRace, Faction } from '../types/character';
+import type { WowClass, WowRace, Faction, Character } from '../types/character';
 import {
-  getCharactersByUser,
-  createCharacter,
   updateDocument,
   collections,
   onDocumentChange,
 } from '../firebase/database';
-// import { calculateBaseStats, CLASSES } from '../types/character';
-import { playerStatsCalculator } from '../utils/player';
+import { clearOldBuffs, playerStatsCalculator } from '../utils/player';
+import { createCharacter, getCharactersByUser } from '../firebase/models/character';
 
 interface CharacterContextType {
   character: Character | null;
@@ -155,6 +152,8 @@ export const CharacterProvider = ({ children }: CharacterProviderProps) => {
 
     try {
       const statsCharacter = playerStatsCalculator(data);
+      const newBuffs = clearOldBuffs(data);
+      data.buffs = newBuffs;
 
       await updateDocument(collections.characters, data.id ?? character.id, {
         ...data,

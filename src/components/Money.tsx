@@ -1,7 +1,7 @@
 import { formatNumber } from "../utils/player";
 import { ShinyCoin } from "./icons/ShinyCoin";
 
-export default function Money({ amount, variant = "normal" }: { amount: number, variant: "small" | "normal" }) {
+export default function Money({ amount, variant = "normal" }: { amount: number, variant?: "small" | "normal" }) {
     const gold = Math.floor(amount / 10000);
     const silver = Math.floor((amount % 10000) / 100);
     const copper = amount % 100;

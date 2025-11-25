@@ -7,6 +7,7 @@ import { useItemTooltip } from "../../hooks/useItemTooltip";
 import { cleanBagsItems } from "../../utils/bags";
 import Money from "../Money";
 import { WowButton } from "../WowButton";
+import type { BagsItemsType } from "../../types/bags";
 
 const BagSection = styled.div``;
 
@@ -81,7 +82,7 @@ export function Bags() {
         };
 
         // Filtrer l'item équipé du sac (gérer les deux formats)
-        let newBagItems = (character.bagItems || []).filter(bagItem => {
+        let newBagItems = (character.bagItems || []).filter((bagItem: BagsItemsType) => {
             const currentItem: EquipmentItem = 'item' in bagItem ? bagItem.item : bagItem as unknown as EquipmentItem;
             return currentItem.id !== item.id;
         });
@@ -103,10 +104,10 @@ export function Bags() {
     };
 
     const handleSellItem = (item: EquipmentItem) => {
-        const sellPrice = Math.floor((item.price || 0)*10);
+        const sellPrice = Math.floor((item.price || 0) * 10);
 
         // Filtrer l'item vendu du sac (gérer les deux formats)
-        let newBagItems = (character.bagItems || []).filter(bagItem => {
+        let newBagItems = (character.bagItems || []).filter((bagItem: BagsItemsType) => {
             const currentItem: EquipmentItem = 'item' in bagItem ? bagItem.item : bagItem as unknown as EquipmentItem;
             return currentItem.id !== item.id;
         });
@@ -120,17 +121,52 @@ export function Bags() {
         });
     };
     // Trier les items du sac par level décroissant
-    const sortedBagItems = (character.bagItems || []).slice().sort((a, b) => {
+    const sortedBagItems = (character.bagItems || []).slice().sort((a: BagsItemsType, b: BagsItemsType) => {
         const itemA: EquipmentItem = 'item' in a ? a.item : a as unknown as EquipmentItem;
         const itemB: EquipmentItem = 'item' in b ? b.item : b as unknown as EquipmentItem;
         return (itemB.level || 0) - (itemA.level || 0);
     });
 
+    const handleSellAll = () => {
+        let totalSellPrice = 0;
+        const newBagItems = (character.bagItems || []).filter((bagItem: BagsItemsType) => {
+            const item: EquipmentItem = 'item' in bagItem ? bagItem.item : bagItem as unknown as EquipmentItem;
+            totalSellPrice += Math.floor((item.price || 0) * 10);
+            return false; // Vendre tous les items
+        });
+
+        updateCharacter({
+            ...character,
+            bagItems: newBagItems,
+            gold: character.gold + totalSellPrice,
+        });
+    }
+
     return <BagSection>
-        <SectionTitle>🎒 Sac - Équipement</SectionTitle>
+        <SectionTitle>🎒 Sac - Équipement
+            <span>
+
+                {sortedBagItems.length > 0 && (
+                    <>
+                        Tout vendre : {" "}
+                        <ActionButton
+                            onClick={() => handleSellAll()}
+                            $size="small"
+                            $variant={'secondary'}
+                        >
+                            <Money amount={sortedBagItems.reduce((total: number, bagItem: BagsItemsType) => {
+                                const item: EquipmentItem = 'item' in bagItem ? bagItem.item : bagItem as unknown as EquipmentItem;
+                                return total + Math.floor((item.price || 0) * 10);
+                            }, 0)} variant="small" />
+                        </ActionButton>
+                    </>
+                )}
+
+            </span>
+        </SectionTitle>
         {sortedBagItems.length > 0 ? (
             <BagGrid>
-                {sortedBagItems.map((bagItem, index) => {
+                {sortedBagItems.map((bagItem: BagsItemsType, index: number) => {
                     const item: EquipmentItem = 'item' in bagItem ? bagItem.item : bagItem as unknown as EquipmentItem;
                     item.equiped = character.equipment ? character.equipment[item.slot] : undefined;
                     if (!item || !item.name) return null;
@@ -152,15 +188,11 @@ export function Bags() {
                             <ItemActions>
                                 <ActionButton
                                     onClick={() => handleSellItem(item)}
-                                    // disabled={!canAfford}
                                     $size="small"
                                     $variant={'secondary'}
                                 >
                                     <Money amount={Math.floor((item.price || 0) * 10)} variant="small" />
                                 </ActionButton>
-                                {/* <ActionButton $variant="secondary" onClick={() => handleSellItem(item)}>
-                                    <Money amount={Math.floor((item.price || 0))} />
-                                </ActionButton> */}
                             </ItemActions>
                         </BagItem>
                     );
