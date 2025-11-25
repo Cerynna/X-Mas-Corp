@@ -1,18 +1,22 @@
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, get, set } from "firebase/database";
-
+import admin from "firebase-admin";
 import { randomClassInfo } from "../../src/types/character.ts";
-import { generateRandomItem, type ShopItem } from "../../src/types/equipment.ts";
+import {
+  generateRandomItem,
+  type ShopItem,
+} from "../../src/types/equipment.ts";
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || "{}");
 
-const app = initializeApp(serviceAccount);
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://<TON_PROJECT_ID>.firebaseio.com", // à adapter
+});
 
-export const database = getDatabase(app);
+const db = admin.database();
 
 async function ensureShopItems(): Promise<void> {
-  const shopRef = ref(database, "shops");
-  const snapshot = await get(shopRef);
+  const shopRef = db.ref("shops");
+  const snapshot = await shopRef.once("value");
 
   const items: ShopItem[] = [];
   snapshot.forEach((childSnapshot) => {
@@ -24,8 +28,7 @@ async function ensureShopItems(): Promise<void> {
     for (let i = 0; i < missing; i++) {
       const classInfo = randomClassInfo();
       const randomItem = generateRandomItem(1, 1, classInfo, 1.5);
-      const newItemRef = ref(database, `shops/${Date.now()}_${i}`);
-      await set(newItemRef, {
+      await shopRef.push({
         ...randomItem,
         dateAdded: Date.now(),
       });
