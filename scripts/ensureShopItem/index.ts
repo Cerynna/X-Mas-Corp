@@ -54,4 +54,6 @@ ensureShopItems();
 
 console.log("ensureShopItem script executed");
 
-process.exit(0);
+setTimeout(() => {
+  process.exit(0);
+}, 1000 * 10);
