@@ -9,7 +9,8 @@ const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || "{}");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://<TON_PROJECT_ID>.firebaseio.com", // à adapter
+  databaseURL:
+    "https://xmas-corp-default-rtdb.europe-west1.firebasedatabase.app",
 });
 
 const db = admin.database();
