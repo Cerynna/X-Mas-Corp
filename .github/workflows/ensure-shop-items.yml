@@ -24,6 +24,6 @@ jobs:
         run: npx tsc --project tsconfig.ensureShopItem.json
 
       - name: Run ensureShopItems script
-        run: node scripts/ensureShopItem/scripts/ensureShopItem/index.js
+        run: node scripts/ensureShopItem/index.js
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
