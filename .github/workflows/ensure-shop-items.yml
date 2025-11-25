@@ -18,12 +18,9 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install firebase
-
-      - name: Build ensureShopItem
-        run: npx tsc --project tsconfig.ensureShopItem.json
+        run: npm install firebase ts-node typescript
 
       - name: Run ensureShopItems script
-        run: node scripts/ensureShopItem/scripts/ensureShopItem/index.js
+        run: npx ts-node scripts/ensureShopItem/index.ts
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
