@@ -66,6 +66,11 @@ export interface EquipmentItem {
   equiped?: EquipmentItem;
 }
 
+export interface ShopItem extends EquipmentItem {
+  dateAdded: number;
+}
+
+
 export interface EquippedItems {
   weapon?: EquipmentItem;
   head?: EquipmentItem;

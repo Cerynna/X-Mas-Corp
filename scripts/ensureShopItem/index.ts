@@ -1,25 +1,31 @@
-import admin from "firebase-admin";
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, get, set } from "firebase/database";
+
 import { randomClassInfo } from "../../src/types/character";
-import { generateRandomItem } from "../../src/types/equipment";
+import { generateRandomItem, ShopItem } from "../../src/types/equipment";
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || "{}");
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
-const db = admin.firestore();
+const app = initializeApp(serviceAccount);
+
+export const database = getDatabase(app);
 
 async function ensureShopItems(): Promise<void> {
-  const shopRef = db.collection("shops");
-  const snapshot = await shopRef.get();
-  const items = snapshot.docs.map((doc) => doc.data());
+  const shopRef = ref(database, "shops");
+  const snapshot = await get(shopRef);
+
+  const items: ShopItem[] = [];
+  snapshot.forEach((childSnapshot) => {
+    items.push(childSnapshot.val());
+  });
 
   if (items.length < 15) {
     const missing = 15 - items.length;
     for (let i = 0; i < missing; i++) {
       const classInfo = randomClassInfo();
       const randomItem = generateRandomItem(1, 1, classInfo, 1.5);
-      await shopRef.add({
+      const newItemRef = ref(database, `shops/${Date.now()}_${i}`);
+      await set(newItemRef, {
         ...randomItem,
         dateAdded: Date.now(),
       });
@@ -32,4 +38,4 @@ async function ensureShopItems(): Promise<void> {
 
 ensureShopItems();
 
-console.log('ensureShopItem script executed');
+console.log("ensureShopItem script executed");

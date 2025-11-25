@@ -1,5 +1,5 @@
 import { orderBy } from "es-toolkit";
-import { generateRandomItem, type EquipmentItem } from "../../types/equipment";
+import { generateRandomItem, type ShopItem } from "../../types/equipment";
 import {
   collections,
   createDocument,
@@ -8,10 +8,6 @@ import {
   updateDocument,
 } from "../database";
 import { randomClassInfo, type Character } from "../../types/character";
-
-export interface ShopItem extends EquipmentItem {
-  dateAdded: number;
-}
 
 export const getShopItems = async () => {
   // await updateShopItem();

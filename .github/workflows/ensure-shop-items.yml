@@ -18,10 +18,7 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install firebase-admin
-
-      - name: Create service account key
-        run: echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" > serviceAccountKey.json
+        run: npm install firebase
 
       - name: Run ensureShopItems script
         run: node scripts/ensureShopItem/scripts/ensureShopItem/index.js

@@ -7,7 +7,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "outDir": "scripts/ensureShopItem",
+    "outDir": "./scripts/ensureShopItem",
     "strict": true,
     "skipLibCheck": true,
     "types": ["node"]
