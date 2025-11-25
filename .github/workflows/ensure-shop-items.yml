@@ -19,8 +19,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install firebase ts-node typescript
+        run: npm ci
 
       - name: Run ensureShopItems script
-        run: npx ts-node scripts/ensureShopItem/index.ts
+        run: npx ts-node-esm scripts/ensureShopItem/index.ts
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
