@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import { useCharacter } from '../contexts/useCharacter';
 import { Battle } from '../components/Battle/BattleContainer';
 import { WowButton } from '../components';
-import { type Character } from '../firebase';
 import type { EquipmentItem } from '../types/equipment';
 import { ZONES } from '../types/zone';
+import type { Character } from '../types/character';
 
 const ExplorationContainer = styled.div`
   min-height: calc(100vh - 92px);
@@ -43,9 +43,9 @@ const ZoneItem = styled.div<{ $selected: boolean }>`
   // width: 80px;
   border: 3px solid ${({ $selected, theme }) => $selected ? theme.colors.primary.gold : 'transparent'};
   border-radius: 12px;
-  padding: 8px;
   background: ${({ theme }) => theme.colors.neutral.darkGray};
   box-shadow: ${({ theme }) => theme.shadows.md};
+  padding: 8px;
   cursor: pointer;
   transition: border-color 0.3s;
   display: grid;
@@ -146,7 +146,6 @@ export function Exploration() {
   if (inBattle) {
     return (
       <Battle
-        character={character}
         monsterLevel={monsterLevel}
         zone={selectedZone}
         onBattleEnd={handleBattleEnd}

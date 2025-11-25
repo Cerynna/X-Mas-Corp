@@ -41,7 +41,7 @@ describe("removeUndefinedValues", () => {
 			},
 			equipment: {
 				weapon: undefined,
-				head: { id: "h1", name: "Casque", slot: "head", quality: "rare", level: 10, stats: { armor: 5 }, icon: "icon.png", price: 50, dropRate: 0.1 },
+				head: { id: "h1", name: "Casque", slot: "head", quality: "rare", level: 10, stats: { armor: 5 }, icon: "icon.png", price: 50 },
 				chest: undefined
 			},
 			bagItems: [undefined],
@@ -73,7 +73,7 @@ describe("removeUndefinedValues", () => {
 
 			// Vérification de equipment imbriqué
 			expect(cleaned.equipment).toBeDefined();
-			expect(cleaned.equipment.head).toEqual({ id: "h1", name: "Casque", slot: "head", quality: "rare", level: 10, stats: { armor: 5 }, icon: "icon.png", price: 50, dropRate: 0.1 });
+			expect(cleaned.equipment.head).toEqual({ id: "h1", name: "Casque", slot: "head", quality: "rare", level: 10, stats: { armor: 5 }, icon: "icon.png", price: 50 });
 			expect(cleaned.equipment).not.toHaveProperty("weapon");
 			expect(cleaned.equipment).not.toHaveProperty("chest");
 

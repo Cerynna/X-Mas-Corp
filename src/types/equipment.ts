@@ -58,11 +58,10 @@ export interface EquipmentItem {
   name: string;
   slot: EquipmentSlot;
   quality: ItemQuality;
-  level: number; // Niveau requis pour équiper
+  level: number;
   stats: EquipmentStats;
   icon: string;
-  price?: number; // Prix en or (si achetable en boutique)
-  dropRate?: number; // Chance de drop (0-1) si c'est du loot
+  price: number;
   equiped?: EquipmentItem;
 }
 

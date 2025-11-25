@@ -131,7 +131,7 @@ export function Bags() {
         let totalSellPrice = 0;
         const newBagItems = (character.bagItems || []).filter((bagItem: BagsItemsType) => {
             const item: EquipmentItem = 'item' in bagItem ? bagItem.item : bagItem as unknown as EquipmentItem;
-            totalSellPrice += Math.floor((item.price || 0) * 10);
+            totalSellPrice += (item.price || 0);
             return false; // Vendre tous les items
         });
 
@@ -156,7 +156,7 @@ export function Bags() {
                         >
                             <Money amount={sortedBagItems.reduce((total: number, bagItem: BagsItemsType) => {
                                 const item: EquipmentItem = 'item' in bagItem ? bagItem.item : bagItem as unknown as EquipmentItem;
-                                return total + Math.floor((item.price || 0) * 10);
+                                return total + Math.floor((item.price || 0));
                             }, 0)} variant="small" />
                         </ActionButton>
                     </>
@@ -191,7 +191,7 @@ export function Bags() {
                                     $size="small"
                                     $variant={'secondary'}
                                 >
-                                    <Money amount={Math.floor((item.price || 0) * 10)} variant="small" />
+                                    <Money amount={(item.price || 0)} variant="small" />
                                 </ActionButton>
                             </ItemActions>
                         </BagItem>

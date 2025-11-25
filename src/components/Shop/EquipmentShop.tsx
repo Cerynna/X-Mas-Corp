@@ -4,6 +4,9 @@ import { ItemIconWithQuality } from "../icons";
 import { useItemTooltip } from "../../hooks/useItemTooltip";
 import { WowButton } from "../WowButton";
 import Money from "../Money";
+import { useCharacter } from "../../contexts";
+// import { BuffTimer } from "../Dashboard/BuffTimer";
+import type { ShopItem } from "../../types/equipment";
 
 const ItemIconWrapper = styled.div`
   cursor: pointer;
@@ -18,7 +21,7 @@ const EquipmentShopGrid = styled.div`
     grid-template-columns: repeat(3, 1fr);
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 810px) {
     grid-template-columns: repeat(2, 1fr);
   }
 `;
@@ -32,6 +35,11 @@ const EquipmentShopGridCell = styled.div`
     justify-items: start;
     align-items: center;
     gap: ${({ theme }) => theme.spacing.sm};
+    border: 1px solid ${({ theme }) => theme.colors.primary.gold};
+    border-radius: 6px;
+    background: ${({ theme }) => theme.colors.neutral.darkGray};
+    box-shadow: ${({ theme }) => theme.shadows.md};
+    padding: 8px;
 `;
 
 const EquipmentShopName = styled.div`
@@ -47,18 +55,20 @@ const EquipmentShopPurchase = styled.div`
     width: 100%;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
     gap: ${({ theme }) => theme.spacing.sm};
 `;
 
 
-export function EquipmentShop() {
+export function EquipmentShop({ handlePurchase }: { handlePurchase: (item: ShopItem, part: number) => void }) {
+    const { character } = useCharacter();
     const { shop } = useShop();
     const { showItemTooltip, hideTooltip } = useItemTooltip();
 
     return (
         <EquipmentShopGrid>
             {shop.map((item) => {
+                const canAfford = character!.gold >= item.price;
                 return (
                     <EquipmentShopGridCell key={item.id}>
                         <ItemIconWrapper
@@ -78,16 +88,17 @@ export function EquipmentShop() {
                         </EquipmentShopName>
 
                         <EquipmentShopPurchase>
+                            {/* <BuffTimer expiresAt={item.dateAdded + 15 * 60 * 1000 || 0} /> */}
                             <span>
                                 Level : {item.level}
                             </span>
                             <WowButton
-                                // onClick={() => handlePurchase(potion)}
-                                // disabled={!canAfford}
+                                onClick={() => handlePurchase(item, 1.8)}
+                                disabled={!canAfford}
                                 $size="small"
                                 $variant={'secondary'}
                             >
-                                <Money amount={item.price || 1000000} variant='small' />
+                                {canAfford ? (<Money amount={Math.floor(item.price * 1.8)} variant='small' />) : 'Trop cher'}
                             </WowButton>
                         </EquipmentShopPurchase>
 

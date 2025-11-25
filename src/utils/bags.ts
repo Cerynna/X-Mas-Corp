@@ -1,4 +1,4 @@
-import type { BagsItemsType } from "../firebase";
+import type { BagsItemsType } from "../types/bags";
 
 export function cleanBagsItems(bagItems: BagsItemsType[]): BagsItemsType[] {
   // supprimer les doublons bagItem.id
@@ -15,7 +15,6 @@ export function cleanBagsItems(bagItems: BagsItemsType[]): BagsItemsType[] {
         stats: bagItem.item.stats,
         icon: bagItem.item.icon,
         price: bagItem.item.price,
-        dropRate: bagItem.item.dropRate || 0,
       },
     };
   });

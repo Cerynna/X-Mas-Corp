@@ -1,9 +1,9 @@
-name: Ensure 15 Shop Items
+name: Reload Shop Items
 
 on:
   schedule:
-    - cron: '*/15 * * * *' # Toutes les 15 minutes
-  workflow_dispatch: # Permet de lancer manuellement
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
 
 jobs:
   ensure-shop-items:

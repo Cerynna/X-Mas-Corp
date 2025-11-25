@@ -4,13 +4,13 @@ import { clearOldBuffs } from "../../utils/player";
 import styled from "styled-components";
 
 const BuffTimerContainer = styled.div`
-margin-top: -16px;
-background: rgba(0, 0, 0, 0.5);
-padding: 2px;
-border-radius: 4px;
-color: white;
-font-weight: bold;
-font-size: 0.8rem;
+    margin-top: -16px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0 4px;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    font-size: 0.8rem;
 `;
 
 interface BuffTimerProps {

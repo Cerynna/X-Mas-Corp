@@ -118,7 +118,7 @@ function AppContent() {
               <Header showActions={true} />
               <MainContent>
                 <Routes>
-                  <Route path="/" element={<ShopPage />} />
+                  <Route path="/" element={<Dashboard />} />
                   <Route path="/exploration" element={<Exploration />} />
                   <Route path="/shop" element={<ShopPage />} />
                   <Route path="/bestiary" element={<Bestiary />} />

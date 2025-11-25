@@ -6,6 +6,7 @@ import { PotionIconWithQuality } from './icons';
 import Money from './Money';
 import { EquipmentShop } from './Shop/EquipmentShop';
 import type { Character } from '../types/character';
+import type { ShopItem } from '../types/equipment';
 
 // Mapper les qualités de potion vers les qualités d'item
 
@@ -264,41 +265,36 @@ export function Shop({ character, onPurchase }: ShopProps) {
     setQuantities(prev => ({ ...prev, [potion.id]: 1 }));
   };
 
-  // const handlePurchaseEquipment = (item: EquipmentItem) => {
-  //   const totalCost = item.price || 0;
+  const handlePurchaseEquipment = (item: ShopItem, randomPart: number) => {
+    const totalCost = item.price * randomPart;
 
-  //   if (character.gold < totalCost) {
-  //     // setMessage({ text: `Pas assez d'or ! Il vous faut ${totalCost} pièces.`, type: 'error' });
-  //     // setTimeout(() => setMessage(null), 3000);
-  //     return;
-  //   }
+    if (character.gold < totalCost) {
+      // setMessage({ text: `Pas assez d'or ! Il vous faut ${totalCost} pièces.`, type: 'error' });
+      // setTimeout(() => setMessage(null), 3000);
+      return;
+    }
 
-  //   if (character.level < item.level) {
-  //     // setMessage({ text: `Niveau ${item.level} requis !`, type: 'error' });
-  //     // setTimeout(() => setMessage(null), 3000);
-  //     return;
-  //   }
+    if (character.level < item.level) {
+      // setMessage({ text: `Niveau ${item.level} requis !`, type: 'error' });
+      // setTimeout(() => setMessage(null), 3000);
+      return;
+    }
 
-  //   // Ajouter l'item au sac
-  //   const bagItems = character.bagItems || [];
-  //   bagItems.push({
-  //     itemId: item.id,
-  //     item: item,
-  //   });
+    // Ajouter l'item au sac
+    const bagItems = character.bagItems || [];
+    bagItems.push({
+      itemId: item.id,
+      item: item,
+    });
 
-  //   const updatedCharacter: Character = {
-  //     ...character,
-  //     gold: character.gold - totalCost,
-  //     bagItems: bagItems,
-  //   };
+    const updatedCharacter: Character = {
+      ...character,
+      gold: character.gold - totalCost,
+      bagItems: bagItems,
+    };
 
-  //   onPurchase(updatedCharacter);
-  //   // setMessage({
-  //   //   text: `Vous avez acheté ${item.name} pour ${totalCost} 💰`,
-  //   //   type: 'success',
-  //   // });
-  //   // setTimeout(() => setMessage(null), 3000);
-  // };
+    onPurchase(updatedCharacter);
+  };
 
   return (
     <ShopContainer>
@@ -390,7 +386,7 @@ export function Shop({ character, onPurchase }: ShopProps) {
       )}
 
       {category === 'equipment' && (
-        <EquipmentShop />
+        <EquipmentShop handlePurchase={handlePurchaseEquipment} />
         // 
       )}
     </ShopContainer>

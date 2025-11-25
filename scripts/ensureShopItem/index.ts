@@ -13,7 +13,7 @@ admin.initializeApp({
     "https://xmas-corp-default-rtdb.europe-west1.firebasedatabase.app",
 });
 
-const MAX_SHOP_ITEMS = 12;
+const MAX_SHOP_ITEMS = 12 * 4;
 
 const db = admin.database();
 
@@ -29,7 +29,7 @@ async function ensureShopItems(): Promise<void> {
   const now = Date.now();
   let itemCount = 0;
   for (const item of items) {
-    if (now - item.dateAdded > 30 * 60 * 1000) {
+    if (item.dateAdded + 15 * 60 * 1000 <= now) {
       await shopRef.child(item.id!).remove();
     } else {
       itemCount++;

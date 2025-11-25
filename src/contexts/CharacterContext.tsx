@@ -11,7 +11,7 @@ import { clearOldBuffs, playerStatsCalculator } from '../utils/player';
 import { createCharacter, getCharactersByUser } from '../firebase/models/character';
 
 interface CharacterContextType {
-  character: Character | null;
+  character: Character;
   loading: boolean;
   hasCharacter: boolean;
   createNewCharacter: (data: {
@@ -26,7 +26,7 @@ interface CharacterContextType {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const CharacterContext = createContext<CharacterContextType>({
-  character: null,
+  character: {} as Character,
   loading: true,
   hasCharacter: false,
   createNewCharacter: async () => { },
@@ -40,7 +40,7 @@ interface CharacterProviderProps {
 
 export const CharacterProvider = ({ children }: CharacterProviderProps) => {
   const { user } = useAuth();
-  const [character, setCharacter] = useState<Character | null>(null);
+  const [character, setCharacter] = useState<Character>({} as Character);
   const [loading, setLoading] = useState(true);
 
   // Charger le personnage de l'utilisateur
@@ -52,11 +52,11 @@ export const CharacterProvider = ({ children }: CharacterProviderProps) => {
       if (characters.length > 0) {
         setCharacter(characters[0]); // Premier personnage (on pourra gérer plusieurs personnages plus tard)
       } else {
-        setCharacter(null);
+        setCharacter({} as Character);
       }
     } catch (error) {
       console.error('Erreur lors du chargement du personnage:', error);
-      setCharacter(null);
+      setCharacter({} as Character);
     } finally {
       setLoading(false);
     }
@@ -178,7 +178,7 @@ export const CharacterProvider = ({ children }: CharacterProviderProps) => {
     if (user) {
       loadCharacter(user);
     } else {
-      setCharacter(null);
+      setCharacter({} as Character);
       setLoading(false);
     }
   }, [user, loadCharacter]);
