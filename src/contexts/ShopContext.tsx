@@ -17,7 +17,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
     const [shop, setShop] = useState<ShopItem[]>([]);
 
     const loadShop = useCallback(async () => {
-        setShop((await getShopItemsOrdered(["name"], ["asc"])));
+        setShop((await getShopItemsOrdered(["level", ], ["asc"])));
     }, []);
 
 

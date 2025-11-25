@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { generateMonster } from "../src/types/monsters";
 import { expForLevel, playerStatsCalculator } from "../src/utils/player";
 import { ZONES } from "../src/types/zone";
+import { calculateQuality } from "../src/types/equipment";
 
 describe("Scaling", () => {
   it("Scaling EXP - Monstre Experience Reward = expForLevel(level) / (4 + level / 10)", () => {
@@ -38,6 +39,20 @@ describe("Scaling", () => {
           playerStats.maxHealth / 10
         }`
       );
+    });
+  });
+
+  it("test calculateQuality", () => {
+    const levels = [1, 10, 20, 30, 40, 50, 55, 60];
+    levels.forEach((level) => {
+      const qualityRolls = [0.1, 0.4, 0.6, 0.8, 0.95, 0.99];
+      qualityRolls.forEach((qualityRoll) => {
+        const quality = calculateQuality(level, qualityRoll);
+        console.log(
+          `Level ${level} - Quality Roll: ${qualityRoll} => Quality: ${quality}`
+        );
+      });
+      console.log("----");
     });
   });
 });

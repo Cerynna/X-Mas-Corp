@@ -489,44 +489,57 @@ const generatorNameItem = (
   return name;
 };
 
-const calculateQuality = (level: number, qualityRoll: number): ItemQuality => {
-  let quality: ItemQuality = "poor";
+export const calculateQuality = (
+  level: number,
+  qualityRoll: number
+): ItemQuality => {
   if (level < 10) {
-    if (qualityRoll < 0.5) quality = "poor";
-    else if (qualityRoll < 0.85) quality = "common";
-    else if (qualityRoll < 0.99) quality = "uncommon";
-    else quality = "legendary";
-  } else if (level < 20) {
-    if (qualityRoll < 0.3) quality = "poor";
-    else if (qualityRoll < 0.6) quality = "common";
-    else if (qualityRoll < 0.85) quality = "uncommon";
-    else if (qualityRoll < 0.98) quality = "rare";
-    else quality = "legendary";
-  } else if (level < 30) {
-    if (qualityRoll < 0.3) quality = "common";
-    else if (qualityRoll < 0.6) quality = "uncommon";
-    else if (qualityRoll < 0.85) quality = "rare";
-    else if (qualityRoll < 0.97) quality = "epic";
-    else quality = "legendary";
-  } else if (level > 49) {
-    if (qualityRoll < 0.3) quality = "common";
-    else if (qualityRoll < 0.6) quality = "uncommon";
-    else if (qualityRoll < 0.85) quality = "rare";
-    else if (qualityRoll < 0.9) quality = "epic";
-    else quality = "legendary";
-  } else if (level > 59) {
-    if (qualityRoll < 0.3) quality = "common";
-    else if (qualityRoll < 0.6) quality = "uncommon";
-    else if (qualityRoll < 0.85) quality = "rare";
-    else if (qualityRoll < 0.8) quality = "epic";
-    else quality = "legendary";
-  } else {
-    if (qualityRoll < 0.4) quality = "uncommon";
-    else if (qualityRoll < 0.7) quality = "rare";
-    else if (qualityRoll < 0.95) quality = "epic";
-    else quality = "legendary";
+    if (qualityRoll >= 0 && qualityRoll < 0.3) return "poor";
+    if (qualityRoll >= 0.3 && qualityRoll < 0.6) return "common";
+    if (qualityRoll >= 0.6 && qualityRoll < 0.85) return "uncommon";
+    if (qualityRoll >= 0.85 && qualityRoll < 0.99) return "rare";
+    return "legendary";
   }
-  return quality;
+  if (level < 20) {
+    if (qualityRoll >= 0 && qualityRoll < 0.15) return "poor";
+    if (qualityRoll >= 0.15 && qualityRoll < 0.4) return "common";
+    if (qualityRoll >= 0.4 && qualityRoll < 0.75) return "uncommon";
+    if (qualityRoll >= 0.75 && qualityRoll < 0.95) return "rare";
+    if (qualityRoll >= 0.95 && qualityRoll < 0.98) return "epic";
+    return "legendary";
+  }
+  if (level < 30) {
+    if (qualityRoll >= 0 && qualityRoll < 0.1) return "poor";
+    if (qualityRoll >= 0.1 && qualityRoll < 0.3) return "common";
+    if (qualityRoll >= 0.3 && qualityRoll < 0.65) return "uncommon";
+    if (qualityRoll >= 0.65 && qualityRoll < 0.9) return "rare";
+    if (qualityRoll >= 0.9 && qualityRoll < 0.97) return "epic";
+    return "legendary";
+  }
+  if (level < 40) {
+    if (qualityRoll >= 0 && qualityRoll < 0.07) return "poor";
+    if (qualityRoll >= 0 && qualityRoll < 0.25) return "common";
+    if (qualityRoll >= 0 && qualityRoll < 0.6) return "uncommon";
+    if (qualityRoll >= 0 && qualityRoll < 0.7) return "rare";
+    if (qualityRoll >= 0 && qualityRoll < 0.96) return "epic";
+    return "legendary";
+  }
+  if (level < 50) {
+    if (qualityRoll >= 0 && qualityRoll < 0.05) return "poor";
+    if (qualityRoll >= 0.05 && qualityRoll < 0.2) return "common";
+    if (qualityRoll >= 0.2 && qualityRoll < 0.5) return "uncommon";
+    if (qualityRoll >= 0.5 && qualityRoll < 0.65) return "rare";
+    if (qualityRoll >= 0.65 && qualityRoll < 0.85) return "epic";
+    if (qualityRoll >= 0.85 && qualityRoll < 0.95) return "legendary";
+    return "legendary";
+  }
+  // Niveau 50+
+  if (qualityRoll >= 0 && qualityRoll < 0.01) return "poor";
+  if (qualityRoll >= 0.01 && qualityRoll < 0.1) return "common";
+  if (qualityRoll >= 0.1 && qualityRoll < 0.4) return "uncommon";
+  if (qualityRoll >= 0.4 && qualityRoll < 0.6) return "rare";
+  if (qualityRoll >= 0.6 && qualityRoll < 0.9) return "epic";
+  return "legendary";
 };
 
 const randomSlotEquipment = () => {
@@ -651,7 +664,7 @@ export const generateRandomItem = (
   classInfo: ClassInfo,
   luck: number
 ): EquipmentItem => {
-  const quality: ItemQuality = calculateQuality(qualityRoll, level);
+  const quality: ItemQuality = calculateQuality(level, qualityRoll);
   const slot = randomSlotEquipment();
   const stats: EquipmentStats = calculateEquipmentStats(
     slot,
