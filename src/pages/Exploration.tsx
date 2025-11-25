@@ -1,24 +1,25 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useCharacter } from '../contexts/useCharacter';
-import { Battle } from '../components/Battle';
+import { Battle } from '../components/Battle/BattleContainer';
 import { WowButton } from '../components';
 import { type Character } from '../firebase';
 import type { EquipmentItem } from '../types/equipment';
+import { ZONES } from '../types/zone';
 
 const ExplorationContainer = styled.div`
   min-height: calc(100vh - 92px);
   width: 100%;
   max-width: 1200px;
-  // background:
-  //   radial-gradient(ellipse at top, rgba(139, 0, 0, 0.3) 0%, transparent 50%),
-  //   radial-gradient(ellipse at bottom, rgba(0, 0, 139, 0.3) 0%, transparent 50%),
-  //   linear-gradient(180deg, rgba(10, 10, 20, 0.95) 0%, rgba(20, 10, 30, 0.98) 100%);
   padding: ${({ theme }) => theme.spacing.xl};
   margin: 0 auto;
 `;
 
 const Card = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
   background: linear-gradient(
     135deg,
     rgba(30, 58, 95, 0.9) 0%,
@@ -31,31 +32,95 @@ const Card = styled.div`
   backdrop-filter: blur(10px);
   text-align: center;
 `;
+const SelectZoneContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+`;
+
+const ZoneItem = styled.div<{ $selected: boolean }>`
+  // width: 80px;
+  border: 3px solid ${({ $selected, theme }) => $selected ? theme.colors.primary.gold : 'transparent'};
+  border-radius: 12px;
+  padding: 8px;
+  background: ${({ theme }) => theme.colors.neutral.darkGray};
+  box-shadow: ${({ theme }) => theme.shadows.md};
+  cursor: pointer;
+  transition: border-color 0.3s;
+  display: grid;
+  grid-template-areas:
+  "icon name"
+  "level desc";
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 30px 1fr;
+  gap: 0 16px;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+`;
+
+const ZoneLevel = styled.div`
+  grid-area: level;
+  width: fit-content;
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+  margin: auto;
+  background-color: ${({ theme }) => theme.colors.winter.deepBlue};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  color: ${({ theme }) => theme.colors.text.primary};
+`;
+
+const ZoneDescription = styled.div`
+  grid-area: desc;
+  width: 200px;
+  text-align: left;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.text.secondary};
+`;
+
+const ZoneName = styled.div`
+  grid-area: name;
+  height: 25px;
+  font-size: ${({ theme }) => theme.fontSizes.lg};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+  color: ${({ theme }) => theme.colors.primary.gold};
+`;
 
 const Title = styled.h1`
   color: ${({ theme }) => theme.colors.primary.gold};
   font-size: ${({ theme }) => theme.fontSizes['3xl']};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
   text-shadow: ${({ theme }) => theme.shadows.glow.gold};
+  margin-bottom: 0;
 `;
 
-const Description = styled.p`
+const Description = styled.div`
   color: ${({ theme }) => theme.colors.text.secondary};
-  font-size: ${({ theme }) => theme.fontSizes.lg};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  font-size: ${({ theme }) => theme.fontSizes.base};
   line-height: 1.6;
 `;
 
 export function Exploration() {
   const { character, updateCharacter } = useCharacter();
   const [inBattle, setInBattle] = useState(false);
-  const [monsterLevel, setMonsterLevel] = useState(character ? character.level : 1);
+  const [monsterLevel, setMonsterLevel] = useState(1);
+  const [selectedZone, setSelectedZone] = useState(ZONES.find(zone => character && character.level >= zone.levelRange[0] && character.level <= zone.levelRange[1]) || ZONES[0]);
+
+  useEffect(() => {
+    if (selectedZone) {
+      const minLevel = selectedZone.levelRange[0];
+      const maxLevel = selectedZone.levelRange[1];
+      const level = Math.min(Math.max(character?.level || 1, minLevel), maxLevel);
+      setMonsterLevel(level);
+    }
+  }, [character, monsterLevel, selectedZone]);
+
 
   if (!character) {
     return null;
   }
 
   const handleBattleEnd = (updatedCharacter: Character, loot?: EquipmentItem) => {
+
+
     // Ajouter le loot au sac si présent
     if (loot) {
       const newBagItems = [...(updatedCharacter.bagItems || []), {
@@ -72,14 +137,18 @@ export function Exploration() {
     setInBattle(false);
     setTimeout(() => {
       setInBattle(true);
-    }, 10);
+    }, 100);
   };
+
+
+
 
   if (inBattle) {
     return (
       <Battle
         character={character}
         monsterLevel={monsterLevel}
+        zone={selectedZone}
         onBattleEnd={handleBattleEnd}
         onExit={() => setInBattle(false)}
       />
@@ -94,20 +163,36 @@ export function Exploration() {
           Partez à l'aventure dans les terres sauvages et affrontez des monstres !<br />
           Gagnez de l'expérience, de l'or et trouvez des équipements légendaires.
         </Description>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32, justifyContent: 'center' }}>
-          <label htmlFor="monster-level" style={{ fontWeight: 'bold', color: '#ffd700' }}>Niveau du monstre :</label>
-          <input
-            id="monster-level"
-            type="number"
-            min={1}
-            max={character.level + 10 > 35 ? character.level + 10 : 35}
-            value={monsterLevel}
-            onChange={e => setMonsterLevel(Number(e.target.value))}
-            style={{ width: 80, fontSize: 18, padding: 4, borderRadius: 8, border: '2px solid #ffd700', background: '#222', color: '#ffd700', textAlign: 'center' }}
-          />
-        </div>
+        <SelectZoneContainer>
+
+          {ZONES.map(zone => {
+            const ZoneIcon = zone.componentIcon;
+            // afficher les zones correspondant au niveau du personnage et les zone inférieures
+            if (character.level < zone.levelRange[0]) {
+              return null;
+            }
+            return (
+              <ZoneItem key={zone.id} $selected={selectedZone.id === zone.id} onClick={() => setSelectedZone(zone)}>
+                <div style={{ gridArea: 'icon' }}>
+                  <ZoneIcon key={zone.id} />
+                </div>
+                <ZoneLevel>
+                  {zone.levelRange[0]} - {zone.levelRange[1]}
+                </ZoneLevel>
+                <ZoneName>
+                  {zone.name}
+                </ZoneName>
+                <ZoneDescription>
+                  {zone.description}
+                </ZoneDescription>
+              </ZoneItem>
+            )
+              ;
+          })}
+
+        </SelectZoneContainer>
         <WowButton onClick={() => setInBattle(true)} $size="large">
-          ⚔️ Chercher un Combat
+          ⚔️ Chercher un Combat {monsterLevel}
         </WowButton>
       </Card>
     </ExplorationContainer>

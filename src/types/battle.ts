@@ -18,6 +18,7 @@ import {
   type EquipmentItem,
   type EquippedItems,
 } from "./equipment";
+import { CLASSES, type WowClass } from "./character";
 
 export type BattleAction = "attack" | "ability" | "defend" | "flee";
 
@@ -44,7 +45,7 @@ export interface BattleRewards {
   experience: number;
   gold: number;
   levelUp?: boolean;
-  newLevel?: number;
+  newLevel: number;
   loot?: EquipmentItem; // Item droppé par le monstre
 }
 
@@ -68,54 +69,48 @@ export const calculateDamage = (
     spellPower?: number;
     critChance?: number;
     equipment?: EquippedItems;
+    class?: WowClass;
   },
   defender: { armor: number; stamina?: number; level: number },
   isAbility: boolean = false,
-  abilityDamage: number = 0,
-  isMonster: boolean = false
+  abilityDamage: number = 0
+  // isMonster: boolean = false
 ): { damage: number; critical: boolean } => {
   // Dégâts de base (utiliser attackPower pour les joueurs, damage pour les monstres)
-  const attackerDamage = attacker.attackPower ?? attacker.damage ?? 0;
+
+  const primaryStat = CLASSES[attacker.class ?? "warrior"].primaryStat;
+  const primaryAttackDamage =
+    primaryStat === "strength" ? attacker.attackPower : attacker.spellPower;
+
+  // console.log("Primary Attack Damage:", {
+  //   primaryStat,
+  //   primaryAttackDamage,
+  //   attacker,
+  // });
+
+  const attackerDamage = primaryAttackDamage ?? attacker.damage ?? 0;
   const strength = attacker.strength ?? 0;
   const critChanceStat = attacker.critChance ?? 0;
-
-  // // Ajouter les stats des équipements si présent
-  // if (attacker.equipment) {
-  //   for (const item of Object.values(attacker.equipment)) {
-  //     if (item && item.stats) {
-  //       attackerDamage += item.stats.attackPower || 0;
-  //       strength += item.stats.strength || 0;
-  // // spellPower += item.stats.spellPower || 0; // Non utilisé ici
-  //       critChanceStat += item.stats.critChance || 0;
-  //     }
-  //   }
-  // }
 
   let baseDamage = isAbility ? abilityDamage : attackerDamage;
   // Ajouter les bonus de stats si c'est le joueur
   baseDamage += Math.floor(strength * 0.5);
 
   // Critique (10% de base + chance critique du joueur si disponible)
-  const critChance = 0.1 + critChanceStat / 100;
-  const isCritical = Math.random() < critChance;
+  const critChance = critChanceStat / 100;
+  const randomValue = Math.random();
+  const isCritical = randomValue < critChance;
   if (isCritical) {
     baseDamage *= 2;
   }
 
-  // Réduction d'armure (armure réduit 1% des dégâts par point)
-  console.log("Calcul des dégâts :", {
-    isMonster: isMonster ? 1 : 2,
-    defender: defender.armor * 0.01,
-  });
-  const damageReduction =
-    defender.armor * (isMonster ? 1 : defender.level) * 0.1;
-  console.log("Calcul des dégâts :", {
-    baseDamage,
-    damageReduction,
-    defenderArmor: defender.armor,
-  });
+  // Réduction d'armure linéaire : chaque point d'armure réduit 0.1 dégât
+  const damageReduction = defender.armor * 0.1;
+  // console.log("damageReduction", {
+  //   damageReduction,
+  //   defenderArmor: defender.armor,
+  // });
   const finalDamage = Math.max(1, Math.floor(baseDamage - damageReduction));
-  console.log("Dégâts finaux après réduction :", finalDamage);
 
   return {
     damage: finalDamage,
@@ -138,6 +133,7 @@ export const playerAttack = (state: BattleState): BattleState => {
     type: critical ? "critical" : "damage",
     timestamp: Date.now(),
   };
+  // console.log(logEntry);
 
   return {
     ...state,
@@ -157,8 +153,8 @@ export const monsterAttack = (state: BattleState): BattleState => {
     state.monster,
     state.player,
     false,
-    0,
-    true
+    0
+    // true
   );
 
   // Réduction si le joueur défend
@@ -177,7 +173,7 @@ export const monsterAttack = (state: BattleState): BattleState => {
     type: critical ? "critical" : "damage",
     timestamp: Date.now(),
   };
-
+  // console.log(logEntry);
   return {
     ...state,
     player: {
@@ -200,7 +196,7 @@ export const playerDefend = (state: BattleState): BattleState => {
     type: "info",
     timestamp: Date.now(),
   };
-
+  // console.log(logEntry);
   return {
     ...state,
     playerDefending: true,
@@ -234,7 +230,7 @@ export const playerFlee = (state: BattleState): BattleState => {
       type: "info",
       timestamp: Date.now(),
     };
-
+    // console.log(logEntry);
     return {
       ...state,
       turn: "monster",
@@ -257,7 +253,7 @@ export const useAbility = (
       type: "info",
       timestamp: Date.now(),
     };
-
+    // console.log(logEntry);
     return {
       ...state,
       battleLog: [...state.battleLog, logEntry],
@@ -266,9 +262,7 @@ export const useAbility = (
 
   // Déterminer la stat primaire basée sur la classe
   const primaryStat: "strength" | "agility" | "intellect" =
-    state.player.spellPower > state.player.attackPower
-      ? "intellect"
-      : "strength";
+    CLASSES[state.player.class].primaryStat;
 
   // Calculer les dégâts de la capacité
   const abilityBaseDamage = calculateAbilityDamage(
@@ -436,6 +430,7 @@ export const calculateRewards = (
 
   // Vérifier si le joueur monte de niveau
   const newExperience = player.experience + experience;
+  // console.log("Récompenses du combat", { newExperience, experience, player });
   const levelUp = newExperience >= player.experienceToNextLevel;
   const newLevel = levelUp ? player.level + 1 : player.level;
 
@@ -446,7 +441,7 @@ export const calculateRewards = (
     experience,
     gold,
     levelUp,
-    newLevel: levelUp ? newLevel : undefined,
+    newLevel: newLevel,
     loot: loot || undefined, // Ajouter le loot s'il y en a un
   };
 };
@@ -491,8 +486,8 @@ export const processMonsterTurn = (state: BattleState): BattleState => {
       state.monster,
       state.player,
       true,
-      ability.damage || state.monster.damage * 1.5,
-      true
+      ability.damage || state.monster.damage * 1.5
+      // true
     );
 
     const finalDamage = state.playerDefending

@@ -58,6 +58,7 @@ export interface EquipmentItem {
   icon: string;
   price?: number; // Prix en or (si achetable en boutique)
   dropRate?: number; // Chance de drop (0-1) si c'est du loot
+  equiped?: EquipmentItem;
 }
 
 export interface EquippedItems {
@@ -322,10 +323,10 @@ export const SHOP_EQUIPMENT: EquipmentItem[] = [
 
 // Générateur de loot aléatoire basé sur le niveau
 export const generateLoot = (
-  playerLevel: number,
+  monsterLevel: number,
   player: Character
 ): EquipmentItem | null => {
-  console.log("player in generateLoot", player);
+  // console.log("player in generateLoot", player);
 
   // 30% de chance de drop
   if (Math.random() > 0.3) return null;
@@ -344,30 +345,30 @@ export const generateLoot = (
   let quality: ItemQuality;
   const qualityRoll = Math.random();
 
-  if (playerLevel < 10) {
+  if (monsterLevel < 10) {
     if (qualityRoll < 0.5) quality = "poor";
     else if (qualityRoll < 0.85) quality = "common";
     else if (qualityRoll < 0.99) quality = "uncommon";
     else quality = "legendary";
-  } else if (playerLevel < 20) {
+  } else if (monsterLevel < 20) {
     if (qualityRoll < 0.3) quality = "poor";
     else if (qualityRoll < 0.6) quality = "common";
     else if (qualityRoll < 0.85) quality = "uncommon";
     else if (qualityRoll < 0.98) quality = "rare";
     else quality = "legendary";
-  } else if (playerLevel < 30) {
+  } else if (monsterLevel < 30) {
     if (qualityRoll < 0.3) quality = "common";
     else if (qualityRoll < 0.6) quality = "uncommon";
     else if (qualityRoll < 0.85) quality = "rare";
     else if (qualityRoll < 0.97) quality = "epic";
     else quality = "legendary";
-  } else if (playerLevel > 49) {
+  } else if (monsterLevel > 49) {
     if (qualityRoll < 0.3) quality = "common";
     else if (qualityRoll < 0.6) quality = "uncommon";
     else if (qualityRoll < 0.85) quality = "rare";
     else if (qualityRoll < 0.9) quality = "epic";
     else quality = "legendary";
-  } else if (playerLevel > 59) {
+  } else if (monsterLevel > 59) {
     if (qualityRoll < 0.3) quality = "common";
     else if (qualityRoll < 0.6) quality = "uncommon";
     else if (qualityRoll < 0.85) quality = "rare";
@@ -400,7 +401,7 @@ export const generateLoot = (
   };
 
   const baseStatValue = Math.floor(
-    playerLevel * 0.8 * qualityMultiplier[quality]
+    monsterLevel * 0.8 * qualityMultiplier[quality]
   );
   const stats: EquipmentStats = {};
 
@@ -535,7 +536,7 @@ export const generateLoot = (
 
   const icons = {
     weapon: "⚔️",
-    head: "🪖",
+    head: "👑",
     chest: "🛡️",
     legs: "👖",
     boots: "👢",
@@ -552,7 +553,19 @@ export const generateLoot = (
     legendary: 30.0,
   };
 
-  const basePrice = playerLevel * 10; // 10 gold par niveau
+  // Progression linéaire des stats d'équipement
+  const statPerLevel = 1; // Chaque niveau ajoute +1 à chaque stat principale
+  const equipLevel = monsterLevel;
+  const scaledStats: EquipmentStats = { ...stats };
+  Object.keys(scaledStats).forEach((key) => {
+    if (typeof scaledStats[key as keyof EquipmentStats] === "number") {
+      scaledStats[key as keyof EquipmentStats] =
+        (scaledStats[key as keyof EquipmentStats] || 0) +
+        equipLevel * statPerLevel;
+    }
+  });
+
+  const basePrice = equipLevel * 10; // 10 gold par niveau
   const itemPrice = Math.floor(basePrice * qualityPriceMultiplier[quality]);
 
   return {
@@ -560,8 +573,8 @@ export const generateLoot = (
     name,
     slot,
     quality,
-    level: Math.max(1, playerLevel - 2), // Niveau requis légèrement inférieur au niveau du joueur
-    stats,
+    level: equipLevel,
+    stats: scaledStats,
     icon: icons[slot],
     price: itemPrice, // Ajout du prix calculé
   };

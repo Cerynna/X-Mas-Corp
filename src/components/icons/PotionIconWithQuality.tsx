@@ -144,25 +144,9 @@ export const PotionIconWithQuality: React.FC<PotionIconWithQualityProps> = ({
   const getLiquidColor = (potion: Potion): string => {
     switch (potion.type) {
       case 'health':
-        switch (potion.quality) {
-          case 'minor': return '#CD5C5C';
-          case 'lesser': return '#DC143C';
-          case 'normal': return '#FF0000';
-          case 'greater': return '#FF1493';
-          case 'superior': return '#FF69B4';
-          case 'ultimate': return '#FFD700';
-          default: return '#DC143C';
-        }
+        return '#DC143C';
       case 'mana':
-        switch (potion.quality) {
-          case 'minor': return '#4682B4';
-          case 'lesser': return '#4169E1';
-          case 'normal': return '#0000FF';
-          case 'greater': return '#1E90FF';
-          case 'superior': return '#00BFFF';
-          case 'ultimate': return '#00FFFF';
-          default: return '#4169E1';
-        }
+        return '#4169E1';
       case 'effect':
         return getLiquideColorEffect(potion);
       default:

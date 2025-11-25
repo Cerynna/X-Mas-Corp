@@ -1,6 +1,8 @@
 import { createContext, useState } from 'react';
 import type { ReactNode } from 'react';
 import styled from 'styled-components';
+import type { EquipmentItem } from '../types/equipment';
+// import { ItemIcon } from '../components/icons';
 
 interface TooltipContent {
     title: string;
@@ -8,6 +10,7 @@ interface TooltipContent {
     stats?: Record<string, string | number>;
     quality?: 'poor' | 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
     level?: number;
+    equiped?: EquipmentItem;
 }
 
 export type { TooltipContent };
@@ -95,16 +98,42 @@ const TooltipStats = styled.div`
 `;
 
 const TooltipStat = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: #1eff00;
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
 `;
+
+const TooltipStatKey = styled.div`
+//   display: flex;
+  color: #1eff00;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  width: calc(100% - 100px);
+  text-transform: capitalize;
+`;
+const TooltipStatValue = styled.div`
+//   display: flex;
+  color: ${({ theme }) => theme.colors.primary.gold};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  width: 50px;
+  text-align: right;
+`;
+
+const TooltipStatEquiped = styled.div<{ $colorText?: 'green' | 'red' }>`
+  color: ${({ $colorText }) => $colorText};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  text-align: right;
+  width: 50px;
+  &:before { 
+    content: '${({ $colorText }) => $colorText === 'green' ? '+' : ''}'; 
+  } 
+`;
+
 
 export function TooltipProvider({ children }: { children: ReactNode }) {
     const [content, setContent] = useState<TooltipContent | null>(null);
     const [position, setPosition] = useState<TooltipPosition>({ x: 0, y: 0 });
     const [visible, setVisible] = useState(false);
+    const [hovered, setHovered] = useState(false);
 
     const showTooltip = (tooltipContent: TooltipContent, tooltipPosition: TooltipPosition) => {
         setContent(tooltipContent);
@@ -114,15 +143,36 @@ export function TooltipProvider({ children }: { children: ReactNode }) {
 
     const hideTooltip = () => {
         setVisible(false);
-        setTimeout(() => setContent(null), 200);
+        setTimeout(() => {
+            if (!hovered) setContent(null);
+        }, 200);
+    };
+
+    // La tooltip reste visible si la souris est sur la tooltip ou l'élément
+    const handleTooltipMouseEnter = () => {
+        setHovered(true);
+        setVisible(true);
+    };
+    const handleTooltipMouseLeave = () => {
+        setHovered(false);
+        setVisible(false);
+        setTimeout(() => {
+            if (!hovered) setContent(null);
+        }, 200);
     };
 
     return (
         <TooltipContext.Provider value={{ showTooltip, hideTooltip }}>
             {children}
             {content && (
-                <TooltipContainer $x={position.x} $y={position.y} $visible={visible}>
-                    <TooltipBox $quality={content.quality} onMouseLeave={hideTooltip} onClick={hideTooltip}>
+                <TooltipContainer
+                    $x={position.x}
+                    $y={position.y}
+                    $visible={visible}
+                    onMouseEnter={handleTooltipMouseEnter}
+                    onMouseLeave={handleTooltipMouseLeave}
+                >
+                    <TooltipBox $quality={content.quality} onClick={hideTooltip}>
                         <TooltipTitle $quality={content.quality}>{content.title}</TooltipTitle>
                         {content.description && (
                             <TooltipDescription>"{content.description}"</TooltipDescription>
@@ -131,15 +181,30 @@ export function TooltipProvider({ children }: { children: ReactNode }) {
                             <TooltipStats>
                                 {Object.entries(content.stats).sort().reverse().map(([key, value]) => (
                                     <TooltipStat key={key}>
-                                        <span>{key}</span>
-                                        <span>+{value}</span>
+                                        <TooltipStatKey>{key}</TooltipStatKey>
+                                        <TooltipStatValue>
+                                            {value}
+                                        </TooltipStatValue>
+                                        {content.equiped &&
+                                            <>
+                                                <TooltipStatEquiped $colorText={Number(value) > Number(content.equiped.stats[key as keyof typeof content.equiped.stats]) ? 'green' : 'red'}>
+                                                    {`${Number(value) - Number(content.equiped.stats[key as keyof typeof content.equiped.stats])}`}
+                                                </TooltipStatEquiped>
+                                            </>
+
+                                        }
                                     </TooltipStat>
                                 ))}
                             </TooltipStats>
                         )}
                         <TooltipStat>
-                            <span>level</span>
-                            <span>+{content.level}</span>
+                            <TooltipStatKey>level</TooltipStatKey>
+                            <TooltipStatValue>{content.level}</TooltipStatValue>
+                            {content.equiped &&
+                                <TooltipStatEquiped $colorText={Number(content.level) > Number(content.equiped.level) ? 'green' : 'red'}>
+                                    {`${content.equiped.level}`}
+                                </TooltipStatEquiped>
+                            }
                         </TooltipStat>
                     </TooltipBox>
                 </TooltipContainer>

@@ -1,14 +1,18 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { Header, CharacterCreation } from './components';
+
 import { useAuth, useCharacter } from './contexts';
+import { ChatProvider } from './contexts/ChatContext';
+import { MembersProvider } from './contexts/MembersContext';
+
+import type { Faction, WowClass, WowRace } from './types/character';
+import { Header, CharacterCreation } from './components';
+
 import { Dashboard } from './pages/Dashboard';
 import { Exploration } from './pages/Exploration';
 import { ShopPage } from './pages/ShopPage';
 import { Bestiary } from './pages/Bestiary';
-import { ChatProvider } from './contexts/ChatContext';
-import type { Faction, WowClass, WowRace } from './types/character';
-import { MembersProvider } from './contexts/MembersContext';
+import { LeaderBoard } from './pages/LeaderBoard';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -116,6 +120,7 @@ function AppContent() {
                 <Route path="/exploration" element={<Exploration />} />
                 <Route path="/shop" element={<ShopPage />} />
                 <Route path="/bestiary" element={<Bestiary />} />
+                <Route path="/leaderboard" element={<LeaderBoard />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </MainContent>

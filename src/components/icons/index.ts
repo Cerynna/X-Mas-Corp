@@ -1,9 +1,8 @@
 export { ItemIcon } from './ItemIcon';
 export { ItemIconWithQuality } from './ItemIconWithQuality';
 export { PotionIconWithQuality } from './PotionIconWithQuality';
-export { MonsterIconWithLevel } from './MonsterIconWithLevel';
+export { MonsterIconWithLevel } from './MonsterIcon/MonsterIconWithLevel';
 export { HealthPotionIcon, ManaPotionIcon, GenericPotionIcon } from './PotionIcon';
-export { SkeletonIcon, GoblinIcon, OrcIcon, StoneGiantIcon, DragonIcon, SlimeIcon, ZombieIcon, DemonIcon, WolfIcon, BoarIcon, MurlocIcon, BanditIcon, FireElementalIcon, IceElementalIcon, ImpIcon, FelguardIcon, WhelpIcon, AncientDragonIcon } from './MonsterIcon';
 export { SwordIcon, StaffIcon, DaggerIcon, AxeIcon, BowIcon } from './WeaponIcon';
 export { HelmetIcon, ChestplateIcon, LeggingsIcon, BootsIcon } from './ArmorIcon';
 export { RingIcon, AmuletIcon, NecklaceIcon, BraceletIcon, CrownIcon } from './JewelryIcon';

@@ -34,7 +34,6 @@ export type WowRace = AllianceRace | HordeRace;
 
 type ArmorType = "cloth" | "leather" | "mail" | "plate";
 
-
 // Informations sur les classes
 export interface ClassInfo {
   id: WowClass;
@@ -114,7 +113,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     baseHP: 100,
     baseMP: 100,
     availableFor: {
-      alliance: ["human", "dwarf", "night-elf", "draenei", "worgen"],
+      alliance: ["human", "dwarf", "night-elf", "draenei", "worgen", "gnome"],
       horde: ["orc", "undead", "tauren", "troll", "blood-elf", "goblin"],
     },
     energyName: "🎯 Focus",
@@ -366,6 +365,8 @@ export interface CharacterStats {
   intellect: number;
   stamina: number;
   energyName: string;
+  armor?: number;
+  critChance?: number;
 }
 
 export const calculateBaseStats = (
@@ -374,26 +375,41 @@ export const calculateBaseStats = (
 ): CharacterStats => {
   const classInfo = CLASSES[classId];
   const raceInfo = RACES[raceId];
-  console.log("Calculating base stats for class:", classInfo, " race:", raceInfo);
+  // console.log("Calculating base stats for class:", classInfo, " race:", raceInfo);
 
   // Stats de base (niveau 1)
   const baseStrength = 10;
   const baseAgility = 10;
   const baseIntellect = 10;
   const baseStamina = 10;
+  const baseArmor = 10;
 
   const strength = baseStrength + (raceInfo.bonuses.strength || 0);
   const agility = baseAgility + (raceInfo.bonuses.agility || 0);
   const intellect = baseIntellect + (raceInfo.bonuses.intellect || 0);
   const stamina = baseStamina + (raceInfo.bonuses.stamina || 0);
-
-  // HP = baseHP de la classe + (stamina * 10)
-  const health = classInfo.baseHP + stamina * 10;
-
-  // MP = baseMP de la classe + (intellect * 5)
-  const energy = classInfo.baseMP + intellect * 5;
+  const armor =
+    baseArmor + Math.floor((agility + stamina + strength + intellect) / 4);
 
   const energyName = classInfo.energyName;
+
+  const health = classInfo.baseHP * 10;
+  const energy = classInfo.baseMP * 5;
+  let critChance = 0;
+
+  switch (classInfo.primaryStat) {
+    case "strength":
+      critChance += 5 * strength;
+      break;
+    case "agility":
+      // Les voleurs et chasseurs gagnent plus d'agilité
+      critChance += 7 * agility;
+      break;
+    case "intellect":
+      // Les mages et prêtres gagnent plus d'intellect
+      critChance += 5 * intellect;
+      break;
+  }
 
   return {
     health,
@@ -402,6 +418,8 @@ export const calculateBaseStats = (
     agility,
     intellect,
     stamina,
+    armor,
     energyName,
+    critChance,
   };
 };

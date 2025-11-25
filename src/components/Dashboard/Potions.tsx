@@ -86,12 +86,12 @@ export function Potions() {
 
         const qualityToDuration = (potion: Potion) => {
             switch (potion.quality) {
-                case 'minor': return 1800; // 30 minutes
-                case 'lesser': return 2100; // 35 minutes
-                case 'normal': return 2400; // 40 minutes
-                case 'greater': return 2700; // 45 minutes
-                case 'superior': return 3000; // 50 minutes
-                case 'ultimate': return 3600; // 60 minutes
+                case 'minor': return 1000 * 60 * 30; // 30 minutes
+                case 'lesser': return 1000 * 60 * 35; // 35 minutes
+                case 'normal': return 1000 * 60 * 40; // 40 minutes
+                case 'greater': return 1000 * 60 * 45; // 45 minutes
+                case 'superior': return 1000 * 60 * 50; // 50 minutes
+                case 'ultimate': return 1000 * 60 * 60; // 60 minutes
                 default: return 0;
             }
 
@@ -99,6 +99,7 @@ export function Potions() {
         const effect = potion.id.split('-').pop() as BuffEffect;
         switch (potion.type) {
             case 'health':
+                // console.log('Using health potion:', potion);
                 newHealth = Math.min(
                     character.maxHealth || character.health || 0,
                     (character.health || 0) + potion.restoreAmount
@@ -127,6 +128,10 @@ export function Potions() {
             default:
                 break;
         }
+        if (newHealth < 0) newHealth = 0;
+        if (newMana < 0) newMana = 0;
+        if (newHealth > (character.maxHealth || 0)) newHealth = character.maxHealth || 0;
+        if (newMana > (character.maxMana || 0)) newMana = character.maxMana || 0;
 
         updateCharacter({
             ...character,

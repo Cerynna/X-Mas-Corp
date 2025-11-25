@@ -1,10 +1,11 @@
 import { createContext, useCallback, useEffect, useState, type ReactNode } from "react";
-import { AddMpList, getMembers, type Character } from "../firebase";
+import { AddMpList, deleteDocument, getMembers, onCollectionChange, type Character } from "../firebase";
 import styled from "styled-components";
 import { CLASSES } from "../types/character";
 import { useCharacter } from "./useCharacter";
 
 interface MembersContextType {
+  members: Character[] | null;
   showMembers: () => void;
   hideMembers: () => void;
 }
@@ -53,7 +54,7 @@ const MemberHeader = styled.div`
 `;
 
 const MemberList = styled.div`
-  height: 100%;
+  height: 90%;
   overflow-y: auto;
 `;
 const MemberListItem = styled.div`
@@ -74,6 +75,11 @@ const MemberListItem = styled.div`
 const MemberItemName = styled.div<{ $color?: string }>`
   font-weight: ${({ theme }) => theme.fontWeights.bold};
   color: ${({ theme, $color }) => $color || theme.colors.primary.gold};
+`;
+
+const MemberItemConnected = styled.div`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.winter.iceBlue};
 `;
 
 const MemberItemLevel = styled.div`
@@ -103,7 +109,7 @@ const ButtonTool = styled.button`
 `;
 
 export function MembersProvider({ children }: { children: ReactNode }) {
-  const [members, setMembers] = useState<Character[]>([]);
+  const [members, setMembers] = useState<Character[] | null>(null);
   const [visible, setVisible] = useState(false);
   const { character } = useCharacter();
 
@@ -124,11 +130,22 @@ export function MembersProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    onCollectionChange('characters', loadMembers);
     loadMembers();
   }, [character, loadMembers]);
 
+  // members.map((member) => {
+  //   console.log(typeof member.updatedAt === "number" && member.updatedAt + 60 * 1000 > Date.now(), member.name);
+  // });
+
+  const value: MembersContextType = {
+    members,
+    showMembers,
+    hideMembers,
+  };
+
   return (
-    <MembersContext.Provider value={{ showMembers, hideMembers }}>
+    <MembersContext.Provider value={value}>
       <MemberContainer $visible={visible}>
         <MembersToggler $visible={visible} onClick={() => {
           setVisible(!visible);
@@ -138,12 +155,22 @@ export function MembersProvider({ children }: { children: ReactNode }) {
         <MemberHeader>Members</MemberHeader>
         <MemberList>
           {/* Render members list here */}
-          {members.map((member) => (
+          {members && members.map((member) => (
             <MemberListItem key={member.id}>
+              <MemberItemConnected>
+                {typeof member.updatedAt === "number" && member.updatedAt + (60 * 1000 * 15) > Date.now()
+                  ? "🟢"
+                  : "⚪"}
+              </MemberItemConnected>
               <MemberItemLevel>{member.level}</MemberItemLevel>
               <MemberItemName $color={CLASSES[member.class].color}>{member.name}</MemberItemName>
               {character && character.id !== member.id && (
                 <MemberItemTools>
+                  {character.isAdmin && (
+                    <ButtonTool onClick={() => {
+                      if (member.id) deleteDocument('characters', member.id);
+                    }}>🗑️</ButtonTool>
+                  )}
                   <ButtonTool onClick={() => {
                     console.log("SEND LOVE")
                   }}>❤️</ButtonTool>

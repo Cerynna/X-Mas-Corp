@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useAuth, useCharacter } from '../contexts';
-// import { logOut } from '../firebase';
+import { logOut } from '../firebase';
 import { WowButton } from './';
 
 const HeaderContainer = styled.header`
@@ -89,15 +89,15 @@ export function Header({ showActions = true }: HeaderProps) {
   const { user, loading } = useAuth();
   const { character } = useCharacter();
 
-  // const handleLogOut = async () => {
-  //   try {
-  //     await logOut();
-  //     // Recharger la page pour créer une nouvelle session anonyme
-  //     window.location.reload();
-  //   } catch (error) {
-  //     console.error('Erreur lors de la déconnexion:', error);
-  //   }
-  // };
+  const handleLogOut = async () => {
+    try {
+      await logOut();
+      // Recharger la page pour créer une nouvelle session anonyme
+      window.location.reload();
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+    }
+  };
 
   return (
     <HeaderContainer>
@@ -133,11 +133,16 @@ export function Header({ showActions = true }: HeaderProps) {
                       📖
                     </WowButton>
                   </Link>
+                  <Link to="/leaderboard">
+                    <WowButton $size="small" $variant="secondary">
+                      🏆
+                    </WowButton>
+                  </Link>
                 </>
               )}
-              {/* {character ? (<WowButton $size="small" $variant="secondary" onClick={handleLogOut}>
+              {character && character.isAdmin ? (<WowButton $size="small" $variant="secondary" onClick={handleLogOut}>
                 Nouveau Personnage
-              </WowButton>) : <></>} */}
+              </WowButton>) : <></>}
               <UserInfo>
                 <Avatar>👤</Avatar>
                 <UserName>{character?.name || 'Aventurier'}</UserName>

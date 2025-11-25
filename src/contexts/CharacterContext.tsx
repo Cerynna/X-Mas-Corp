@@ -10,7 +10,8 @@ import {
   collections,
   onDocumentChange,
 } from '../firebase/database';
-import { calculateBaseStats, CLASSES } from '../types/character';
+// import { calculateBaseStats, CLASSES } from '../types/character';
+import { playerStatsCalculator } from '../utils/player';
 
 interface CharacterContextType {
   character: Character | null;
@@ -26,6 +27,7 @@ interface CharacterContextType {
   refreshCharacter: () => Promise<void>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const CharacterContext = createContext<CharacterContextType>({
   character: null,
   loading: true,
@@ -77,12 +79,7 @@ export const CharacterProvider = ({ children }: CharacterProviderProps) => {
     try {
       setLoading(true);
 
-      // Calculer les stats de base
-      const baseStats = calculateBaseStats(data.class, data.race);
-      const classInfo = CLASSES[data.class];
-
-      // Créer le personnage avec toutes les stats
-      const characterData: Omit<Character, 'id' | 'createdAt' | 'updatedAt'> = {
+      const characterData: Character = {
         userId: user.uid,
         name: data.name,
         faction: data.faction,
@@ -90,25 +87,25 @@ export const CharacterProvider = ({ children }: CharacterProviderProps) => {
         class: data.class,
         level: 1,
         experience: 0,
-        experienceToNextLevel: 100,
+        experienceToNextLevel: Math.floor(100 * Math.pow(1.5, (1) - 1)),
 
-        // Stats de combat
-        health: baseStats.health,
-        maxHealth: baseStats.health,
-        mana: baseStats.energy,
-        maxMana: baseStats.energy,
+        // Stats de combat linéaires
+        health: 0,
+        maxHealth: 0,
+        mana: 0,
+        maxMana: 0,
 
         // Attributs
-        strength: baseStats.strength,
-        agility: baseStats.agility,
-        intellect: baseStats.intellect,
-        stamina: baseStats.stamina,
+        strength: 0,
+        agility: 0,
+        intellect: 0,
+        stamina: 0,
 
-        // Stats dérivées (équilibrées pour un combat progressif)
-        attackPower: 0,
-        spellPower: 0,
-        armor: baseStats.agility + baseStats.stamina,
-        critChance: 5 + (baseStats.agility * 0.1),
+        // Stats dérivées linéaires
+        attackPower: 5,
+        spellPower: 5,
+        armor: 5,
+        critChance: 5,
 
         // Progression
         achievements: [],
@@ -130,26 +127,14 @@ export const CharacterProvider = ({ children }: CharacterProviderProps) => {
         chatChannel: [],
       };
 
-      switch (classInfo.primaryStat) {
-        case 'strength':
-          characterData.attackPower = 5 + Math.floor(characterData.strength * 0.5);
-          break;
-        case 'agility':
-          characterData.attackPower = 5 + Math.floor(characterData.agility * 0.5);
-          characterData.critChance += characterData.agility * 0.05;
-          break;
-        case 'intellect':
-          characterData.spellPower = 5 + Math.floor(characterData.intellect * 0.5);
-          break;
-        default:
-          break;
-      }
+      const statsCharacter = playerStatsCalculator(characterData);
 
-      // if (classInfo.primaryStat) {
-
-      // }
-
-      await createCharacter(characterData);
+      await createCharacter({
+        ...characterData,
+        ...statsCharacter,
+        mana: statsCharacter.maxMana,
+        health: statsCharacter.maxHealth,
+      });
 
       // Recharger le personnage
       await loadCharacter(user);
@@ -163,55 +148,19 @@ export const CharacterProvider = ({ children }: CharacterProviderProps) => {
 
   // Mettre à jour le personnage
   const updateCharacter = useCallback(async (data: Character) => {
-    console.log('Mise à jour du personnage avec les données:', data);
+    // console.log('Mise à jour du personnage avec les données:', data);
     if (!character?.id) {
       throw new Error('Aucun personnage à mettre à jour');
     }
 
-
-
     try {
-      const classInfo = CLASSES[data.class || character.class];
-      const baseStats = calculateBaseStats(data.class ?? character.class, data.race ?? character.race);
-
-      const updatedStats = {
-        strength: (baseStats.strength * data.level * 5) + (data.equipment ? Object.values(data.equipment).reduce((total, item) => {
-          return total + (item.stats?.strength || 0);
-        }, 0) : 0),
-        agility: (baseStats.agility * data.level * 5) + (data.equipment ? Object.values(data.equipment).reduce((total, item) => {
-          return total + (item.stats?.agility || 0);
-        }, 0) : 0),
-        intellect: (baseStats.intellect * data.level * 5) + (data.equipment ? Object.values(data.equipment).reduce((total, item) => {
-          return total + (item.stats?.intellect || 0);
-        }, 0) : 0),
-        stamina: (baseStats.stamina * data.level * 5) + (data.equipment ? Object.values(data.equipment).reduce((total, item) => {
-          return total + (item.stats?.stamina || 0);
-        }, 0) : 0),
-      }
-      switch (classInfo.primaryStat) {
-        case 'strength':
-          console.log('Calcul de la nouvelle puissance d\'attaque avec la force:', updatedStats.strength);
-          data.attackPower = Math.floor(updatedStats.strength * 1.2);
-          break;
-        case 'agility':
-          data.attackPower = Math.floor(updatedStats.agility * 1.2);
-          data.critChance = updatedStats.agility * .05;
-          break;
-        case 'intellect':
-          data.spellPower = Math.floor(updatedStats.intellect * 1.2);
-          break;
-        default:
-          break;
-      }
-
+      const statsCharacter = playerStatsCalculator(data);
 
       await updateDocument(collections.characters, data.id ?? character.id, {
-        ...character,
         ...data,
+        ...statsCharacter,
       });
 
-      // Mettre à jour l'état local
-      setCharacter(prev => prev ? { ...prev, ...data } : null);
     } catch (error) {
       console.error('Erreur lors de la mise à jour du personnage:', error);
       throw error;

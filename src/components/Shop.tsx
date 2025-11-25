@@ -5,6 +5,7 @@ import type { Character } from '../firebase/database';
 import { getAvailablePotions, addPotionToInventory, type Potion } from '../types/shop';
 import { getShopEquipment, QUALITY_COLORS, QUALITY_NAMES, type EquipmentItem } from '../types/equipment';
 import { ItemIconWithQuality, PotionIconWithQuality } from './icons';
+import Money from './Money';
 
 // Mapper les qualités de potion vers les qualités d'item
 
@@ -38,6 +39,12 @@ const ShopTitle = styled.h2`
 const GoldDisplay = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.xl};
   color: ${({ theme }) => theme.colors.winter.iceBlue};
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.md};
+
   
   span {
     color: ${({ theme }) => theme.colors.primary.gold};
@@ -88,24 +95,19 @@ const PotionCard = styled.div<{ $affordable: boolean }>`
   border-radius: ${({ theme }) => theme.borderRadius.md};
   padding: ${({ theme }) => theme.spacing.lg};
   opacity: ${({ $affordable }) => ($affordable ? 1 : 0.6)};
-  transition: all ${({ theme }) => theme.transitions.base};
-  
-  &:hover {
-    transform: ${({ $affordable }) => ($affordable ? 'translateY(-5px)' : 'none')};
-    box-shadow: ${({ $affordable, theme }) =>
-    $affordable ? theme.shadows.glow.gold : 'none'};
-  }
 `;
 
 const PotionHeader = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: ${({ theme }) => theme.spacing.md};
   margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
 const PotionInfo = styled.div`
-  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.xxs};
 `;
 
 const PotionName = styled.h3`
@@ -116,15 +118,14 @@ const PotionName = styled.h3`
 `;
 
 const PotionDescription = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  line-height: 1;
   color: ${({ theme }) => theme.colors.neutral.silver};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
 `;
 
 const PotionLevel = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
   color: ${({ theme }) => theme.colors.winter.iceBlue};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
 const QuantitySelector = styled.div`
@@ -171,17 +172,17 @@ const QuantityDisplay = styled.div`
   font-weight: ${({ theme }) => theme.fontWeights.bold};
 `;
 
-const Message = styled.div<{ $type: 'success' | 'error' }>`
-  padding: ${({ theme }) => theme.spacing.md};
-  background: ${({ $type }) =>
-    $type === 'success' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'};
-  border: ${({ theme }) => theme.borders.thin} solid
-    ${({ $type }) => ($type === 'success' ? '#22c55e' : '#ef4444')};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  color: ${({ theme }) => theme.colors.neutral.white};
-  text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-`;
+// const Message = styled.div<{ $type: 'success' | 'error' }>`
+//   padding: ${({ theme }) => theme.spacing.md};
+//   background: ${({ $type }) =>
+//     $type === 'success' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)'};
+//   border: ${({ theme }) => theme.borders.thin} solid
+//     ${({ $type }) => ($type === 'success' ? '#22c55e' : '#ef4444')};
+//   border-radius: ${({ theme }) => theme.borderRadius.md};
+//   color: ${({ theme }) => theme.colors.neutral.white};
+//   text-align: center;
+//   margin-bottom: ${({ theme }) => theme.spacing.lg};
+// `;
 
 interface ShopProps {
   character: Character;
@@ -195,7 +196,7 @@ export function Shop({ character, onPurchase }: ShopProps) {
   const [equipmentSlotFilter, setEquipmentSlotFilter] = useState<'all' | 'weapon' | 'head' | 'chest' | 'legs' | 'boots' | 'jewelry'>('all');
   const [equipmentLevelFilter, setEquipmentLevelFilter] = useState<'all' | 'available' | 'current'>('all');
   const [quantities, setQuantities] = useState<Record<string, number>>({});
-  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  // const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   const availablePotions = getAvailablePotions(
     character.level,
@@ -236,8 +237,8 @@ export function Shop({ character, onPurchase }: ShopProps) {
     const totalCost = potion.price * quantity;
 
     if (character.gold < totalCost) {
-      setMessage({ text: `Pas assez d'or ! Il vous faut ${totalCost} pièces.`, type: 'error' });
-      setTimeout(() => setMessage(null), 3000);
+      // setMessage({ text: `Pas assez d'or ! Il vous faut ${totalCost} pièces.`, type: 'error' });
+      // setTimeout(() => setMessage(null), 3000);
       return;
     }
 
@@ -252,11 +253,11 @@ export function Shop({ character, onPurchase }: ShopProps) {
     };
 
     onPurchase(updatedCharacter);
-    setMessage({
-      text: `Vous avez acheté ${quantity}x ${potion.name} pour ${totalCost} 💰`,
-      type: 'success',
-    });
-    setTimeout(() => setMessage(null), 3000);
+    // setMessage({
+    //   text: `Vous avez acheté ${quantity}x ${potion.name} pour ${totalCost} 💰`,
+    //   type: 'success',
+    // });
+    // setTimeout(() => setMessage(null), 3000);
 
     // Réinitialiser la quantité
     setQuantities(prev => ({ ...prev, [potion.id]: 1 }));
@@ -266,14 +267,14 @@ export function Shop({ character, onPurchase }: ShopProps) {
     const totalCost = item.price || 0;
 
     if (character.gold < totalCost) {
-      setMessage({ text: `Pas assez d'or ! Il vous faut ${totalCost} pièces.`, type: 'error' });
-      setTimeout(() => setMessage(null), 3000);
+      // setMessage({ text: `Pas assez d'or ! Il vous faut ${totalCost} pièces.`, type: 'error' });
+      // setTimeout(() => setMessage(null), 3000);
       return;
     }
 
     if (character.level < item.level) {
-      setMessage({ text: `Niveau ${item.level} requis !`, type: 'error' });
-      setTimeout(() => setMessage(null), 3000);
+      // setMessage({ text: `Niveau ${item.level} requis !`, type: 'error' });
+      // setTimeout(() => setMessage(null), 3000);
       return;
     }
 
@@ -291,11 +292,11 @@ export function Shop({ character, onPurchase }: ShopProps) {
     };
 
     onPurchase(updatedCharacter);
-    setMessage({
-      text: `Vous avez acheté ${item.name} pour ${totalCost} 💰`,
-      type: 'success',
-    });
-    setTimeout(() => setMessage(null), 3000);
+    // setMessage({
+    //   text: `Vous avez acheté ${item.name} pour ${totalCost} 💰`,
+    //   type: 'success',
+    // });
+    // setTimeout(() => setMessage(null), 3000);
   };
 
   return (
@@ -303,11 +304,11 @@ export function Shop({ character, onPurchase }: ShopProps) {
       <ShopHeader>
         <ShopTitle>🏪 Boutique</ShopTitle>
         <GoldDisplay>
-          Votre or : <span>{character.gold}</span> 💰
+          Votre or : <Money amount={character.gold} variant='normal' />
         </GoldDisplay>
       </ShopHeader>
 
-      {message && <Message $type={message.type}>{message.text}</Message>}
+      {/* {message && <Message $type={message.type}>{message.text}</Message>} */}
 
       <CategoryTabs>
         <CategoryTab $active={category === 'potions'} onClick={() => setCategory('potions')}>
@@ -343,15 +344,16 @@ export function Shop({ character, onPurchase }: ShopProps) {
                   <PotionHeader>
                     <PotionIconWithQuality
                       potion={potion}
-                      size={56}
+                      size={64}
                     />
                     <PotionInfo>
                       <PotionName>{potion.name}</PotionName>
+                      <PotionDescription>{potion.description}</PotionDescription>
+                      {/* <PotionLevel>Level : {potion.requiredLevel}</PotionLevel> */}
                     </PotionInfo>
                   </PotionHeader>
 
-                  <PotionDescription>{potion.description}</PotionDescription>
-                  <PotionLevel>Niveau minimum : {potion.requiredLevel}</PotionLevel>
+
 
                   <PurchaseRow>
                     <QuantitySelector>
@@ -374,9 +376,9 @@ export function Shop({ character, onPurchase }: ShopProps) {
                       onClick={() => handlePurchase(potion)}
                       disabled={!canAfford}
                       $size="small"
-                      $variant={potion.type === 'health' ? 'horde' : 'alliance'}
+                      $variant={'secondary'}
                     >
-                      {canAfford ? `${totalCost} 💰` : 'Trop cher'}
+                      {canAfford ? <Money amount={totalCost} variant='small' /> : 'Trop cher'}
                     </WowButton>
                   </PurchaseRow>
                 </PotionCard>

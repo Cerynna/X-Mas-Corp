@@ -78,26 +78,26 @@ const XPBarText = styled.div`
 
 
 export function XPBar() {
-    const { character } = useCharacter();
-    if (!character) return null;
+  const { character } = useCharacter();
+  if (!character) return null;
 
-    // Calculer l'XP pour le niveau actuel
-    // La formule d'XP est : 100 * 1.5^(level - 1)
-    const xpForThisLevel = character.level > 1
-        ? Math.floor(100 * Math.pow(1.5, character.level - 2))
-        : 0;
-    const xpForNextLevel = character.experienceToNextLevel;
-    const xpGainedInLevel = character.experience - xpForThisLevel;
-    const xpNeededForLevel = xpForNextLevel - xpForThisLevel;
-    const xpProgress = Math.max(0, Math.min(100, (xpGainedInLevel / xpNeededForLevel) * 100));
-    return <XPBarContainer>
-        <XPBarLabel>
-            <span>Niveau {character.level}</span>
-            <span>{Math.floor(Math.max(0, xpGainedInLevel))} / {Math.floor(xpNeededForLevel)} XP</span>
-        </XPBarLabel>
-        <XPBarWrapper>
-            <XPBarFill $progress={Math.max(0, Math.min(100, xpProgress))} />
-            <XPBarText>{Math.max(0, Math.round(xpProgress))}%</XPBarText>
-        </XPBarWrapper>
-    </XPBarContainer>
+  // Calculer l'XP pour le niveau actuel
+  // La formule d'XP est : 100 * 1.5^(level - 1)
+  // const xpForThisLevel = character.level > 1
+  // ? Math.floor(100 * Math.pow(1.5, character.level - 2))
+  // : 0;
+  // const xpForNextLevel = character.experienceToNextLevel;
+  // const xpGainedInLevel = character.experience - xpForThisLevel;
+  // const xpNeededForLevel = xpForNextLevel - xpForThisLevel;
+  const xpProgress = character.experience / character.experienceToNextLevel * 100;
+  return <XPBarContainer>
+    <XPBarLabel>
+      <span>Niveau {character.level}</span>
+      <span>{character.experience} / {character.experienceToNextLevel} XP</span>
+    </XPBarLabel>
+    <XPBarWrapper>
+      <XPBarFill $progress={Math.max(0, Math.min(100, xpProgress))} />
+      <XPBarText>{Math.max(0, Math.round(xpProgress))}%</XPBarText>
+    </XPBarWrapper>
+  </XPBarContainer>
 }

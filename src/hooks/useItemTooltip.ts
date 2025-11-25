@@ -11,7 +11,8 @@ export function useItemTooltip() {
       title: item.name,
       stats: item.stats as Record<string, string | number>,
       quality: item.quality,
-      level: item.level
+      level: item.level,
+      equiped: item.equiped ?? undefined,
     };
 
     showTooltip(content, {

@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import styled from 'styled-components';
-import { MONSTER_TEMPLATES } from '../types/monsters';
-import type { MonsterType } from '../types/monsters';
+import { MONSTER_TEMPLATES, type MonsterType } from '../types/monsters';
 import { MonsterIconWithLevel } from '../components/icons';
+import Money from '../components/Money';
+import { useCharacter } from '../contexts';
 
 const BestiaryContainer = styled.div`
   width: 100%;
@@ -50,8 +51,8 @@ const FilterBar = styled.div`
 
 const FilterButton = styled.button<{ $active: boolean }>`
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  background: ${({ $active, theme }) => 
-    $active 
+  background: ${({ $active, theme }) =>
+    $active
       ? `linear-gradient(135deg, ${theme.colors.primary.gold} 0%, ${theme.colors.primary.bronze} 100%)`
       : 'rgba(0, 0, 0, 0.3)'
   };
@@ -84,12 +85,6 @@ const MonsterCard = styled.div`
   align-items: center;
   gap: ${({ theme }) => theme.spacing.md};
   transition: all 0.3s;
-
-  &:hover {
-    transform: translateY(-4px);
-    border-color: ${({ theme }) => theme.colors.primary.gold};
-    box-shadow: 0 8px 16px ${({ theme }) => theme.colors.primary.gold}33;
-  }
 `;
 
 const MonsterName = styled.h3`
@@ -147,6 +142,7 @@ type FilterType = 'all' | MonsterType;
 
 // Mapping des types vers leurs labels en français
 const MONSTER_TYPE_LABELS: Record<MonsterType, { icon: string; label: string }> = {
+  goblin: { icon: '🧌', label: 'Gobelin' },
   beast: { icon: '🐺', label: 'Bêtes' },
   humanoid: { icon: '👤', label: 'Humanoïdes' },
   undead: { icon: '💀', label: 'Morts-vivants' },
@@ -157,6 +153,7 @@ const MONSTER_TYPE_LABELS: Record<MonsterType, { icon: string; label: string }> 
 };
 
 export function Bestiary() {
+  const { character } = useCharacter();
   const [filter, setFilter] = useState<FilterType>('all');
 
   // Filtrer les monstres
@@ -166,7 +163,7 @@ export function Bestiary() {
   });
 
   // Compter les monstres par type
-  const countByType = (type: MonsterType) => 
+  const countByType = (type: MonsterType) =>
     MONSTER_TEMPLATES.filter(m => m.type === type).length;
 
   return (
@@ -186,9 +183,9 @@ export function Bestiary() {
             const count = countByType(type);
             const { icon, label } = MONSTER_TYPE_LABELS[type];
             return (
-              <FilterButton 
-                key={type} 
-                $active={filter === type} 
+              <FilterButton
+                key={type}
+                $active={filter === type}
                 onClick={() => setFilter(type)}
               >
                 {icon} {label} ({count})
@@ -204,16 +201,23 @@ export function Bestiary() {
         <MonsterGrid>
           {filteredMonsters.map((monster, index) => (
             <MonsterCard key={index}>
-              <MonsterIconWithLevel 
-                monsterName={monster.name}
+              <MonsterIconWithLevel
+                monster={{
+                  ...monster,
+                  level: Math.floor((monster.minLevel + monster.maxLevel) / 2),
+                  health: monster.baseHealth,
+                  maxHealth: monster.baseHealth,
+                  damage: monster.baseDamage,
+                  armor: monster.baseArmor,
+                  abilities: monster.abilities ?? [],
+                }}
                 level={Math.floor((monster.minLevel + monster.maxLevel) / 2)}
                 size={96}
               />
               <MonsterName>{monster.name}</MonsterName>
               <MonsterTypeLabel>{monster.type}</MonsterTypeLabel>
               <LevelRange>Niveau {monster.minLevel} - {monster.maxLevel}</LevelRange>
-              
-              <StatsGrid>
+              {character?.isAdmin && (<StatsGrid>
                 <StatItem>
                   ❤️ PV: <span>{monster.baseHealth}</span>
                 </StatItem>
@@ -224,9 +228,10 @@ export function Bestiary() {
                   🛡️ ARM: <span>{monster.baseArmor}</span>
                 </StatItem>
                 <StatItem>
-                  💰 Or: <span>{monster.goldReward}</span>
+                  💰 Or: <span><Money amount={monster.goldReward} /></span>
                 </StatItem>
-              </StatsGrid>
+              </StatsGrid>)}
+
             </MonsterCard>
           ))}
         </MonsterGrid>

@@ -4,6 +4,9 @@ import { useCharacter } from "../../contexts";
 import type { EquipmentItem } from "../../types/equipment";
 import { ItemIconWithQuality } from "../icons";
 import { useItemTooltip } from "../../hooks/useItemTooltip";
+import { cleanBagsItems } from "../../utils/bags";
+import Money from "../Money";
+import { WowButton } from "../WowButton";
 
 const BagSection = styled.div``;
 
@@ -44,26 +47,8 @@ const ItemActions = styled.div`
 `;
 
 
-const ActionButton = styled.button<{ $variant?: 'primary' | 'secondary' }>`
-  width: 100%;
-  padding: ${({ theme }) => theme.spacing.xs};
-  background: ${({ $variant }) =>
-        $variant === 'primary' ? 'rgba(0, 120, 255, 0.2)' : 'rgba(255, 215, 0, 0.2)'
-    };
-  color: ${({ theme }) => theme.colors.text.primary};
-  border: 1px solid ${({ $variant, theme }) =>
-        $variant === 'primary' ? theme.colors.alliance.blue : theme.colors.primary.gold
-    };
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  font-size: ${({ theme }) => theme.fontSizes.xs};
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    background: ${({ $variant }) =>
-        $variant === 'primary' ? 'rgba(0, 120, 255, 0.4)' : 'rgba(255, 215, 0, 0.4)'
-    };
-  }
+const ActionButton = styled(WowButton)`
+padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
 `;
 
 const EmptySlot = styled.div`
@@ -83,12 +68,16 @@ export function Bags() {
 
 
     const handleEquipItem = (item: EquipmentItem) => {
+        // On clone l'item pour ne pas modifier l'objet original utilisé pour la tooltip
+        const itemToEquip = { ...item };
+        delete itemToEquip.equiped;
         const equipment = character.equipment || {};
         const oldItem = equipment[item.slot];
+        // console.log(itemToEquip);
 
         const newEquipment = {
             ...equipment,
-            [item.slot]: item,
+            [item.slot]: itemToEquip,
         };
 
         // Filtrer l'item équipé du sac (gérer les deux formats)
@@ -97,10 +86,14 @@ export function Bags() {
             return currentItem.id !== item.id;
         });
 
-        // Si un item était déjà équipé, le remettre dans le sac
+        // Si un item était déjà équipé, le remettre dans le sac sans la propriété equiped
         if (oldItem) {
-            newBagItems = [...newBagItems, { itemId: oldItem.id, item: oldItem }];
+            const oldItemClean = { ...oldItem };
+            delete oldItemClean.equiped;
+            newBagItems = [...newBagItems, { itemId: oldItemClean.id, item: oldItemClean }];
         }
+
+        newBagItems = cleanBagsItems(newBagItems);
 
         updateCharacter({
             ...character,
@@ -110,13 +103,15 @@ export function Bags() {
     };
 
     const handleSellItem = (item: EquipmentItem) => {
-        const sellPrice = Math.floor((item.price || 0) * 0.25);
+        const sellPrice = Math.floor((item.price || 0)*10);
 
         // Filtrer l'item vendu du sac (gérer les deux formats)
-        const newBagItems = (character.bagItems || []).filter(bagItem => {
+        let newBagItems = (character.bagItems || []).filter(bagItem => {
             const currentItem: EquipmentItem = 'item' in bagItem ? bagItem.item : bagItem as unknown as EquipmentItem;
             return currentItem.id !== item.id;
         });
+
+        newBagItems = cleanBagsItems(newBagItems);
 
         updateCharacter({
             ...character,
@@ -124,12 +119,20 @@ export function Bags() {
             gold: character.gold + sellPrice,
         });
     };
+    // Trier les items du sac par level décroissant
+    const sortedBagItems = (character.bagItems || []).slice().sort((a, b) => {
+        const itemA: EquipmentItem = 'item' in a ? a.item : a as unknown as EquipmentItem;
+        const itemB: EquipmentItem = 'item' in b ? b.item : b as unknown as EquipmentItem;
+        return (itemB.level || 0) - (itemA.level || 0);
+    });
+
     return <BagSection>
         <SectionTitle>🎒 Sac - Équipement</SectionTitle>
-        {character.bagItems && character.bagItems.length > 0 ? (
+        {sortedBagItems.length > 0 ? (
             <BagGrid>
-                {character.bagItems.map((bagItem, index) => {
+                {sortedBagItems.map((bagItem, index) => {
                     const item: EquipmentItem = 'item' in bagItem ? bagItem.item : bagItem as unknown as EquipmentItem;
+                    item.equiped = character.equipment ? character.equipment[item.slot] : undefined;
                     if (!item || !item.name) return null;
 
                     return (
@@ -147,9 +150,17 @@ export function Bags() {
                                 />
                             </ItemIconWrapper>
                             <ItemActions>
-                                <ActionButton $variant="secondary" onClick={() => handleSellItem(item)}>
-                                    Vendre ({Math.floor((item.price || 0) * 0.25)}g)
+                                <ActionButton
+                                    onClick={() => handleSellItem(item)}
+                                    // disabled={!canAfford}
+                                    $size="small"
+                                    $variant={'secondary'}
+                                >
+                                    <Money amount={Math.floor((item.price || 0) * 10)} variant="small" />
                                 </ActionButton>
+                                {/* <ActionButton $variant="secondary" onClick={() => handleSellItem(item)}>
+                                    <Money amount={Math.floor((item.price || 0))} />
+                                </ActionButton> */}
                             </ItemActions>
                         </BagItem>
                     );

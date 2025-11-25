@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { Card, SectionTitle } from "../../pages/Dashboard";
 import { useCharacter } from "../../contexts";
+import Money from "../Money";
 
 const StatsPanel = styled.div`
   display: grid;
@@ -34,34 +35,12 @@ export function Stats() {
     const { character } = useCharacter();
     if (!character) return null;
 
-    // Additionne les stats des équipements
-    const equipment = character.equipment || {};
-    const equipStats = Object.values(equipment).reduce((acc, item) => {
-        Object.entries(item.stats || {}).forEach(([key, value]) => {
-            acc[key] = (acc[key] || 0) + (value || 0);
-        });
-        return acc;
-    }, {} as Record<string, number>);
-
-    // Calculer les stats totales
-    const totalAttackPower = (character.attackPower || 0) + (equipStats.attackPower || 0);
-    const totalSpellPower = (character.spellPower || 0) + (equipStats.spellPower || 0);
-    const totalArmor = (character.armor || 0) + (equipStats.armor || 0);
-    const totalStrength = (character.strength || 0) + (equipStats.strength || 0);
-    const totalAgility = (character.agility || 0) + (equipStats.agility || 0);
-    const totalIntellect = (character.intellect || 0) + (equipStats.intellect || 0);
-    const totalStamina = (character.stamina || 0) + (equipStats.stamina || 0);
-    const totalCritChance = (character.critChance || 0) + (equipStats.critChance || 0);
-
-    // Calculer l'esquive basée sur l'agilité totale (1 agilité = 0.05% d'esquive)
-    const dodgeChance = (totalAgility) * 0.05 / 100;
-
     return <Card>
         <SectionTitle>📊 Statistiques</SectionTitle>
         <StatsPanel>
             <StatItem>
                 <StatLabel>❤️ Vie</StatLabel>
-                <StatValue>{character.health} / {character.maxHealth}</StatValue>
+                <StatValue>{Math.floor(character.health / 10)} / {Math.floor(character.maxHealth / 10)}</StatValue>
             </StatItem>
             <StatItem>
                 <StatLabel>💙 Mana</StatLabel>
@@ -69,43 +48,41 @@ export function Stats() {
             </StatItem>
             <StatItem>
                 <StatLabel>💰 Or</StatLabel>
-                <StatValue>{character.gold}</StatValue>
+                <StatValue>
+                    <Money amount={character.gold} />
+                </StatValue>
             </StatItem>
             <StatItem>
                 <StatLabel>⚔️ Puissance d'attaque</StatLabel>
-                <StatValue>{totalAttackPower}</StatValue>
+                <StatValue>{character.attackPower}</StatValue>
             </StatItem>
             <StatItem>
                 <StatLabel>🔮 Puissance magique</StatLabel>
-                <StatValue>{totalSpellPower}</StatValue>
+                <StatValue>{character.spellPower}</StatValue>
             </StatItem>
             <StatItem>
                 <StatLabel>🛡️ Armure</StatLabel>
-                <StatValue>{totalArmor}</StatValue>
+                <StatValue>{character.armor}</StatValue>
             </StatItem>
             <StatItem>
                 <StatLabel>💪 Force</StatLabel>
-                <StatValue>{totalStrength}</StatValue>
+                <StatValue>{character.strength}</StatValue>
             </StatItem>
             <StatItem>
                 <StatLabel>🎯 Agilité</StatLabel>
-                <StatValue>{totalAgility}</StatValue>
+                <StatValue>{character.agility}</StatValue>
             </StatItem>
             <StatItem>
                 <StatLabel>🧠 Intelligence</StatLabel>
-                <StatValue>{totalIntellect}</StatValue>
+                <StatValue>{character.intellect}</StatValue>
             </StatItem>
             <StatItem>
                 <StatLabel>💚 Endurance</StatLabel>
-                <StatValue>{totalStamina}</StatValue>
+                <StatValue>{character.stamina}</StatValue>
             </StatItem>
             <StatItem>
                 <StatLabel>⚡ Critique</StatLabel>
-                <StatValue>{(totalCritChance).toFixed(1)}%</StatValue>
-            </StatItem>
-            <StatItem>
-                <StatLabel>🎲 Esquive</StatLabel>
-                <StatValue>{(dodgeChance * 100).toFixed(1)}%</StatValue>
+                <StatValue>{(character.critChance).toFixed(1)}%</StatValue>
             </StatItem>
         </StatsPanel>
     </Card>

@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { BuffTimer } from "./BuffTimer";
 import { useCharacter } from "../../contexts";
 
 const PotionsSection = styled.div`
@@ -7,7 +8,7 @@ const PotionsSection = styled.div`
 
 const BuffList = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
@@ -18,8 +19,9 @@ const BuffItem = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.md};
   padding: ${({ theme }) => theme.spacing.sm};
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
+//   gap: ${({ theme }) => theme.spacing.xs};
 `;
 
 export function Buffs() {
@@ -30,13 +32,13 @@ export function Buffs() {
 
     return <PotionsSection>
         <BuffList>
-            <BuffItem>
-                {character?.buffs.filter((buff) => buff.expiresAt < Date.now()).map((buff) => (
-                    <>
-                        <span style={{ fontSize: '1.5rem' }}>{buff.icon}</span> {buff.name}(+{buff.amount} %) - Durée restante : {buff.duration} secondes
-                    </>
-                ))}
-            </BuffItem>
+            {character?.buffs.filter((buff) => buff.expiresAt > Date.now()).map((buff) => (
+                <BuffItem key={buff.expiresAt + (buff.name || "")}>
+                    <span style={{ fontSize: '1.5rem' }}>{buff.icon}</span>
+                    <BuffTimer expiresAt={buff.expiresAt} />
+                    {/* {buff.name}(+{buff.amount} %) - Durée restante : {buff.duration} secondes */}
+                </BuffItem>
+            ))}
         </BuffList>
     </PotionsSection>
 }

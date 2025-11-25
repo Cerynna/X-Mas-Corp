@@ -3,6 +3,9 @@ import { Card, SectionTitle } from "../../pages/Dashboard";
 import { ItemIconWithQuality } from "../icons";
 import { useCharacter } from "../../contexts";
 import { useItemTooltip } from "../../hooks/useItemTooltip";
+import { cleanBagsItems } from "../../utils/bags";
+import { useEffect, useState } from "react";
+import type { EquipementsType } from "../../firebase";
 
 
 const EquipmentGrid = styled.div`
@@ -56,16 +59,25 @@ const EmptySlot = styled.div`
 export function Stuffs() {
   const { character, updateCharacter } = useCharacter();
   const { showItemTooltip, hideTooltip } = useItemTooltip();
+  const [equipments, setEquipment] = useState<EquipementsType>({});
+  useEffect(() => {
+    if (character) {
+      setEquipment(character.equipment || {});
+    }
+  }, [character]);
   if (!character) return null;
+
 
 
   const handleUnequipItem = (slot: 'weapon' | 'head' | 'chest' | 'legs' | 'boots' | 'jewelry') => {
     if (!character.equipment || !character.equipment[slot]) return;
 
     const item = character.equipment[slot];
-    const newBagItems = [...(character.bagItems || []), { itemId: item.id, item }];
+    let newBagItems = [...(character.bagItems || []), { itemId: item.id, item }];
     const newEquipment = { ...character.equipment };
     delete newEquipment[slot];
+
+    newBagItems = cleanBagsItems(newBagItems);
 
     updateCharacter({
       ...character,
@@ -88,7 +100,7 @@ export function Stuffs() {
           jewelry: '💍 Bijou',
         };
 
-        const item = character.equipment?.[slot];
+        const item = equipments?.[slot];
 
         return (
           <EquipmentSlot key={slot}>

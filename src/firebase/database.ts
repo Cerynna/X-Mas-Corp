@@ -20,6 +20,8 @@ import type { WowClass, WowRace } from "../types/character";
 import type { EquipmentItem } from "../types/equipment";
 import { slugify } from "../utils";
 
+import { orderBy, groupBy } from "es-toolkit/array";
+
 // Collections de référence
 export const collections = {
   characters: "characters",
@@ -125,6 +127,28 @@ export interface Buffs {
 //   createdAt?: number;
 //   updatedAt?: number;
 // }
+export type EquipementSlot =
+  | "weapon"
+  | "head"
+  | "chest"
+  | "legs"
+  | "boots"
+  | "jewelry"
+  | "stamina";
+
+export interface EquipementsType {
+  weapon?: EquipmentItem; // EquipmentItem complet
+  head?: EquipmentItem;
+  chest?: EquipmentItem;
+  legs?: EquipmentItem;
+  boots?: EquipmentItem;
+  jewelry?: EquipmentItem;
+}
+
+export interface BagsItemsType {
+  itemId: string;
+  item: EquipmentItem; // EquipmentItem
+}
 
 // Interface pour les personnages (RPG complet)
 export interface Character {
@@ -135,6 +159,10 @@ export interface Character {
   level: number;
   experience: number;
   experienceToNextLevel: number;
+  isAdmin?: boolean;
+
+  status?: "online" | "offline" | "in-battle";
+  score?: number;
 
   // Classe et race
   class: WowClass; // WowClass
@@ -171,20 +199,10 @@ export interface Character {
   };
 
   // Équipement (stocke l'item complet, pas juste l'ID)
-  equipment?: {
-    weapon?: EquipmentItem; // EquipmentItem complet
-    head?: EquipmentItem;
-    chest?: EquipmentItem;
-    legs?: EquipmentItem;
-    boots?: EquipmentItem;
-    jewelry?: EquipmentItem;
-  };
+  equipment?: EquipementsType;
 
   // Items dans le sac (loot)
-  bagItems?: Array<{
-    itemId: string;
-    item: EquipmentItem; // EquipmentItem
-  }>;
+  bagItems?: Array<BagsItemsType>;
 
   chatChannel: ChatChannel[];
 
@@ -329,7 +347,7 @@ export const queryDocuments = async (
 };
 
 // Nettoyer les valeurs undefined d'un objet (Firebase ne les accepte pas)
-const removeUndefinedValues = <T extends Record<string, unknown>>(
+export const removeUndefinedValues = <T extends Record<string, unknown>>(
   obj: T
 ): T => {
   const cleaned: Record<string, unknown> = {};
@@ -351,8 +369,14 @@ const removeUndefinedValues = <T extends Record<string, unknown>>(
         cleaned[key] = cleanedNested;
       }
     } else if (Array.isArray(value)) {
-      // Keep arrays as is (but could filter undefined items if needed)
-      cleaned[key] = value;
+      // Filtrer les undefined dans les tableaux, et nettoyer récursivement les objets
+      cleaned[key] = value
+        .filter((item) => item !== undefined)
+        .map((item) =>
+          item !== null && typeof item === "object" && !Array.isArray(item)
+            ? removeUndefinedValues(item as Record<string, unknown>)
+            : item
+        );
     } else {
       cleaned[key] = value;
     }
@@ -478,7 +502,34 @@ export const getMembers = async (): Promise<Character[]> => {
     collections.characters
   )) as Character[];
 
-  const uniqueMembers = allMembers.filter(
+  const groupedMembers = groupBy(
+    allMembers.map((member) => {
+      member.status =
+        typeof member.updatedAt === "number" &&
+        member.updatedAt + 60 * 1000 * 15 > Date.now()
+          ? "online"
+          : "offline";
+      return member;
+    }),
+    (member) => member.status || "offline"
+  );
+
+  // console.log("Grouped Members:", groupedMembers["online"], groupedMembers["offline"]);
+  groupedMembers["online"] = orderBy(
+    groupedMembers["online"] || [],
+    ["name"],
+    ["asc"]
+  );
+  groupedMembers["offline"] = orderBy(
+    groupedMembers["offline"] || [],
+    ["name"],
+    ["asc"]
+  );
+
+  const uniqueMembers = [
+    ...groupedMembers["online"],
+    ...groupedMembers["offline"],
+  ].filter(
     (member, index, self) =>
       index === self.findIndex((m) => m.userId === member.userId)
   );
