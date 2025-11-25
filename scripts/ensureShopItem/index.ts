@@ -43,3 +43,5 @@ async function ensureShopItems(): Promise<void> {
 ensureShopItems();
 
 console.log("ensureShopItem script executed");
+
+process.exit(0);
