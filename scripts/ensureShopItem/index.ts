@@ -24,8 +24,18 @@ async function ensureShopItems(): Promise<void> {
     items.push(childSnapshot.val());
   });
 
-  if (items.length < 15) {
-    const missing = 15 - items.length;
+  const now = Date.now();
+  let itemCount = 0;
+  for (const item of items) {
+    if (now - item.dateAdded > 30 * 60 * 1000) {
+      await shopRef.child(item.id!).remove();
+    } else {
+      itemCount++;
+    }
+  }
+
+  if (itemCount < 15) {
+    const missing = 15 - itemCount;
     for (let i = 0; i < missing; i++) {
       const classInfo = randomClassInfo();
       const randomItem = generateRandomItem(1, 1, classInfo, 1.5);
