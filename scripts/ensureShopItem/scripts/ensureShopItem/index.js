@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, get, set } from "firebase/database";
-import { randomClassInfo } from "../../src/types/character";
-import { generateRandomItem } from "../../src/types/equipment";
+import { randomClassInfo } from "../../src/types/character.js";
+import { generateRandomItem } from "../../src/types/equipment.js";
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || "{}");
 const app = initializeApp(serviceAccount);
 export const database = getDatabase(app);
