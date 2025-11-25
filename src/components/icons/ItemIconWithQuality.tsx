@@ -49,7 +49,7 @@ export const ItemIconWithQuality: React.FC<ItemIconWithQualityProps> = ({
 
   return (
     <IconContainer $quality={quality} $size={size}>
-      <ItemIcon 
+      <ItemIcon
         itemType={itemType}
         itemName={itemName}
         quality="common" // On passe toujours 'common' pour garder les couleurs naturelles

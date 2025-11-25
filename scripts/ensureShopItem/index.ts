@@ -13,6 +13,8 @@ admin.initializeApp({
     "https://xmas-corp-default-rtdb.europe-west1.firebasedatabase.app",
 });
 
+const MAX_SHOP_ITEMS = 12;
+
 const db = admin.database();
 
 async function ensureShopItems(): Promise<void> {
@@ -34,13 +36,13 @@ async function ensureShopItems(): Promise<void> {
     }
   }
 
-  if (itemCount < 15) {
-    const missing = 15 - itemCount;
+  if (itemCount < MAX_SHOP_ITEMS) {
+    const missing = MAX_SHOP_ITEMS - itemCount;
     for (let i = 0; i < missing; i++) {
       const classInfo = randomClassInfo();
       const luck = Math.random() + 1;
       const randomLevel = Math.floor(Math.random() * 30) + 1;
-      const qualityRoll = Math.random() + (luck - 1) * 0.08;
+      const qualityRoll = Math.random();
       const randomItem = generateRandomItem(
         randomLevel,
         qualityRoll,

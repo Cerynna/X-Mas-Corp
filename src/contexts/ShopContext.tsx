@@ -1,6 +1,7 @@
 import { createContext, useCallback, useEffect, useState, type ReactNode } from "react";
 import { collections, onCollectionChange } from "../firebase";
-import { getShopItemsOrdered, type ShopItem } from "../firebase/models/shop";
+import { getShopItemsOrdered } from "../firebase/models/shop";
+import type { ShopItem } from "../types/equipment";
 
 interface ShopContextType {
     shop: ShopItem[];
