@@ -38,8 +38,6 @@ async function ensureShopItems(): Promise<void> {
     const missing = 15 - itemCount;
     for (let i = 0; i < missing; i++) {
       const classInfo = randomClassInfo();
-
-      // random entre 1 et 2
       const luck = Math.random() + 1;
       const randomLevel = Math.floor(Math.random() * 30) + 1;
       const qualityRoll = Math.random() + (luck - 1) * 0.08;
@@ -47,8 +45,9 @@ async function ensureShopItems(): Promise<void> {
         randomLevel,
         qualityRoll,
         classInfo,
-        1.5
+        luck
       );
+
       await shopRef.push({
         ...randomItem,
         dateAdded: Date.now(),
