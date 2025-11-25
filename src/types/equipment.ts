@@ -1,12 +1,12 @@
 // Système d'équipement du personnage
-import { randomUUID } from "../utils/randomUUID";
+import { randomUUID } from "../utils/randomUUID.ts";
 import {
   CLASSES,
   type Character,
   type ClassInfo,
   type WeaponType,
   type WowClass,
-} from "./character";
+} from "./character.ts";
 
 export type ItemQuality =
   | "poor"
@@ -69,7 +69,6 @@ export interface EquipmentItem {
 export interface ShopItem extends EquipmentItem {
   dateAdded: number;
 }
-
 
 export interface EquippedItems {
   weapon?: EquipmentItem;
@@ -455,8 +454,6 @@ const itemNames = {
     legendary: ["Anneau des rois", "Amulette éternels"],
   },
 };
-
-
 
 const calculatePrice = (level: number, quality: ItemQuality) => {
   return Math.floor(level * qualityPriceMultiplier[quality] * 100);
