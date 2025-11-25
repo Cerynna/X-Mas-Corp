@@ -30,6 +30,7 @@ async function ensureShopItems(): Promise<void> {
   let itemCount = 0;
   for (const item of items) {
     if (item.dateAdded + 15 * 60 * 1000 <= now) {
+      console.log(`Removing expired item: ${item.name}`);
       await shopRef.child(item.id!).remove();
     } else {
       itemCount++;
