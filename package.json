@@ -9,11 +9,13 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "deploy": "gh-pages -d dist",
-    "predeploy": "yarn build"
+    "predeploy": "yarn build",
+    "build:ensureShopItem": "tsc --project tsconfig.ensureShopItem.json"
   },
   "dependencies": {
     "es-toolkit": "^1.42.0",
     "firebase": "^12.5.0",
+    "firebase-admin": "^13.6.0",
     "gh-pages": "^6.3.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

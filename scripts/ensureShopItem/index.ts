@@ -1,17 +1,22 @@
+// ensureShopItem.ts
+// Script to ensure a shop item exists in the database
+// ...existing code from ensureShopItem.js will be migrated here...
+
+// Example import (update as needed):
 import admin from "firebase-admin";
 import fs from "fs";
-import { randomClassInfo } from "../src/types/character.js";
-import { generateRandomItem } from "../src/types/equipment.js";
+import { randomClassInfo } from "../../src/types/character";
+import { generateRandomItem } from "../../src/types/equipment";
+
 
 const serviceAccount = JSON.parse(fs.readFileSync("./serviceAccountKey.json", "utf8"));
-
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 const db = admin.firestore();
 
-async function ensureShopItems() {
+async function ensureShopItems(): Promise<void> {
   const shopRef = db.collection("shops");
   const snapshot = await shopRef.get();
   const items = snapshot.docs.map((doc) => doc.data());
@@ -33,3 +38,5 @@ async function ensureShopItems() {
 }
 
 ensureShopItems();
+
+console.log('ensureShopItem script executed');
