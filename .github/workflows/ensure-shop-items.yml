@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: yarn install && yarn add ts-node typescript firebase
 
-      - name: Debug: List src/types files
+      - name: Debug - List src/types files
         run: ls -lR src/types
 
       - name: Run ensureShopItems script
