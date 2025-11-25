@@ -18,12 +18,9 @@ jobs:
           node-version: '22'
 
       - name: Install dependencies
-        run: npm install firebase ts-node@latest typescript
-        
-      - name: Install dependencies from lockfile
-        run: npm ci
+        run: npm ci && npm install ts-node@latest typescript firebase
 
       - name: Run ensureShopItems script
-        run: npx ts-node-esm --loader ts-node/esm scripts/ensureShopItem/index.ts
+        run: npx ts-node-esm scripts/ensureShopItem/index.ts
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
