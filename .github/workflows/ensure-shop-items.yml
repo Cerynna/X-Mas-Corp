@@ -19,6 +19,8 @@ jobs:
 
       - name: Install dependencies
         run: npm install firebase ts-node typescript
+        
+      - name: Install dependencies from lockfile
         run: npm ci
 
       - name: Run ensureShopItems script
