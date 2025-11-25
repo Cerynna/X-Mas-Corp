@@ -51,8 +51,10 @@ async function ensureShopItems(): Promise<void> {
         luck
       );
 
-      await shopRef.push({
+      const newItemId = db.ref("shops").push().key; // Génère une clé unique
+      await shopRef.child(newItemId).set({
         ...randomItem,
+        id: newItemId,
         dateAdded: Date.now(),
       });
     }
