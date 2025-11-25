@@ -1,15 +1,10 @@
-// ensureShopItem.ts
-// Script to ensure a shop item exists in the database
-// ...existing code from ensureShopItem.js will be migrated here...
-
-// Example import (update as needed):
 import admin from "firebase-admin";
-import fs from "fs";
+
 import { randomClassInfo } from "../../src/types/character";
 import { generateRandomItem } from "../../src/types/equipment";
 
 
-const serviceAccount = JSON.parse(fs.readFileSync("./serviceAccountKey.json", "utf8"));
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || "");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

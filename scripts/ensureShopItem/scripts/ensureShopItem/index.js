@@ -1,17 +1,12 @@
 "use strict";
-// ensureShopItem.ts
-// Script to ensure a shop item exists in the database
-// ...existing code from ensureShopItem.js will be migrated here...
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// Example import (update as needed):
 const firebase_admin_1 = __importDefault(require("firebase-admin"));
-const fs_1 = __importDefault(require("fs"));
 const character_1 = require("../../src/types/character");
 const equipment_1 = require("../../src/types/equipment");
-const serviceAccount = JSON.parse(fs_1.default.readFileSync("./serviceAccountKey.json", "utf8"));
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || "");
 firebase_admin_1.default.initializeApp({
     credential: firebase_admin_1.default.credential.cert(serviceAccount),
 });
