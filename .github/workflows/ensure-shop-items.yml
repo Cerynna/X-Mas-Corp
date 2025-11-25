@@ -24,6 +24,6 @@ jobs:
         run: npm ci
 
       - name: Run ensureShopItems script
-        run: npx ts-node-esm scripts/ensureShopItem/index.ts
+        run: npx ts-node-esm --loader ts-node/esm scripts/ensureShopItem/index.ts
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
