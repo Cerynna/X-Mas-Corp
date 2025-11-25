@@ -58,7 +58,7 @@ async function ensureShopItems(): Promise<void> {
     }
     console.log(`Ajouté ${missing} items.`);
   } else {
-    console.log("Déjà 15 items ou plus.");
+    console.log(`Déjà ${MAX_SHOP_ITEMS} items ou plus.`);
   }
 }
 
