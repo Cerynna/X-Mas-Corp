@@ -1,8 +1,10 @@
-const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountKey.json"); // à ajouter plus tard
+import admin from "firebase-admin";
+import fs from "fs";
+import { randomClassInfo } from "../src/types/character.js";
+import { generateRandomItem } from "../src/types/equipment.js";
 
-const randomClassInfo = require("../src/types/character").randomClassInfo;
-const generateRandomItem = require("../src/types/equipment").generateRandomItem;
+const serviceAccount = JSON.parse(fs.readFileSync("./serviceAccountKey.json", "utf8"));
+
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
