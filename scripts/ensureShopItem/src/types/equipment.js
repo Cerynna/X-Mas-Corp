@@ -1,11 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateRandomItem = exports.generateLoot = exports.SHOP_EQUIPMENT = exports.QUALITY_NAMES = exports.QUALITY_COLORS = void 0;
 // Système d'équipement du personnage
-const randomUUID_1 = require("../utils/randomUUID");
-const character_1 = require("./character");
+import { randomUUID } from "../utils/randomUUID";
+import { CLASSES, } from "./character";
 // Couleurs WoW pour chaque qualité
-exports.QUALITY_COLORS = {
+export const QUALITY_COLORS = {
     poor: "#9d9d9d", // Gris
     common: "#ffffff", // Blanc
     uncommon: "#1eff00", // Vert
@@ -13,7 +10,7 @@ exports.QUALITY_COLORS = {
     epic: "#a335ee", // Violet
     legendary: "#ff8000", // Orange
 };
-exports.QUALITY_NAMES = {
+export const QUALITY_NAMES = {
     poor: "Pauvre",
     common: "Commun",
     uncommon: "Inhabituel",
@@ -22,7 +19,7 @@ exports.QUALITY_NAMES = {
     legendary: "Légendaire",
 };
 // Templates d'items verts achetables tous les 10 niveaux
-exports.SHOP_EQUIPMENT = [
+export const SHOP_EQUIPMENT = [
     // Niveau 1
     {
         id: "weapon-uncommon-1",
@@ -567,8 +564,8 @@ const calculateEquipmentStats = (slot, classInfo, monsterLevel, quality, luck) =
     return stats;
 };
 // Générateur de loot aléatoire basé sur le niveau
-const generateLoot = (level, player) => {
-    const classInfo = character_1.CLASSES[player.class] || character_1.CLASSES["warrior"];
+export const generateLoot = (level, player) => {
+    const classInfo = CLASSES[player.class] || CLASSES["warrior"];
     const luck = player.buffs?.reduce((acc, buff) => {
         if (buff.effect === "luck") {
             return acc + buff.amount / 100;
@@ -578,17 +575,16 @@ const generateLoot = (level, player) => {
     const qualityRoll = Math.random() + luck > 1 ? (luck - 1) * 0.08 : 0.0;
     if (Math.random() > 0.3 + luck)
         return null;
-    return (0, exports.generateRandomItem)(level, qualityRoll, classInfo, luck);
+    return generateRandomItem(level, qualityRoll, classInfo, luck);
 };
-exports.generateLoot = generateLoot;
-const generateRandomItem = (level, qualityRoll, classInfo, luck) => {
+export const generateRandomItem = (level, qualityRoll, classInfo, luck) => {
     const quality = calculateQuality(qualityRoll, level);
     const slot = randomSlotEquipment();
     const stats = calculateEquipmentStats(slot, classInfo, level, quality, luck);
     const name = generatorNameItem(slot, quality, classInfo);
     const price = calculatePrice(level, quality);
     return {
-        id: `${slot}-${quality}-${Date.now()}-${(0, randomUUID_1.randomUUID)()}`,
+        id: `${slot}-${quality}-${Date.now()}-${randomUUID()}`,
         name,
         slot,
         quality,
@@ -598,4 +594,3 @@ const generateRandomItem = (level, qualityRoll, classInfo, luck) => {
         price,
     };
 };
-exports.generateRandomItem = generateRandomItem;

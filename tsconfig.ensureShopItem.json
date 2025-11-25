@@ -2,10 +2,11 @@
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2022"],
-    "module": "CommonJS",
+    "module": "ES2022",
     "downlevelIteration": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "moduleResolution": "node",
     "outDir": "scripts/ensureShopItem",
     "strict": true,
     "skipLibCheck": true,

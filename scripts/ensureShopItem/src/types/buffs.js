@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BuffEffectInfos = void 0;
-exports.BuffEffectInfos = {
+export const BuffEffectInfos = {
     none: { name: "No Effect", emoji: "❔" },
     strength: { name: "Strength", emoji: "💪" },
     agility: { name: "Agility", emoji: "🤸" },

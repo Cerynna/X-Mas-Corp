@@ -1,9 +1,6 @@
-"use strict";
 // Types et constantes pour le système de personnages WoW
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getClassesForRace = exports.getRacesByFaction = exports.RACES = exports.randomClassInfo = exports.CLASSES = void 0;
 // Classes disponibles
-exports.CLASSES = {
+export const CLASSES = {
     warrior: {
         id: "warrior",
         name: "Guerrier",
@@ -175,12 +172,11 @@ exports.CLASSES = {
         weaponType: ["sword", "axe", "mace"],
     },
 };
-const randomClassInfo = () => {
-    return exports.CLASSES[Object.keys(exports.CLASSES)[Math.floor(Math.random() * Object.keys(exports.CLASSES).length)]];
+export const randomClassInfo = () => {
+    return CLASSES[Object.keys(CLASSES)[Math.floor(Math.random() * Object.keys(CLASSES).length)]];
 };
-exports.randomClassInfo = randomClassInfo;
 // Races disponibles
-exports.RACES = {
+export const RACES = {
     // Alliance
     human: {
         id: "human",
@@ -281,12 +277,10 @@ exports.RACES = {
     },
 };
 // Obtenir les races disponibles pour une faction
-const getRacesByFaction = (faction) => {
-    return Object.values(exports.RACES).filter((race) => race.faction === faction);
+export const getRacesByFaction = (faction) => {
+    return Object.values(RACES).filter((race) => race.faction === faction);
 };
-exports.getRacesByFaction = getRacesByFaction;
 // Obtenir les classes disponibles pour une race
-const getClassesForRace = (race, faction) => {
-    return Object.values(exports.CLASSES).filter((classInfo) => classInfo.availableFor[faction].includes(race));
+export const getClassesForRace = (race, faction) => {
+    return Object.values(CLASSES).filter((classInfo) => classInfo.availableFor[faction].includes(race));
 };
-exports.getClassesForRace = getClassesForRace;

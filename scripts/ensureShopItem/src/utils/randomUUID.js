@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.randomUUID = randomUUID;
 // Génère un UUID v4 compatible navigateur
-function randomUUID() {
+export function randomUUID() {
     if (typeof crypto !== "undefined" && crypto.randomUUID) {
         return crypto.randomUUID();
     }
