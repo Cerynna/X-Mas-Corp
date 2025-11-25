@@ -17,8 +17,11 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Install Yarn
+        run: corepack enable
+
       - name: Install dependencies
-        run: npm ci && npm install ts-node@latest typescript firebase
+        run: yarn install && yarn add ts-node typescript firebase
 
       - name: Run ensureShopItems script
         run: npx ts-node-esm scripts/ensureShopItem/index.ts
