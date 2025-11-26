@@ -1,6 +1,5 @@
 // Système de combat au tour par tour
 
-import type { Character } from "../firebase/database";
 import type { Monster } from "./monsters";
 import type { ClassAbility } from "./abilities";
 import {
@@ -18,7 +17,7 @@ import {
   type EquipmentItem,
   type EquippedItems,
 } from "./equipment";
-import { CLASSES, type WowClass } from "./character";
+import { CLASSES, type Character, type WowClass } from "./character";
 
 export type BattleAction = "attack" | "ability" | "defend" | "flee";
 
@@ -73,14 +72,16 @@ export const calculateDamage = (
   },
   defender: { armor: number; stamina?: number; level: number },
   isAbility: boolean = false,
-  abilityDamage: number = 0
-  // isMonster: boolean = false
+  abilityDamage: number = 0,
+  isMonster: boolean = false
 ): { damage: number; critical: boolean } => {
   // Dégâts de base (utiliser attackPower pour les joueurs, damage pour les monstres)
 
   const primaryStat = CLASSES[attacker.class ?? "warrior"].primaryStat;
   const primaryAttackDamage =
-    primaryStat === "strength" ? attacker.attackPower : attacker.spellPower;
+    primaryStat === "strength" || primaryStat === "agility"
+      ? attacker.attackPower
+      : attacker.spellPower;
 
   // console.log("Primary Attack Damage:", {
   //   primaryStat,
@@ -89,12 +90,12 @@ export const calculateDamage = (
   // });
 
   const attackerDamage = primaryAttackDamage ?? attacker.damage ?? 0;
-  const strength = attacker.strength ?? 0;
+  // const strength = attacker.strength ?? 0;
   const critChanceStat = attacker.critChance ?? 0;
 
   let baseDamage = isAbility ? abilityDamage : attackerDamage;
   // Ajouter les bonus de stats si c'est le joueur
-  baseDamage += Math.floor(strength * 0.5);
+  // baseDamage += Math.floor(strength * 0.5);
 
   // Critique (10% de base + chance critique du joueur si disponible)
   const critChance = critChanceStat / 100;
@@ -105,8 +106,11 @@ export const calculateDamage = (
   }
 
   // Réduction d'armure linéaire : chaque point d'armure réduit 0.1 dégât
-  const damageReduction = defender.armor * 0.1;
+  const damageReduction =
+    defender.armor * defender.level * (isMonster ? 0.05 : 1.5);
   // console.log("damageReduction", {
+  //   isMonster,
+  //   baseDamage,
   //   damageReduction,
   //   defenderArmor: defender.armor,
   // });
@@ -153,15 +157,15 @@ export const monsterAttack = (state: BattleState): BattleState => {
     state.monster,
     state.player,
     false,
-    0
-    // true
+    0,
+    true
   );
 
   // Réduction si le joueur défend
   const finalDamage = state.playerDefending ? Math.floor(damage * 0.5) : damage;
 
   const newPlayerHealth = Math.max(0, state.player.health - finalDamage);
-  const isDead = newPlayerHealth === 0;
+  const isDead = newPlayerHealth <= 0;
 
   const logEntry: BattleLogEntry = {
     id: `${Date.now()}-monster-attack`,
@@ -256,13 +260,15 @@ export const useAbility = (
     // console.log(logEntry);
     return {
       ...state,
+      turn: "player",
+      status: "ongoing",
       battleLog: [...state.battleLog, logEntry],
     };
   }
 
   // Déterminer la stat primaire basée sur la classe
   const primaryStat: "strength" | "agility" | "intellect" =
-    CLASSES[state.player.class].primaryStat;
+    CLASSES[state.player.class as WowClass].primaryStat;
 
   // Calculer les dégâts de la capacité
   const abilityBaseDamage = calculateAbilityDamage(
@@ -425,7 +431,23 @@ export const calculateRewards = (
   monster: Monster,
   player: Character
 ): BattleRewards => {
-  const experience = monster.experienceReward;
+  let experience = monster.experienceReward;
+
+  const diffLevel = monster.level - player.level;
+
+  if (diffLevel !== 0) {
+    if (diffLevel >= 3) {
+      experience *= 1.5;
+    }
+    if (diffLevel < 0) {
+      experience /= Math.abs(diffLevel);
+    }
+  }
+
+  experience = Math.floor(experience);
+
+  console.log("calculateRewards", { experience, diffLevel });
+
   const gold = monster.goldReward;
 
   // Vérifier si le joueur monte de niveau
@@ -486,8 +508,8 @@ export const processMonsterTurn = (state: BattleState): BattleState => {
       state.monster,
       state.player,
       true,
-      ability.damage || state.monster.damage * 1.5
-      // true
+      ability.damage || state.monster.damage * 1.5,
+      true
     );
 
     const finalDamage = state.playerDefending

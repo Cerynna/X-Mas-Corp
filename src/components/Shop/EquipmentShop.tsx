@@ -7,6 +7,8 @@ import Money from "../Money";
 import { useCharacter } from "../../contexts";
 // import { BuffTimer } from "../Dashboard/BuffTimer";
 import type { ShopItem } from "../../types/equipment";
+import { buyItem } from "../../firebase/models/shop";
+// import { groupBy } from "es-toolkit";
 
 const ItemIconWrapper = styled.div`
   cursor: pointer;
@@ -36,17 +38,18 @@ const EquipmentShopGridCell = styled.div`
     align-items: center;
     gap: ${({ theme }) => theme.spacing.sm};
     border: 1px solid ${({ theme }) => theme.colors.primary.gold};
-    border-radius: 6px;
+    border-radius: ${({ theme }) => theme.borderRadius.sm};
     background: ${({ theme }) => theme.colors.neutral.darkGray};
     box-shadow: ${({ theme }) => theme.shadows.md};
-    padding: 8px;
+    padding: ${({ theme }) => theme.spacing.sm};
 `;
 
 const EquipmentShopName = styled.div`
     grid-area: name;
-    font-size: ${({ theme }) => theme.fontSizes.xs};
+    font-size: ${({ theme }) => theme.fontSizes.sm};
     font-weight: ${({ theme }) => theme.fontWeights.bold};
     color: ${({ theme }) => theme.colors.primary.gold};
+    height: 25px;
 `;
 
 const EquipmentShopPurchase = styled.div`
@@ -60,19 +63,30 @@ const EquipmentShopPurchase = styled.div`
 `;
 
 
-export function EquipmentShop({ handlePurchase }: { handlePurchase: (item: ShopItem, part: number) => void }) {
+export function EquipmentShop() {
     const { character } = useCharacter();
     const { shop } = useShop();
     const { showItemTooltip, hideTooltip } = useItemTooltip();
 
+    const handlePurchase = (item: ShopItem, randomPart: number) => {
+        if (!character) return;
+        if (character.gold < item.price * randomPart) return;
+        if (character.level < item.level) return;
+        buyItem(item.id!, character, randomPart);
+    };
+
+
+    // console.log(groupBy(shop, (item) => item.dateAdded));
+
     return (
         <EquipmentShopGrid>
-            {shop.map((item) => {
+            {shop.filter(item => item.level <= character!.level).map((item) => {
                 const canAfford = character!.gold >= item.price;
+                // console.log(item)
                 return (
                     <EquipmentShopGridCell key={item.id}>
                         <ItemIconWrapper
-                            onMouseEnter={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => showItemTooltip(item, e)}
+                            onMouseMove={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => showItemTooltip(item, e)}
                             onMouseLeave={hideTooltip}
                             style={{ gridArea: 'icon' }}
                         >

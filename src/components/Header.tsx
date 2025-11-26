@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useAuth, useCharacter } from '../contexts';
 import { logOut } from '../firebase';
-import { WowButton } from './';
+import { UserInfo } from './UserInfo';
 
 const HeaderContainer = styled.header`
   position: sticky;
@@ -47,38 +47,44 @@ const Nav = styled.nav`
   gap: ${({ theme }) => theme.spacing.md};
 `;
 
-const UserInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  background: rgba(10, 14, 26, 0.5);
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  border: ${({ theme }) => theme.borders.thin} solid ${({ theme }) => theme.colors.winter.darkIce};
-`;
+// const UserInfo = styled.div`
+//   display: flex;
+//   align-items: center;
+//   gap: ${({ theme }) => theme.spacing.md};
+//   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+//   background: rgba(10, 14, 26, 0.5);
+//   border-radius: ${({ theme }) => theme.borderRadius.md};
+//   border: ${({ theme }) => theme.borders.thin} solid ${({ theme }) => theme.colors.winter.darkIce};
+// `;
 
-const UserName = styled.span`
-  color: ${({ theme }) => theme.colors.winter.iceBlue};
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
+// const UserName = styled.span`
+//   color: ${({ theme }) => theme.colors.winter.iceBlue};
+//   font-weight: ${({ theme }) => theme.fontWeights.medium};
+//   font-size: ${({ theme }) => theme.fontSizes.sm};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    display: none;
-  }
-`;
+//   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+//     display: none;
+//   }
+// `;
 
-const Avatar = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: ${({ theme }) => theme.borderRadius.full};
-  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary.gold}, ${({ theme }) => theme.colors.primary.bronze});
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.neutral.black};
-  font-size: ${({ theme }) => theme.fontSizes.lg};
-  border: ${({ theme }) => theme.borders.medium} solid ${({ theme }) => theme.colors.primary.gold};
+// const Avatar = styled.div`
+//   width: 40px;
+//   height: 40px;
+//   border-radius: ${({ theme }) => theme.borderRadius.full};
+//   background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary.gold}, ${({ theme }) => theme.colors.primary.bronze});
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   font-weight: ${({ theme }) => theme.fontWeights.bold};
+//   color: ${({ theme }) => theme.colors.neutral.black};
+//   font-size: ${({ theme }) => theme.fontSizes.lg};
+//   border: ${({ theme }) => theme.borders.medium} solid ${({ theme }) => theme.colors.primary.gold};
+// `;
+
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: ${({ theme }) => theme.colors.neutral.white};
+  font-size: ${({ theme }) => theme.fontSizes["2xl"]};
 `;
 
 interface HeaderProps {
@@ -113,45 +119,33 @@ export function Header({ showActions = true }: HeaderProps) {
             <>
               {showActions && (
                 <>
-                  <Link to="/">
-                    <WowButton $size="small" $variant="horde">
-                      👤
-                    </WowButton>
-                  </Link>
-                  <Link to="/exploration">
-                    <WowButton $size="small">
-                      🗺️
-                    </WowButton>
-                  </Link>
-                  <Link to="/shop">
-                    <WowButton $size="small" $variant="alliance">
-                      🏪
-                    </WowButton>
-                  </Link>
-                  <Link to="/bestiary">
-                    <WowButton $size="small" $variant="secondary">
-                      📖
-                    </WowButton>
-                  </Link>
-                  <Link to="/leaderboard">
-                    <WowButton $size="small" $variant="secondary">
-                      🏅
-                    </WowButton>
-                  </Link>
-                  <Link to="/achievements">
-                    <WowButton $size="small" $variant="secondary">
-                      🏆
-                    </WowButton>
-                  </Link>
+                  <StyledLink to="/">
+                    👤
+                  </StyledLink>
+                  <StyledLink to="/exploration">
+                    🗺️
+                  </StyledLink>
+                  <StyledLink to="/shop">
+                    🏪
+                  </StyledLink>
+                  <StyledLink to="/bestiary">
+                    📖
+                  </StyledLink>
+                  <StyledLink to="/leaderboard">
+                    🏅
+                  </StyledLink>
+                  <StyledLink to="/achievements">
+                    🏆
+                  </StyledLink>
                 </>
               )}
-              {character && character.isAdmin ? (<WowButton $size="small" $variant="secondary" onClick={handleLogOut}>
-                Nouveau Personnage
-              </WowButton>) : <></>}
-              <UserInfo>
-                <Avatar>👤</Avatar>
-                <UserName>{character?.name || 'Aventurier'}</UserName>
-              </UserInfo>
+              {character && character.isAdmin ?
+                (<StyledLink to="/" onClick={handleLogOut}>
+                  🗑️
+                </StyledLink>)
+                : <></>}
+
+              <UserInfo />
             </>
           ) : null}
         </Nav>

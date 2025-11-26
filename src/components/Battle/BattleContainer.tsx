@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { WowButton } from '..';
 import { generateMonster } from '../../types/monsters';
-import type { ClassAbility, WowClass } from '../../types/abilities';
+import type { ClassAbility } from '../../types/abilities';
 import { getAvailableAbilities, calculateManaCost, getAbilityIconUrl } from '../../types/abilities';
 import { BASE_ACTION_ICONS } from '../../data/spellIcons';
 import { POTIONS } from '../../types/shop';
@@ -24,7 +24,7 @@ import { BattleXpBar } from './BattleXpBar';
 import { ActionPanel, ActionTitle, BattleArena, BattleContainer, BattleField, BattleLog, BattleLogTitle, Combatant, CombatantIcon, CombatantName, EmojiIcon, FloatingTextContainer, FloatingTextItem, HealthBar, HealthFill, HealthText, IconButton, LogEntry, ManaBar, ManaFill, ManaText, MonsterIconContainer, RewardItem, RewardMoney, RewardsList, SpellIcon, VictoryPanel, VictoryTitle, } from './Battle.style';
 import type { ZoneType } from '../../types/zone';
 import { useAbilityTooltip } from '../../hooks/useAbilityTooltip';
-import type { Character } from '../../types/character';
+import type { Character, WowClass } from '../../types/character';
 import { useCharacter } from '../../contexts';
 
 
@@ -47,7 +47,7 @@ export function Battle({ monsterLevel, zone, onBattleEnd, onExit }: BattleProps)
   const { character } = useCharacter();
   const [battleState, setBattleState] = useState<BattleState>(() => {
     const monster = generateMonster(monsterLevel, zone);
-    return initBattle(character, monster);
+    return initBattle(character!, monster);
   });
   const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
   const [isActionPending, setIsActionPending] = useState(false);
@@ -71,7 +71,7 @@ export function Battle({ monsterLevel, zone, onBattleEnd, onExit }: BattleProps)
   }, []);
 
   // Obtenir les capacités disponibles pour le personnage
-  const availableAbilities = getAvailableAbilities(character.class as WowClass, character.level);
+  const availableAbilities = getAvailableAbilities(character!.class as WowClass, character!.level);
 
   // Observer les changements de vie pour afficher les dégâts/soins
   useEffect(() => {
@@ -130,41 +130,54 @@ export function Battle({ monsterLevel, zone, onBattleEnd, onExit }: BattleProps)
     }
   }, [battleState.turn, battleState.status]);
 
-  const handleAction = (action: () => BattleState) => {
+  const handleAction = useCallback((action: () => BattleState) => {
     if (battleState.turn === 'player' && battleState.status === 'ongoing' && !isActionPending) {
       setIsActionPending(true);
-      setBattleState(() => action());
+      const newState = action();
+      setBattleState(newState);
+      // Si le tour reste au joueur (ex: pas assez de mana), libérer le verrou
+      if (newState.turn === 'player' && newState.status === 'ongoing') {
+        setIsActionPending(false);
+      }
     }
-  };
+  }, [battleState, isActionPending]);
 
-  const handleAttack = () => handleAction(() => playerAttack(battleState));
-  const handleUseAbility = (ability: ClassAbility) => handleAction(() => applyAbility(battleState, ability));
+  const handleAttack = useCallback(() => {
+    handleAction(() => playerAttack(battleState));
+  }, [battleState, handleAction]);
+
+  const handleUseAbility = useCallback(
+    (ability: ClassAbility) => handleAction(() => applyAbility(battleState, ability)),
+    [battleState, handleAction]
+  );
   const handleDefend = () => handleAction(() => playerDefend(battleState));
   const handleFlee = () => handleAction(() => playerFlee(battleState));
   const handleUsePotion = (potionId: string) => handleAction(() => applyPotion(battleState, potionId));
 
   const handleContinue = () => {
     if (battleState.status === 'victory' && battleState.rewards) {
-      // console.log('Récompenses du combat:');
-      // Mettre à jour le personnage avec les récompenses
-      // console.log(character.level, battleState.monster.level)
-      // console.log(character.level - 3 > battleState.monster.level)
-      // console.log()
-      if (character.level - 3 > battleState.monster.level) {
-        battleState.rewards.experience = 0;
-      }
-      const newExperience = (character.experience || 0) + battleState.rewards.experience;
+      // if (character!.level - 3 > battleState.monster.level) {
+      //   battleState.rewards.experience = 0;
+      // }
+
+
+
+      // console.log('Récompenses du combat:', battleState.rewards.experience, diffLevel);
+
+
+
+      const newExperience = (character!.experience || 0) + battleState.rewards.experience;
       const updatedCharacter: Character = {
-        ...character,
-        experience: battleState.rewards.levelUp ? (newExperience - expForLevel(character.level)) : newExperience,
-        gold: (character.gold || 0) + battleState.rewards.gold,
-        level: battleState.rewards.levelUp ? character.level + 1 : character.level,
+        ...character!,
+        experience: battleState.rewards.levelUp ? (newExperience - expForLevel(character!.level)) : newExperience,
+        gold: (character!.gold || 0) + battleState.rewards.gold,
+        level: battleState.rewards.levelUp ? character!.level + 1 : character!.level,
         // Conserver la vie/mana actuelle du combat (pas de regen entre combats)
         health: battleState.rewards.levelUp ? battleState.player.maxHealth : battleState.player.health,
         mana: battleState.rewards.levelUp ? battleState.player.maxMana : battleState.player.mana,
         // Mettre à jour l'inventaire avec les potions utilisées
         inventory: battleState.player.inventory,
-        defeatedMonsters: character.defeatedMonsters + 1,
+        defeatedMonsters: character!.defeatedMonsters + 1,
         experienceToNextLevel: expForLevel(battleState.rewards.newLevel),
       };
 
@@ -234,7 +247,7 @@ export function Battle({ monsterLevel, zone, onBattleEnd, onExit }: BattleProps)
             <RewardsList>
               <VictoryTitle>🎉 Victoire ! 🎉</VictoryTitle>
               <RewardItem>
-                <BattleXpBar character={character} battleState={battleState} />
+                <BattleXpBar character={character!} battleState={battleState} />
               </RewardItem>
               {/* <RewardColones> */}
 
@@ -379,7 +392,7 @@ export function Battle({ monsterLevel, zone, onBattleEnd, onExit }: BattleProps)
             <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
               <IconButton
                 onClick={handleAttack}
-                onMouseEnter={(event) => showAbilityTooltip({
+                onMouseMove={(event) => showAbilityTooltip({
                   id: 'basic-attack',
                   name: 'Attaque',
                   icon: '⚔️',
@@ -396,15 +409,16 @@ export function Battle({ monsterLevel, zone, onBattleEnd, onExit }: BattleProps)
                 <SpellIcon src={BASE_ACTION_ICONS.attack} alt="Attaquer" />
               </IconButton>
               {availableAbilities.map((ability) => {
-                const manaCost = calculateManaCost(ability, character.level);
+                const manaCost = calculateManaCost(ability, character!.level);
                 const canUse = battleState.turn === 'player' && battleState.player.mana >= manaCost && !isActionPending;
                 const iconUrl = getAbilityIconUrl(ability);
                 return (
                   <IconButton
                     key={ability.id}
                     onClick={() => handleUseAbility(ability)}
-                    onMouseEnter={(event) => showAbilityTooltip(ability, event)}
+                    // onMouseEnter={(event) => showAbilityTooltip(ability, event)}
                     onMouseLeave={hideTooltip}
+                    onMouseMove={(event) => showAbilityTooltip(ability, event)}
                     disabled={!canUse}
                     $disabled={!canUse}
                     $variant="primary"
@@ -420,7 +434,7 @@ export function Battle({ monsterLevel, zone, onBattleEnd, onExit }: BattleProps)
               })}
               <IconButton
                 onClick={handleDefend}
-                onMouseEnter={(event) => showAbilityTooltip({
+                onMouseMove={(event) => showAbilityTooltip({
                   id: 'basic-defend',
                   name: 'Défense',
                   icon: '🛡️',
@@ -438,7 +452,7 @@ export function Battle({ monsterLevel, zone, onBattleEnd, onExit }: BattleProps)
               </IconButton>
               <IconButton
                 onClick={handleFlee}
-                onMouseEnter={(event) => showAbilityTooltip({
+                onMouseMove={(event) => showAbilityTooltip({
                   id: 'basic-flee',
                   name: 'Fuir',
                   icon: '🏃‍♂️',
@@ -466,7 +480,7 @@ export function Battle({ monsterLevel, zone, onBattleEnd, onExit }: BattleProps)
                     <IconButton
                       key={item.potionId}
                       onClick={() => handleUsePotion(item.potionId)}
-                      onMouseEnter={(event) => showAbilityTooltip({
+                      onMouseMove={(event) => showAbilityTooltip({
                         id: potion.id,
                         name: potion.name,
                         description: potion.description,

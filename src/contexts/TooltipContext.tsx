@@ -168,7 +168,7 @@ export function TooltipProvider({ children }: { children: ReactNode }) {
                     $x={position.x}
                     $y={position.y}
                     $visible={visible}
-                    onMouseEnter={handleTooltipMouseEnter}
+                    onMouseMove={handleTooltipMouseEnter}
                     onMouseLeave={handleTooltipMouseLeave}
                 >
                     <TooltipBox $quality={content.quality} onClick={hideTooltip}>

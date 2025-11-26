@@ -82,7 +82,7 @@ export function Stats() {
             </StatItem>
             <StatItem>
                 <StatLabel>⚡ Critique</StatLabel>
-                <StatValue>{(character.critChance).toFixed(1)}%</StatValue>
+                <StatValue>{(character.critChance ?? 0).toFixed(1)}%</StatValue>
             </StatItem>
         </StatsPanel>
     </Card>

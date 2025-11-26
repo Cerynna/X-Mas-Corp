@@ -108,7 +108,7 @@ export function Stuffs() {
             {item ? (
               <ItemIconWrapper
                 onClick={() => handleUnequipItem(slot)}
-                onMouseEnter={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => showItemTooltip(item, e)}
+                onMouseMove={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => showItemTooltip(item, e)}
                 onMouseLeave={hideTooltip}
               >
                 <ItemIconWithQuality

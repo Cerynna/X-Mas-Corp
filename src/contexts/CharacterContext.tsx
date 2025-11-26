@@ -11,7 +11,7 @@ import { clearOldBuffs, playerStatsCalculator } from '../utils/player';
 import { createCharacter, getCharactersByUser } from '../firebase/models/character';
 
 interface CharacterContextType {
-  character: Character;
+  character: Character | null;
   loading: boolean;
   hasCharacter: boolean;
   createNewCharacter: (data: {
@@ -40,7 +40,7 @@ interface CharacterProviderProps {
 
 export const CharacterProvider = ({ children }: CharacterProviderProps) => {
   const { user } = useAuth();
-  const [character, setCharacter] = useState<Character>({} as Character);
+  const [character, setCharacter] = useState<Character | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Charger le personnage de l'utilisateur
@@ -203,7 +203,7 @@ export const CharacterProvider = ({ children }: CharacterProviderProps) => {
   const value: CharacterContextType = {
     character,
     loading,
-    hasCharacter: character !== null,
+    hasCharacter: character !== null && character.id !== undefined,
     createNewCharacter,
     updateCharacter,
     refreshCharacter,

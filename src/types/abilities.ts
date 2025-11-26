@@ -1,6 +1,7 @@
 // Système de capacités par classe
 
 import { getSpellIconUrl } from "../data/spellIcons";
+import type { WowClass } from "./character";
 
 export interface ClassAbility {
   id: string;
@@ -15,20 +16,64 @@ export interface ClassAbility {
   baseHeal?: number;
 }
 
-export type WowClass =
-  | "warrior"
-  | "paladin"
-  | "hunter"
-  | "rogue"
-  | "priest"
-  | "shaman"
-  | "mage"
-  | "warlock"
-  | "druid"
-  | "death-knight";
-
 // Capacités par classe
 export const CLASS_ABILITIES: Record<WowClass, ClassAbility[]> = {
+  monk: [
+    {
+      id: "jab",
+      name: "Coup de poing",
+      icon: "🥋",
+      description: "Un coup rapide qui inflige +20% de dégâts supplémentaires.",
+      baseDamage: 0.2,
+      baseManaCost: 10,
+      manaCostPerLevel: 2,
+      unlockLevel: 1,
+    },
+    {
+      id: "rising-sun-kick",
+      name: "Coup de pied du soleil levant",
+      icon: "☀️",
+      description:
+        "Un coup puissant qui inflige +50% de dégâts supplémentaires.",
+      baseDamage: 0.5,
+      baseManaCost: 20,
+      manaCostPerLevel: 3,
+      unlockLevel: 5,
+    },
+    {
+      id: "blackout-kick",
+      name: "Coup de pied aveuglant",
+      icon: "🌑",
+      description:
+        "Un coup tournoyant qui inflige +80% de dégâts supplémentaires.",
+      baseDamage: 0.8,
+      baseManaCost: 30,
+      manaCostPerLevel: 4,
+      unlockLevel: 10,
+    },
+    {
+      id: "fists-of-fury",
+      name: "Poings de fureur",
+      icon: "👊",
+      description:
+        "Une série de coups rapides qui infligent +100% de dégâts supplémentaires.",
+      baseDamage: 1.0,
+      baseManaCost: 40,
+      manaCostPerLevel: 5,
+      unlockLevel: 20,
+    },
+    {
+      id: "spinning-crane-kick",
+      name: "Coup de grue tournoyant",
+      icon: "🦢",
+      description:
+        "Un coup tournoyant qui inflige +200% de dégâts supplémentaires.",
+      baseDamage: 2.0,
+      baseManaCost: 50,
+      manaCostPerLevel: 6,
+      unlockLevel: 30,
+    },
+  ],
   warrior: [
     {
       id: "heroic-strike",

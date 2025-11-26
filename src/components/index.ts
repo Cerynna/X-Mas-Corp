@@ -4,4 +4,4 @@ export { Card, CardHeader, CardTitle, CardSubtitle, CardContent, CardFooter } fr
 export { Header } from './Header';
 export { CharacterCreation } from './CharacterCreation';
 export { Battle } from "./Battle/BattleContainer";
-export { Shop } from './Shop';
+export { ShopComponent } from "./Shop/ShopComponent";

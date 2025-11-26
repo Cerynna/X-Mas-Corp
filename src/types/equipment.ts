@@ -651,7 +651,9 @@ export const generateLoot = (
       }
       return acc;
     }, 0) || 0;
-  const qualityRoll = Math.random() + luck > 1 ? (luck - 1) * 0.08 : 0.0;
+  let qualityRoll = Math.random();
+  qualityRoll += luck >= 1 ? (luck - 1) * 0.08 : 0;
+
 
   if (Math.random() > 0.3 + luck) return null;
   return generateRandomItem(level, qualityRoll, classInfo, luck);

@@ -22,12 +22,17 @@ export const getShopItemsOrdered = async (
   return orderBy(items, key, order);
 };
 
-export const buyItem = async (itemId: string, character: Character) => {
+export const buyItem = async (
+  itemId: string,
+  character: Character,
+  randomPart: number
+) => {
   const items = (await getDocuments(collections.shops)) as ShopItem[];
   const itemBuy = items.find((item) => item.id === itemId);
   if (!itemBuy) return;
-  await deleteDocument(collections.shops, itemBuy.id!);
+  await deleteDocument(collections.shops, itemBuy.id);
   const bagItems = character.bagItems || [];
+  const gold = character.gold - itemBuy.price * randomPart;
   if (itemBuy) {
     bagItems.push({
       itemId: itemBuy.id!,
@@ -36,5 +41,6 @@ export const buyItem = async (itemId: string, character: Character) => {
   }
   await updateDocument(collections.characters, character.id!, {
     bagItems,
+    gold,
   });
 };

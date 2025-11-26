@@ -17,7 +17,7 @@ export const WowButton = styled.button<WowButtonProps>`
   font-weight: ${({ theme }) => theme.fontWeights.bold};
   padding: ${({ $size, theme }) =>
     $size === 'small'
-      ? `${theme.spacing.sm} ${theme.spacing.md}`
+      ? `${theme.spacing.xs} ${theme.spacing.sm}`
       : $size === 'large'
       ? `${theme.spacing.lg} ${theme.spacing['2xl']}`
       : `${theme.spacing.md} ${theme.spacing.xl}`};

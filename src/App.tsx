@@ -71,6 +71,7 @@ const Subtitle = styled.h2`
 function AppContent() {
   const { user, loading: authLoading } = useAuth();
   const { character, hasCharacter, loading: characterLoading, createNewCharacter } = useCharacter();
+  // console.log('App render - user:', user, 'character:', character, 'hasCharacter:', hasCharacter);
 
   const handleCharacterCreation = async (data: {
     name: string;

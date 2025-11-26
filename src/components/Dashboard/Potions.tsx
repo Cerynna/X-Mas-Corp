@@ -157,7 +157,7 @@ export function Potions() {
                             onClick={() => handleUsePotion(potionData.id)}
                         >
                             <div
-                                onMouseEnter={(e) => {
+                                onMouseMove={(e) => {
                                     showTooltip({
                                         title: potionData.name,
                                         description: potionData.description,

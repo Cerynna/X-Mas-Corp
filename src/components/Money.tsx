@@ -21,12 +21,12 @@ export default function Money({ amount, variant = "normal" }: { amount: number, 
                             {formatNumber(gold)} <ShinyCoin color="#FFD700" size={8} />
                         </span>
                     )}
-                    {silver > 0 && (
+                    {(silver > 0 && gold < 900) && (
                         <span style={{ color: '#C0C0C0' }}>
                             {silver} <ShinyCoin color="#C0C0C0" size={8} />
                         </span>
                     )}
-                    {(copper > 0) && (
+                    {(copper > 0 && silver < 90) && (
                         <span style={{ color: '#CD7F32' }}>
                             {copper} <ShinyCoin color="#B87333" size={8} />
                         </span>

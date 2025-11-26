@@ -77,9 +77,7 @@ const XpBarReward = styled.div`
 `;
 
 export function BattleXpBar({ character, battleState }: BattleXpBarProps) {
-    const exepriencePercentBefore = (character.level - 3 > battleState.monster.level) ? 0 : (character.experience) && character.experienceToNextLevel
-        ? (character.experience / character.experienceToNextLevel) * 100
-        : 0;
+    const exepriencePercentBefore = (character.experience / character.experienceToNextLevel) * 100
 
     const experienceGainPercent = battleState.rewards && character.experienceToNextLevel
         ? (battleState.rewards.experience / character.experienceToNextLevel) * 100
@@ -94,10 +92,10 @@ export function BattleXpBar({ character, battleState }: BattleXpBarProps) {
                 </XpBarInfo>
                 <XpBarTrack>
                     <XpBarFill $percent={exepriencePercentBefore} />
-                    <XpBarGain $percent={(character.level - 3 > battleState.monster.level) ? 0 : experienceGainPercent} $offset={exepriencePercentBefore} />
+                    <XpBarGain $percent={experienceGainPercent} $offset={exepriencePercentBefore} />
                     <XpBarText>{Math.max(0, Math.round(exepriencePercentBefore + experienceGainPercent))}%</XpBarText>
                 </XpBarTrack>
-                <XpBarReward>+{(character.level - 3 > battleState.monster.level) ? 0 : battleState.rewards.experience} XP gagnés</XpBarReward>
+                <XpBarReward>+{battleState.rewards.experience} XP gagnés</XpBarReward>
             </XpBarContainer>
         );
     }

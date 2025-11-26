@@ -17,7 +17,8 @@ export type WowClass =
   | "mage" // Mage
   | "warlock" // Démoniste
   | "druid" // Druide
-  | "death-knight"; // Chevalier de la mort
+  | "death-knight" // Chevalier de la mort
+  | "monk"; // Moine
 
 export type AllianceRace =
   | "human" // Humain
@@ -76,6 +77,24 @@ export interface RaceInfo {
 
 // Classes disponibles
 export const CLASSES: Record<WowClass, ClassInfo> = {
+  monk: {
+    id: "monk",
+    name: "Moine",
+    description:
+      "Maître des arts martiaux qui utilise l'énergie spirituelle pour soigner et combattre.",
+    primaryStat: "agility",
+    icon: "🥋",
+    color: "#00FF96",
+    baseHP: 105,
+    baseMP: 100,
+    availableFor: {
+      alliance: ["human", "dwarf", "night-elf", "gnome", "draenei", "worgen"],
+      horde: ["orc", "undead", "tauren", "troll", "blood-elf", "goblin"],
+    },
+    energyName: "💨 Chi",
+    armorType: "leather",
+    weaponType: ["staff"],
+  },
   warrior: {
     id: "warrior",
     name: "Guerrier",
@@ -392,6 +411,7 @@ export interface CharacterStats {
   energyName: string;
   armor?: number;
   critChance?: number;
+  primaryStat?: "strength" | "agility" | "intellect";
 }
 
 export interface CharacterInventoryPotion {

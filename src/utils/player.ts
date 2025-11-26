@@ -56,8 +56,18 @@ function playerStatsCalculator(
   const baseAgility = baseStats.agility;
   const baseIntellect = baseStats.intellect;
   const baseStamina = baseStats.stamina;
-  const baseAttackPower = 5;
-  const baseSpellPower = 5;
+  const baseAttackPower = Math.floor(
+    baseStats.primaryStat === "strength"
+      ? baseStrength + baseStatsFromStuffs.strength / 5
+      : baseStats.primaryStat === "agility"
+      ? baseAgility + baseStatsFromStuffs.agility / 5
+      : baseIntellect + baseStatsFromStuffs.intellect / 5
+  );
+  const baseSpellPower = Math.floor(
+    baseStats.primaryStat === "intellect"
+      ? baseIntellect + baseStatsFromStuffs.intellect / 5
+      : 0
+  );
   const baseArmor = baseStats.armor;
   const baseCritChance = baseStats.critChance;
 
@@ -89,6 +99,13 @@ function playerStatsCalculator(
     critChance: (Number(baseCritChance) + baseStatsFromStuffs.critChance) * 0.1,
     experienceToNextLevel: expForLevel(level + 1),
   };
+
+  console.log(
+    "attackPower",
+    baseAttackPower,
+    baseStatsFromStuffs.attackPower,
+    level
+  );
 
   // AJOUT DES BUFFS
 
@@ -224,6 +241,7 @@ const calculateBaseStats = (
     armor,
     energyName,
     critChance,
+    primaryStat: classInfo.primaryStat,
   };
 };
 

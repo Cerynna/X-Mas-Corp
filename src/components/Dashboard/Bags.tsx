@@ -175,7 +175,7 @@ export function Bags() {
                         <BagItem key={index} $quality={item.quality}>
                             <ItemIconWrapper
                                 onClick={() => handleEquipItem(item)}
-                                onMouseEnter={(e) => showItemTooltip(item, e)}
+                                onMouseMove={(e) => showItemTooltip(item, e)}
                                 onMouseLeave={hideTooltip}
                             >
                                 <ItemIconWithQuality

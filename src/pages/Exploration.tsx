@@ -98,11 +98,27 @@ const Description = styled.div`
   line-height: 1.6;
 `;
 
+// function for find a zone by level range
+// if level is too high, return the highest zone
+function findZoneByLevel(level: number) {
+  let zone = ZONES[0];
+  for (const z of ZONES) {
+    if (level >= z.levelRange[0] && level <= z.levelRange[1]) {
+      zone = z;
+      break;
+    } else if (level > z.levelRange[1]) {
+      zone = z;
+    }
+  }
+  return zone;
+}
+
+
 export function Exploration() {
   const { character, updateCharacter } = useCharacter();
   const [inBattle, setInBattle] = useState(false);
   const [monsterLevel, setMonsterLevel] = useState(1);
-  const [selectedZone, setSelectedZone] = useState(ZONES.find(zone => character && character.level >= zone.levelRange[0] && character.level <= zone.levelRange[1]) || ZONES[0]);
+  const [selectedZone, setSelectedZone] = useState(findZoneByLevel(character?.level || 1));
 
   useEffect(() => {
     if (selectedZone) {
