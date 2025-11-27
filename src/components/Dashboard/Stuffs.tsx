@@ -1,11 +1,12 @@
 import styled from "styled-components";
-import { Card, SectionTitle } from "../../pages/Dashboard";
+
 import { ItemIconWithQuality } from "../icons";
 import { useCharacter } from "../../contexts";
 import { useItemTooltip } from "../../hooks/useItemTooltip";
 import { cleanBagsItems } from "../../utils/bags";
 import { useEffect, useState } from "react";
 import type { EquipementsType } from "../../types/equipmentSlots";
+import { Card, CardHeader, CardTitle } from "../../styles";
 
 
 const EquipmentGrid = styled.div`
@@ -87,8 +88,10 @@ export function Stuffs() {
   };
 
 
-  return <Card style={{ marginBottom: '1.5rem' }}>
-    <SectionTitle>⚔️ Équipement</SectionTitle>
+  return <Card>
+    <CardHeader>
+      <CardTitle>⚔️ Équipement</CardTitle>
+    </CardHeader>
     <EquipmentGrid>
       {(['weapon', 'head', 'chest', 'legs', 'boots', 'jewelry'] as const).map((slot) => {
         const slotLabels: Record<string, string> = {

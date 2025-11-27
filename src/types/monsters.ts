@@ -776,7 +776,7 @@ const createMonsterFromTemplate = (
   const statPerLevel = 2;
   return {
     id: `${template.id}-${Date.now()}`,
-    name: `${template.name} (Niv. ${level})`,
+    name: `${template.name}`,
     type: template.type,
     icon: template.icon,
     level,

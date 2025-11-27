@@ -5,7 +5,7 @@ import type { BuffType } from "./buffs";
 import type { ChatChannel } from "./chat";
 import type { EquipementsType } from "./equipmentSlots";
 
-export type Faction = "alliance" | "horde";
+export type Faction = "alliance" | "horde" | "neutral";
 
 export type WowClass =
   | "warrior" // Guerrier
@@ -26,7 +26,8 @@ export type AllianceRace =
   | "night-elf" // Elfe de la nuit
   | "gnome" // Gnome
   | "draenei" // Draeneï
-  | "worgen"; // Worgen
+  | "worgen" // Worgen
+  | "pandaren"; // Pandaren
 
 export type HordeRace =
   | "orc" // Orc
@@ -34,7 +35,8 @@ export type HordeRace =
   | "tauren" // Tauren
   | "troll" // Troll
   | "blood-elf" // Elfe de sang
-  | "goblin"; // Gobelin
+  | "goblin" // Gobelin
+  | "pandaren"; // Pandaren
 
 export type WowRace = AllianceRace | HordeRace;
 
@@ -54,6 +56,7 @@ export interface ClassInfo {
   availableFor: {
     alliance: WowRace[];
     horde: WowRace[];
+    neutral: WowRace[];
   };
   energyName: string;
   armorType: ArmorType;
@@ -90,6 +93,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     availableFor: {
       alliance: ["human", "dwarf", "night-elf", "gnome", "draenei", "worgen"],
       horde: ["orc", "undead", "tauren", "troll", "blood-elf", "goblin"],
+      neutral: ["pandaren"],
     },
     energyName: "💨 Chi",
     armorType: "leather",
@@ -108,6 +112,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     availableFor: {
       alliance: ["human", "dwarf", "night-elf", "gnome", "draenei", "worgen"],
       horde: ["orc", "undead", "tauren", "troll", "blood-elf", "goblin"],
+      neutral: ["pandaren"],
     },
     energyName: "🔥 Rage",
     armorType: "plate",
@@ -126,6 +131,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     availableFor: {
       alliance: ["human", "dwarf", "draenei"],
       horde: ["blood-elf", "tauren"],
+      neutral: [],
     },
     energyName: "💙 Mana",
     armorType: "plate",
@@ -143,6 +149,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     availableFor: {
       alliance: ["human", "dwarf", "night-elf", "draenei", "worgen", "gnome"],
       horde: ["orc", "undead", "tauren", "troll", "blood-elf", "goblin"],
+      neutral: ["pandaren"],
     },
     energyName: "🎯 Focus",
     armorType: "mail",
@@ -161,6 +168,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     availableFor: {
       alliance: ["human", "dwarf", "night-elf", "gnome", "worgen"],
       horde: ["orc", "undead", "troll", "blood-elf", "goblin"],
+      neutral: ["pandaren"],
     },
     energyName: "⚡ Énergie",
     armorType: "leather",
@@ -179,6 +187,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     availableFor: {
       alliance: ["human", "dwarf", "night-elf", "draenei", "worgen"],
       horde: ["undead", "troll", "blood-elf", "goblin"],
+      neutral: ["pandaren"],
     },
     energyName: "💙 Mana",
     armorType: "cloth",
@@ -196,6 +205,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     availableFor: {
       alliance: ["draenei"],
       horde: ["orc", "tauren", "troll", "goblin"],
+      neutral: ["pandaren"],
     },
     energyName: "💙 Mana",
     armorType: "mail",
@@ -214,6 +224,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     availableFor: {
       alliance: ["human", "dwarf", "night-elf", "gnome", "draenei", "worgen"],
       horde: ["orc", "undead", "troll", "blood-elf", "goblin"],
+      neutral: ["pandaren"],
     },
     energyName: "💙 Mana",
     armorType: "cloth",
@@ -232,6 +243,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     availableFor: {
       alliance: ["human", "dwarf", "gnome", "worgen"],
       horde: ["orc", "undead", "blood-elf", "goblin"],
+      neutral: [],
     },
     energyName: "💙 Mana",
     armorType: "cloth",
@@ -250,6 +262,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     availableFor: {
       alliance: ["night-elf", "worgen"],
       horde: ["tauren", "troll"],
+      neutral: [],
     },
     energyName: "💙 Mana",
     armorType: "leather",
@@ -268,6 +281,7 @@ export const CLASSES: Record<WowClass, ClassInfo> = {
     availableFor: {
       alliance: ["human", "dwarf", "night-elf", "gnome", "draenei", "worgen"],
       horde: ["orc", "undead", "tauren", "troll", "blood-elf", "goblin"],
+      neutral: ["pandaren"],
     },
     energyName: "🌀 Runes",
     armorType: "plate",
@@ -382,6 +396,15 @@ export const RACES: Record<WowRace, RaceInfo> = {
     faction: "horde",
     icon: "👺",
     bonuses: { intellect: 3, agility: 3 },
+  },
+  // Neutre
+  pandaren: {
+    id: "pandaren",
+    name: "Pandaren",
+    description: "Âmes sages en quête d'équilibre.",
+    faction: "neutral",
+    icon: "🐼",
+    bonuses: { strength: 2, agility: 2, intellect: 2, stamina: 2 },
   },
 };
 

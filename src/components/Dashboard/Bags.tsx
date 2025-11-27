@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { SectionTitle } from "../../pages/Dashboard";
+
 import { useCharacter } from "../../contexts";
 import type { EquipmentItem } from "../../types/equipment";
 import { ItemIconWithQuality } from "../icons";
@@ -8,8 +8,8 @@ import { cleanBagsItems } from "../../utils/bags";
 import Money from "../Money";
 import { WowButton } from "../WowButton";
 import type { BagsItemsType } from "../../types/bags";
+import { Card, CardHeader, CardTitle, EmptySlot } from "../../styles";
 
-const BagSection = styled.div``;
 
 const BagGrid = styled.div`
   display: grid;
@@ -50,13 +50,6 @@ const ItemActions = styled.div`
 
 const ActionButton = styled(WowButton)`
 padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
-`;
-
-const EmptySlot = styled.div`
-  color: ${({ theme }) => theme.colors.text.secondary};
-  font-style: italic;
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  text-align: center;
 `;
 
 
@@ -142,28 +135,30 @@ export function Bags() {
         });
     }
 
-    return <BagSection>
-        <SectionTitle>🎒 Sac - Équipement
-            <span>
+    return <Card>
+        <CardHeader>
+            <CardTitle>🎒 Sac</CardTitle>
 
-                {sortedBagItems.length > 0 && (
-                    <>
-                        Tout vendre : {" "}
-                        <ActionButton
-                            onClick={() => handleSellAll()}
-                            $size="small"
-                            $variant={'secondary'}
-                        >
-                            <Money amount={sortedBagItems.reduce((total: number, bagItem: BagsItemsType) => {
-                                const item: EquipmentItem = 'item' in bagItem ? bagItem.item : bagItem as unknown as EquipmentItem;
-                                return total + Math.floor((item.price || 0));
-                            }, 0)} variant="small" />
-                        </ActionButton>
-                    </>
-                )}
+        </CardHeader>
+        <span>
 
-            </span>
-        </SectionTitle>
+            {sortedBagItems.length > 0 && (
+                <>
+                    Tout vendre : {" "}
+                    <ActionButton
+                        onClick={() => handleSellAll()}
+                        $size="small"
+                        $variant={'secondary'}
+                    >
+                        <Money amount={sortedBagItems.reduce((total: number, bagItem: BagsItemsType) => {
+                            const item: EquipmentItem = 'item' in bagItem ? bagItem.item : bagItem as unknown as EquipmentItem;
+                            return total + Math.floor((item.price || 0));
+                        }, 0)} variant="small" />
+                    </ActionButton>
+                </>
+            )}
+
+        </span>
         {sortedBagItems.length > 0 ? (
             <BagGrid>
                 {sortedBagItems.map((bagItem: BagsItemsType, index: number) => {
@@ -201,5 +196,5 @@ export function Bags() {
         ) : (
             <EmptySlot>Aucun équipement dans le sac</EmptySlot>
         )}
-    </BagSection>
+    </Card>
 }

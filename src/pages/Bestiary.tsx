@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { MONSTER_TEMPLATES, type MonsterType } from '../types/monsters';
-import { MonsterIconWithLevel } from '../components/icons';
+// import { MonsterIconWithLevel } from '../components/icons';
 import Money from '../components/Money';
 import { useCharacter } from '../contexts';
+import { MonsterIcon } from '../components/icons';
 
 const BestiaryContainer = styled.div`
   width: 100%;
@@ -201,7 +202,7 @@ export function Bestiary() {
         <MonsterGrid>
           {filteredMonsters.map((monster, index) => (
             <MonsterCard key={index}>
-              <MonsterIconWithLevel
+              <MonsterIcon
                 monster={{
                   ...monster,
                   level: Math.floor((monster.minLevel + monster.maxLevel) / 2),
@@ -211,7 +212,7 @@ export function Bestiary() {
                   armor: monster.baseArmor,
                   abilities: monster.abilities ?? [],
                 }}
-                level={Math.floor((monster.minLevel + monster.maxLevel) / 2)}
+                // level={Math.floor((monster.minLevel + monster.maxLevel) / 2)}
                 size={96}
               />
               <MonsterName>{monster.name}</MonsterName>

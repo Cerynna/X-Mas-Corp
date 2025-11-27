@@ -3,7 +3,7 @@ import { useCharacter } from "../../contexts";
 
 const XPBarContainer = styled.div`
   width: 100%;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  // margin-bottom: ${({ theme }) => theme.spacing.xl};
 `;
 
 const XPBarLabel = styled.div`

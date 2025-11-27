@@ -1,37 +1,32 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useCharacter } from '../contexts/useCharacter';
-import { Battle } from '../components/Battle/BattleContainer';
+// import { Battle } from '../components/Battle/BattleContainer';
 import { WowButton } from '../components';
-import type { EquipmentItem } from '../types/equipment';
+// import type { EquipmentItem } from '../types/equipment';
 import { ZONES } from '../types/zone';
-import type { Character } from '../types/character';
+import { Card, Description, Title } from '../styles';
+import { useBattle } from '../contexts/useBattle';
+// import type { Character } from '../types/character';
 
-const ExplorationContainer = styled.div`
-  min-height: calc(100vh - 92px);
-  width: 100%;
-  max-width: 1200px;
-  padding: ${({ theme }) => theme.spacing.xl};
-  margin: 0 auto;
-`;
 
-const Card = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-  background: linear-gradient(
-    135deg,
-    rgba(30, 58, 95, 0.9) 0%,
-    rgba(26, 31, 46, 0.95) 100%
-  );
-  border: ${({ theme }) => theme.borders.medium} solid ${({ theme }) => theme.colors.primary.gold};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  padding: ${({ theme }) => theme.spacing.xl};
-  box-shadow: ${({ theme }) => theme.shadows.xl};
-  backdrop-filter: blur(10px);
-  text-align: center;
-`;
+// const Card = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   gap: ${({ theme }) => theme.spacing.md};
+//   background: linear-gradient(
+//     135deg,
+//     rgba(30, 58, 95, 0.9) 0%,
+//     rgba(26, 31, 46, 0.95) 100%
+//   );
+//   border: ${({ theme }) => theme.borders.medium} solid ${({ theme }) => theme.colors.primary.gold};
+//   border-radius: ${({ theme }) => theme.borderRadius.lg};
+//   padding: ${({ theme }) => theme.spacing.xl};
+//   box-shadow: ${({ theme }) => theme.shadows.xl};
+//   backdrop-filter: blur(10px);
+//   text-align: center;
+// `;
 const SelectZoneContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -85,18 +80,18 @@ const ZoneName = styled.div`
   color: ${({ theme }) => theme.colors.primary.gold};
 `;
 
-const Title = styled.h1`
-  color: ${({ theme }) => theme.colors.primary.gold};
-  font-size: ${({ theme }) => theme.fontSizes['3xl']};
-  text-shadow: ${({ theme }) => theme.shadows.glow.gold};
-  margin-bottom: 0;
-`;
+// const Title = styled.h1`
+//   color: ${({ theme }) => theme.colors.primary.gold};
+//   font-size: ${({ theme }) => theme.fontSizes['3xl']};
+//   text-shadow: ${({ theme }) => theme.shadows.glow.gold};
+//   margin-bottom: 0;
+// `;
 
-const Description = styled.div`
-  color: ${({ theme }) => theme.colors.text.secondary};
-  font-size: ${({ theme }) => theme.fontSizes.base};
-  line-height: 1.6;
-`;
+// const Description = styled.div`
+//   color: ${({ theme }) => theme.colors.text.secondary};
+//   font-size: ${({ theme }) => theme.fontSizes.base};
+//   line-height: 1.6;
+// `;
 
 // function for find a zone by level range
 // if level is too high, return the highest zone
@@ -114,11 +109,12 @@ function findZoneByLevel(level: number) {
 }
 
 
-export function Exploration() {
-  const { character, updateCharacter } = useCharacter();
-  const [inBattle, setInBattle] = useState(false);
+export function ExplorationPage() {
+  const { character } = useCharacter();
+  // const [inBattle, setInBattle] = useState(false);
   const [monsterLevel, setMonsterLevel] = useState(1);
   const [selectedZone, setSelectedZone] = useState(findZoneByLevel(character?.level || 1));
+  const { createNewBattle } = useBattle();
 
   useEffect(() => {
     if (selectedZone) {
@@ -134,50 +130,47 @@ export function Exploration() {
     return null;
   }
 
-  const handleBattleEnd = (updatedCharacter: Character, loot?: EquipmentItem) => {
+  // const handleBattleEnd = (updatedCharacter: Character, loot?: EquipmentItem) => {
 
 
-    // Ajouter le loot au sac si présent
-    if (loot) {
-      const newBagItems = [...(updatedCharacter.bagItems || []), {
-        itemId: loot.id,
-        item: loot,
-      }];
-      updateCharacter({
-        ...updatedCharacter,
-        bagItems: newBagItems,
-      });
-    } else {
-      updateCharacter(updatedCharacter);
-    }
-    setInBattle(false);
-    setTimeout(() => {
-      setInBattle(true);
-    }, 100);
-  };
+  //   // Ajouter le loot au sac si présent
+  //   if (loot) {
+  //     const newBagItems = [...(updatedCharacter.bagItems || []), {
+  //       itemId: loot.id,
+  //       item: loot,
+  //     }];
+  //     updateCharacter({
+  //       ...updatedCharacter,
+  //       bagItems: newBagItems,
+  //     });
+  //   } else {
+  //     updateCharacter(updatedCharacter);
+  //   }
+  //   // setInBattle(false);
+  //   setTimeout(() => {
+  //     // setInBattle(true);
+  //   }, 100);
+  // };
 
 
 
 
-  if (inBattle) {
-    return (
-      <Battle
-        monsterLevel={monsterLevel}
-        zone={selectedZone}
-        onBattleEnd={handleBattleEnd}
-        onExit={() => setInBattle(false)}
-      />
-    );
-  }
+  // if (inBattle) {
+  //   return (
+  //     <Battle/>
+  //   );
+  // }
 
   return (
-    <ExplorationContainer>
+    // <ExplorationContainer>
+    <>
+      <Title>🗺️ Exploration</Title>
+      <Description>
+        Partez à l'aventure dans les terres sauvages et affrontez des monstres !<br />
+        Gagnez de l'expérience, de l'or et trouvez des équipements légendaires.
+      </Description>
       <Card>
-        <Title>🗺️ Exploration</Title>
-        <Description>
-          Partez à l'aventure dans les terres sauvages et affrontez des monstres !<br />
-          Gagnez de l'expérience, de l'or et trouvez des équipements légendaires.
-        </Description>
+
         <SelectZoneContainer>
 
           {ZONES.map(zone => {
@@ -206,10 +199,17 @@ export function Exploration() {
           })}
 
         </SelectZoneContainer>
-        <WowButton onClick={() => setInBattle(true)} $size="large">
-          ⚔️ Chercher un Combat {monsterLevel}
-        </WowButton>
+        <div>
+          <WowButton $size="large" onClick={() => {
+            console.log('Creating new battle in zone', selectedZone.name, 'for monster level', monsterLevel);
+            createNewBattle(character, monsterLevel, selectedZone);
+          }}>
+            ⚔️ Chercher un Combat {monsterLevel}
+          </WowButton>
+        </div>
+
       </Card>
-    </ExplorationContainer>
+    </>
+    //  </ExplorationContainer>
   );
 }

@@ -1,3 +1,15 @@
+import type { Monster } from '../../../types/monsters';
+import {
+  OwlIcon, FoxIcon, WolfIcon, BoarIcon,
+  GiantRatIcon, BanditIcon, MurlocIcon, ThiefIcon,
+  SkeletonIcon, GargoyleIcon, GhostIcon, ZombieIcon,
+  IceElementalIcon, FireElementalIcon, AirElementalIcon, EarthElementalIcon,
+  DemonIcon, FelguardIcon, ImpIcon, MinorDemonIcon, SuccubusIcon,
+  IceGiantIcon, StoneGiantIcon, TrollBruteIcon,
+  AncientDragonIcon, DragonIcon, DrakeIcon, GuardianDragonIcon, WhelpIcon, WyvernIcon
+
+} from './AllIcon';
+
 
 export interface MonsterIconProps {
   primaryColor?: string;
@@ -8,7 +20,7 @@ export interface MonsterIconProps {
 
 
 // Icône monstre par défaut
-export const DefaultMonsterIcon: React.FC<MonsterIconProps> = ({ primaryColor = '#A3A3A3', secondaryColor = '#6B7280', accentColor = '#FBBF24', size = 48 }) => (
+const DefaultMonsterIcon: React.FC<MonsterIconProps> = ({ primaryColor = '#A3A3A3', secondaryColor = '#6B7280', accentColor = '#FBBF24', size = 48 }) => (
   <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
     {/* Silhouette générique */}
     <ellipse cx="24" cy="32" rx="10" ry="8" fill={primaryColor} stroke={secondaryColor} strokeWidth="2" />
@@ -23,6 +35,81 @@ export const DefaultMonsterIcon: React.FC<MonsterIconProps> = ({ primaryColor = 
     <ellipse cx="24" cy="32" rx="14" ry="10" fill={accentColor} opacity="0.08" />
   </svg>
 );
+
+export const MonsterIcon: React.FC<MonsterIconProps & { monster: Monster }> = ({ monster, size = 64 }) => {
+  const cleaned = monster.id.replace(/-(\d+)$/, "");
+  switch (cleaned) {
+    // Level 1-5
+    case "wolf":
+      return <WolfIcon size={size} />;
+    case "fox":
+      return <FoxIcon size={size} />;
+    case "boar":
+      return <BoarIcon size={size} />;
+    case "owl":
+      return <OwlIcon size={size} />;
+    // Level 5-15
+    case "giant-rat":
+      return <GiantRatIcon size={size} />;
+    case "bandit":
+      return <BanditIcon size={size} />;
+    case "murloc":
+      return <MurlocIcon size={size} />;
+    case "thief":
+      return <ThiefIcon size={size} />;
+    // Level 10-15
+    case "skeleton":
+      return <SkeletonIcon size={size} />;
+    case "gargoyle":
+      return <GargoyleIcon size={size} />;
+    case "ghost":
+      return <GhostIcon size={size} />;
+    case "ghoul":
+      return <ZombieIcon size={size} />;
+    // Level 15-20
+    case "ice-elemental":
+      return <IceElementalIcon size={size} />;
+    case "fire-elemental":
+      return <FireElementalIcon size={size} />;
+    case "air-elemental":
+      return <AirElementalIcon size={size} />;
+    case "earth-elemental":
+      return <EarthElementalIcon size={size} />;
+    // Level 20-25
+    case "demon":
+      return <DemonIcon size={size} />;
+    case "felguard":
+      return <FelguardIcon size={size} />;
+    case "imp":
+      return <ImpIcon size={size} />;
+    case "minor-demon":
+      return <MinorDemonIcon size={size} />;
+    case "succubus":
+      return <SuccubusIcon size={size} />;
+    // Level 25-32
+    case "ice-giant":
+      return <IceGiantIcon size={size} />;
+    case "giant":
+      return <StoneGiantIcon size={size} />;
+    case "troll-brute":
+      return <TrollBruteIcon size={size} />;
+    // Level 30+
+    case "whelp":
+      return <WhelpIcon size={size} />;
+    case "ancient-dragon":
+      return <AncientDragonIcon size={size} />;
+    case "dragon":
+      return <DragonIcon size={size} />;
+    case "drake":
+      return <DrakeIcon size={size} />;
+    case "guardian-dragon":
+      return <GuardianDragonIcon size={size} />;
+    case "wyvern":
+      return <WyvernIcon size={size} />;
+  }
+  // Par défaut: default monster icon
+  return <DefaultMonsterIcon size={size} />;
+};
 
 
 // Élémentaire Mineur de Pierre

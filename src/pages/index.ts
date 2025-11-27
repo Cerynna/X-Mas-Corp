@@ -1,5 +1,6 @@
 export { Dashboard } from "./Dashboard";
-export { Exploration } from "./Exploration";
+export { ExplorationPage } from "./ExplorationPage";
 export { ShopPage } from "./ShopPage";
 export { Bestiary } from "./Bestiary";
-export { LeaderBoard } from "./LeaderBoard";
+export { LeaderBoardPage } from "./LeaderBoardPage";
+export { BattlePage } from "./BattlePage";

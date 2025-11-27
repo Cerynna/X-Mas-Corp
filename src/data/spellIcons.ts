@@ -82,6 +82,7 @@ export const SPELL_ICONS = {
 
   // Base actions
   attack: "inv_sword_04",
+  magic: "inv_wand_02",
   defend: "ability_defend",
   flee: "ability_rogue_sprint",
 
@@ -96,14 +97,15 @@ export function getSpellIconUrl(iconKey: string): string {
   const iconName = SPELL_ICONS[iconKey as SpellIconKey];
   if (!iconName) {
     console.warn(`Icon not found for key: ${iconKey}`);
-    return '';
+    return "";
   }
   return `https://wow.zamimg.com/images/wow/icons/large/${iconName}.jpg`;
 }
 
 // URLs directes pour les actions de base
 export const BASE_ACTION_ICONS = {
-  attack: getSpellIconUrl('attack'),
-  defend: getSpellIconUrl('defend'),
-  flee: getSpellIconUrl('flee'),
+  attack: getSpellIconUrl("attack"),
+  magic: getSpellIconUrl("magic"),
+  defend: getSpellIconUrl("defend"),
+  flee: getSpellIconUrl("flee"),
 };

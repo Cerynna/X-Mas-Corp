@@ -1,4 +1,4 @@
-import type { MonsterIconProps } from "./MonsterIcon";
+import type { MonsterIconProps } from ".";
 
 // Hibou
 export const OwlIcon: React.FC<MonsterIconProps> = ({ primaryColor = '#A3A3A3', secondaryColor = '#6B7280', accentColor = '#FBBF24', size = 48 }) => (

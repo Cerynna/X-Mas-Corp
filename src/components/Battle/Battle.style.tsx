@@ -217,9 +217,11 @@ export const HealthBar = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.md};
   overflow: hidden;
   position: relative;
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+
+  // display: flex;
+  // justify-content: flex-start;
 
   &::before {
     content: '';
@@ -237,162 +239,129 @@ export const HealthBar = styled.div`
   }
 `;
 
-export const HealthFill = styled.div<{ $percentage: number }>`
+export const HealthFill = styled.div<{ $percentage: number, $reverse?: boolean }>`
   height: 100%;
   width: ${({ $percentage }) => $percentage}%;
-  background: linear-gradient(
-    90deg,
-    #dc2626 0%,
-    #ef4444 50%,
-    #f87171 100%
-  );
-  box-shadow: 
-    0 0 10px rgba(239, 68, 68, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background: ${({ $reverse }) => $reverse ?
+    'linear-gradient(90deg, #f87171 0%, #ef4444 50%, #dc2626 100%)'
+    : 'linear-gradient(90deg,#dc2626 0%,#ef4444 50%,#f87171 100%)'
+  };
+  box-shadow: ${($reverse) => $reverse ?
+    "0 0 10px rgba(255, 255, 255, 0.3),inset 0 1px 0 rgba(239, 68, 68, 0.5)"
+    : "0 0 10px rgba(239, 68, 68, 0.5),inset 0 1px 0 rgba(255, 255, 255, 0.3)"
+  };
+  position: absolute;
   transition: width 0.5s ease-out;
-  position: relative;
+  right: ${({ $reverse }) => $reverse ? 0 : 'auto'};
+  left : ${({ $reverse }) => $reverse ? 'auto' : 0};
 
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.3) 50%,
-      transparent 100%
-    );
-    animation: shimmer 2s infinite;
-  }
-
-  @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-  }
 `;
 
 export const HealthText = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: ${({ theme }) => theme.fontWeights.bold};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  text-shadow: 
-    0 0 8px rgba(0, 0, 0, 1),
-    1px 1px 2px rgba(0, 0, 0, 0.8);
-  pointer-events: none;
-  z-index: 2;
-  letter-spacing: 0.5px;
+position: absolute;
+color: red;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+color: white;
+font-weight: ${({ theme }) => theme.fontWeights.bold};
+font-size: ${({ theme }) => theme.fontSizes.sm};
+text-shadow:
+0 0 8px rgba(0, 0, 0, 1),
+  1px 1px 2px rgba(0, 0, 0, 0.8);
+pointer-events: none;
+z-index: 2;
+letter-spacing: 0.5px;
 `;
 
 export const ManaBar = styled(HealthBar)`
-  height: 24px;
+height: 24px;
 `;
 
-export const ManaFill = styled.div<{ $percentage: number }>`
-  height: 100%;
-  width: ${({ $percentage }) => $percentage}%;
-  background: linear-gradient(
-    90deg,
+export const ManaFill = styled.div<{ $percentage: number, $reverse?: boolean }>`
+height: 100 %;
+width: ${({ $percentage }) => $percentage}%;
+background: linear-gradient(
+  90deg,
     #1e3a8a 0%,
     #3b82f6 50%,
     #60a5fa 100%
   );
-  box-shadow: 
-    0 0 10px rgba(59, 130, 246, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transition: width 0.5s ease-out;
-  position: relative;
+box-shadow:
+0 0 10px rgba(59, 130, 246, 0.5),
+  inset 0 1px 0 rgba(255, 255, 255, 0.3);
+transition: width 0.5s ease-out;
+position: relative;
 
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.3) 50%,
-      transparent 100%
-    );
-    animation: shimmer 2s infinite;
-  }
 `;
 
 export const ManaText = styled(HealthText)`
-  font-size: ${({ theme }) => theme.fontSizes.xs};
+font - size: ${({ theme }) => theme.fontSizes.xs};
 `;
 
 export const ActionPanel = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.4) 0%,
-    rgba(0, 0, 0, 0.2) 100%
+margin - bottom: ${({ theme }) => theme.spacing.xl};
+background: linear - gradient(
+  135deg,
+  rgba(0, 0, 0, 0.4) 0 %,
+  rgba(0, 0, 0, 0.2) 100 %
   );
-  border: 2px solid rgba(255, 215, 0, 0.3);
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  padding: ${({ theme }) => theme.spacing.lg};
-  backdrop-filter: blur(10px);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+border: 2px solid rgba(255, 215, 0, 0.3);
+border - radius: ${({ theme }) => theme.borderRadius.lg};
+padding: ${({ theme }) => theme.spacing.lg};
+backdrop - filter: blur(10px);
+box - shadow:
+0 8px 32px rgba(0, 0, 0, 0.5),
+  inset 0 1px 0 rgba(255, 255, 255, 0.1);
 `;
 
 export const ActionTitle = styled.h3`
-  font-family: ${({ theme }) => theme.fonts.display};
-  color: ${({ theme }) => theme.colors.primary.gold};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  font-size: ${({ theme }) => theme.fontSizes.xl};
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
+font - family: ${({ theme }) => theme.fonts.display};
+color: ${({ theme }) => theme.colors.primary.gold};
+margin - bottom: ${({ theme }) => theme.spacing.md};
+font - size: ${({ theme }) => theme.fontSizes.xl};
+text - shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+letter - spacing: 1px;
+text - transform: uppercase;
+display: flex;
+align - items: center;
+gap: ${({ theme }) => theme.spacing.sm};
 
-  &::before,
+  &:: before,
   &::after {
-    content: '';
-    flex: 1;
-    height: 2px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      ${({ theme }) => theme.colors.primary.gold},
-      transparent
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: linear - gradient(
+    90deg,
+    transparent,
+    ${({ theme }) => theme.colors.primary.gold},
+transparent
     );
   }
 `;
 
 export const IconButton = styled.button<{ $disabled?: boolean; $variant?: 'primary' | 'secondary' | 'danger' }>`
-  width: 64px;
-  height: 64px;
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  border: 2px solid;
-  font-size: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: ${({ $disabled }) => $disabled ? 'not-allowed' : 'pointer'};
-  opacity: ${({ $disabled }) => $disabled ? 0.4 : 1};
-  position: relative;
-  transition: all 0.2s ease;
-  padding: 0;
-  overflow: hidden;
-  
-  background: ${({ $variant }) => {
+width: 64px;
+height: 64px;
+border - radius: ${({ theme }) => theme.borderRadius.md};
+border: 2px solid;
+font - size: 2rem;
+display: flex;
+align - items: center;
+justify - content: center;
+cursor: ${({ $disabled }) => $disabled ? 'not-allowed' : 'pointer'};
+opacity: ${({ $disabled }) => $disabled ? 0.4 : 1};
+position: relative;
+transition: all 0.2s ease;
+padding: 0;
+overflow: hidden;
+
+background: ${({ $variant }) => {
     switch ($variant) {
       case 'primary':
         return 'linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(184, 134, 11, 0.3) 100%)';
@@ -403,9 +372,10 @@ export const IconButton = styled.button<{ $disabled?: boolean; $variant?: 'prima
       default:
         return 'linear-gradient(135deg, rgba(100, 116, 139, 0.2) 0%, rgba(71, 85, 105, 0.3) 100%)';
     }
-  }};
-  
-  border-color: ${({ $variant, theme }) => {
+  }
+  };
+
+border - color: ${({ $variant, theme }) => {
     switch ($variant) {
       case 'primary':
         return theme.colors.primary.gold;
@@ -416,88 +386,87 @@ export const IconButton = styled.button<{ $disabled?: boolean; $variant?: 'prima
       default:
         return theme.colors.neutral.silver;
     }
-  }};
-  
-  box-shadow: 
-    0 4px 8px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  };
+
+box - shadow:
+0 4px 8px rgba(0, 0, 0, 0.3),
+  inset 0 1px 0 rgba(255, 255, 255, 0.1);
   
 
   
-  &:active:not(:disabled) {
-    transform: translateY(-2px);
-  }
+  &: active: not(: disabled) {
+  transform: translateY(-2px);
+}
 `;
 
 export const SpellIcon = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
+width: 100 %;
+height: 100 %;
+object - fit: cover;
+border - radius: ${({ theme }) => theme.borderRadius.sm};
 `;
 
 export const EmojiIcon = styled.span`
-  font-size: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+font - size: 2rem;
+display: flex;
+align - items: center;
+justify - content: center;
 `;
 
 
 export const BattleLog = styled.div`
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.6) 0%,
-    rgba(0, 0, 0, 0.4) 100%
+background: linear - gradient(
+  135deg,
+  rgba(0, 0, 0, 0.6) 0 %,
+  rgba(0, 0, 0, 0.4) 100 %
   );
-  border: 2px solid ${({ theme }) => theme.colors.winter.darkIce};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  padding: ${({ theme }) => theme.spacing.lg};
-  max-height: 250px;
-  overflow-y: auto;
-  backdrop-filter: blur(10px);
-  box-shadow: 
-    inset 0 2px 4px rgba(0, 0, 0, 0.5),
-    0 4px 16px rgba(0, 0, 0, 0.3);
+border-radius: ${({ theme }) => theme.borderRadius.lg};
+padding: ${({ theme }) => theme.spacing.lg} 0;
+max-height: 250px;
+width: 100%;
+backdrop-filter: blur(10px);
 
   /* Scrollbar styling */
   &::-webkit-scrollbar {
-    width: 8px;
-  }
+  width: 8px;
+}
 
   &::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-  }
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
 
   &::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.colors.primary.gold};
-    border-radius: 4px;
+  background: ${({ theme }) => theme.colors.primary.gold};
+  border-radius: 4px;
     
     &:hover {
-      background: ${({ theme }) => theme.colors.primary.bronze};
-    }
+    background: ${({ theme }) => theme.colors.primary.bronze};
   }
+}
 `;
 
 export const BattleLogTitle = styled.h3`
-  color: ${({ theme }) => theme.colors.primary.gold};
+  font-family: ${({ theme }) => theme.fonts.primary};
   font-size: ${({ theme }) => theme.fontSizes.lg};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
-  font-weight: ${({ theme }) => theme.fontWeights.bold};
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  color: ${({ theme }) => theme.colors.primary.gold};
+`;
+
+export const LogList = styled.div`
   display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.sm};
+  flex-direction: column;
+  overflow-y: auto;
+  height: 100%;
 `;
 
 export const LogEntry = styled.div<{ $type: BattleLogEntry['type'] }>`
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-  border-radius: ${({ theme }) => theme.borderRadius.sm};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  border-left: 3px solid;
-  background: ${({ $type }) => {
+padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+margin - bottom: ${({ theme }) => theme.spacing.sm};
+border - radius: ${({ theme }) => theme.borderRadius.sm};
+font - size: ${({ theme }) => theme.fontSizes.sm};
+border - left: 3px solid;
+background: ${({ $type }) => {
     switch ($type) {
       case 'critical':
         return 'rgba(239, 68, 68, 0.25)';
@@ -512,8 +481,9 @@ export const LogEntry = styled.div<{ $type: BattleLogEntry['type'] }>`
       default:
         return 'rgba(100, 116, 139, 0.15)';
     }
-  }};
-  border-left-color: ${({ $type }) => {
+  }
+  };
+border - left - color: ${({ $type }) => {
     switch ($type) {
       case 'critical':
         return '#ef4444';
@@ -528,127 +498,129 @@ export const LogEntry = styled.div<{ $type: BattleLogEntry['type'] }>`
       default:
         return '#64748b';
     }
-  }};
-  color: ${({ theme }) => theme.colors.neutral.white};
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  animation: slideIn 0.3s ease-out;
-
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateX(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
   }
+  };
+color: ${({ theme }) => theme.colors.neutral.white};
+box - shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+animation: slideIn 0.3s ease - out;
+
+@keyframes slideIn {
+    from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+    to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 `;
 
 export const VictoryPanel = styled.div`
-  background: linear-gradient(
-    135deg,
-    rgba(34, 197, 94, 0.2) 0%,
-    rgba(22, 163, 74, 0.3) 100%
+background: linear-gradient(
+  135deg,
+  rgba(34, 197, 94, 0.2) 0 %,
+  rgba(22, 163, 74, 0.3) 100 %
   );
-  border: 3px solid ${({ theme }) => theme.colors.status.success};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  padding: ${({ theme }) => theme.spacing.xl};
-  text-align: center;
-  backdrop-filter: blur(10px);
-  box-shadow: 
-    0 0 40px rgba(34, 197, 94, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  position: relative;
-  overflow: hidden;
-  height: 70vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing.lg};
+border: 3px solid ${({ theme }) => theme.colors.status.success};
+border-radius: ${({ theme }) => theme.borderRadius.lg};
+padding: ${({ theme }) => theme.spacing.xl};
+text - align: center;
+backdrop - filter: blur(10px);
+box-shadow:
+0 0 40px rgba(34, 197, 94, 0.4),
+  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+position: relative;
+overflow: hidden;
+height: 70vh;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+gap: ${({ theme }) => theme.spacing.lg};
 
   &::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(
-      circle,
-      rgba(34, 197, 94, 0.1) 0%,
-      transparent 70%
+  content: '';
+  position: absolute;
+  top: -50 %;
+  left: -50 %;
+  width: 200 %;
+  height: 200 %;
+  background: radial - gradient(
+    circle,
+    rgba(34, 197, 94, 0.1) 0 %,
+    transparent 70 %
     );
-    animation: rotate 20s linear infinite;
-  }
+  animation: rotate 20s linear infinite;
+}
 
-  @keyframes rotate {
+@keyframes rotate {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
-  }
+}
 `;
 
 export const VictoryTitle = styled.h2`
-  font-family: ${({ theme }) => theme.fonts.display};
-  font-size: ${({ theme }) => theme.fontSizes['4xl']};
-  color: ${({ theme }) => theme.colors.status.success};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-  text-shadow: 
-    0 0 20px rgba(34, 197, 94, 0.8),
-    0 0 40px rgba(34, 197, 94, 0.5),
+font - family: ${({ theme }) => theme.fonts.display};
+font - size: ${({ theme }) => theme.fontSizes['4xl']};
+color: ${({ theme }) => theme.colors.status.success};
+margin - bottom: ${({ theme }) => theme.spacing.lg};
+text - shadow:
+0 0 20px rgba(34, 197, 94, 0.8),
+  0 0 40px rgba(34, 197, 94, 0.5),
     2px 2px 4px rgba(0, 0, 0, 0.8);
-  animation: glow 2s ease-in-out infinite;
-  position: relative;
-  z-index: 1;
+animation: glow 2s ease -in -out infinite;
+position: relative;
+z - index: 1;
 
-  @keyframes glow {
-    0%, 100% { text-shadow: 0 0 20px rgba(34, 197, 94, 0.8), 2px 2px 4px rgba(0, 0, 0, 0.8); }
-    50% { text-shadow: 0 0 30px rgba(34, 197, 94, 1), 0 0 50px rgba(34, 197, 94, 0.7), 2px 2px 4px rgba(0, 0, 0, 0.8); }
+@keyframes glow {
+  0 %, 100 % { text- shadow: 0 0 20px rgba(34, 197, 94, 0.8), 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+50 % { text- shadow: 0 0 30px rgba(34, 197, 94, 1), 0 0 50px rgba(34, 197, 94, 0.7), 2px 2px 4px rgba(0, 0, 0, 0.8); }
   }
 `;
 
 export const RewardsList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.md};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-  position: relative;
-  z-index: 1;
+display: flex;
+flex - direction: column;
+gap: ${({ theme }) => theme.spacing.md};
+margin - bottom: ${({ theme }) => theme.spacing.xl};
+position: relative;
+z - index: 1;
 `;
 
 export const RewardItem = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.xl};
-  color: ${({ theme }) => theme.colors.primary.gold};
-  font-weight: ${({ theme }) => theme.fontWeights.bold};
-  text-shadow: 
-    0 0 10px rgba(255, 215, 0, 0.5),
-    2px 2px 4px rgba(0, 0, 0, 0.8);
-  padding: ${({ theme }) => theme.spacing.sm};
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  animation: slideInUp 0.5s ease-out backwards;
+font - size: ${({ theme }) => theme.fontSizes.xl};
+color: ${({ theme }) => theme.colors.primary.gold};
+font - weight: ${({ theme }) => theme.fontWeights.bold};
+text - shadow:
+0 0 10px rgba(255, 215, 0, 0.5),
+  2px 2px 4px rgba(0, 0, 0, 0.8);
+padding: ${({ theme }) => theme.spacing.sm};
+background: rgba(0, 0, 0, 0.3);
+border - radius: ${({ theme }) => theme.borderRadius.md};
+border: 1px solid rgba(255, 215, 0, 0.3);
+animation: slideInUp 0.5s ease - out backwards;
 
-  &:nth-child(1) { animation-delay: 0.1s; }
-  &:nth-child(2) { animation-delay: 0.2s; }
-  &:nth-child(3) { animation-delay: 0.3s; }
-  &:nth-child(4) { animation-delay: 0.4s; }
+  &: nth - child(1) { animation - delay: 0.1s; }
+  &: nth - child(2) { animation - delay: 0.2s; }
+  &: nth - child(3) { animation - delay: 0.3s; }
+  &: nth - child(4) { animation - delay: 0.4s; }
 
-  @keyframes slideInUp {
+@keyframes slideInUp {
     from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    opacity: 0;
+    transform: translateY(20px);
   }
+    to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 `;
 export const RewardMoney = styled(RewardItem)`
 display: flex;
-flex-direction: row;
-align-items: center;
-justify-content: center;
+flex - direction: row;
+align - items: center;
+justify - content: center;
 gap: ${({ theme }) => theme.spacing.sm};
 `;

@@ -1,4 +1,4 @@
-import type { MonsterIconProps } from "./MonsterIcon";
+import type { MonsterIconProps } from ".";
 
 // Géant de Glace
 export const IceGiantIcon: React.FC<MonsterIconProps> = ({ primaryColor = '#60A5FA', secondaryColor = '#3B82F6', accentColor = '#DBEAFE', size = 48 }) => (

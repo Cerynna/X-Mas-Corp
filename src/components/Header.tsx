@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth, useCharacter } from '../contexts';
 import { logOut } from '../firebase';
 import { UserInfo } from './UserInfo';
+import Money from './Money';
 
 const HeaderContainer = styled.header`
   position: sticky;
@@ -111,7 +112,9 @@ export function Header({ showActions = true }: HeaderProps) {
         <Link to="/" style={{ textDecoration: 'none' }}>
           <Logo>❄️ Fête d'Hiver</Logo>
         </Link>
-
+        {character && (
+          <Money amount={character.gold} variant='normal' />
+        )}
         <Nav>
           {loading ? (
             <div>Chargement...</div>
@@ -125,27 +128,30 @@ export function Header({ showActions = true }: HeaderProps) {
                   <StyledLink to="/exploration">
                     🗺️
                   </StyledLink>
+                  {/* <StyledLink to="/battle">
+                    ⚔️
+                  </StyledLink> */}
                   <StyledLink to="/shop">
                     🏪
                   </StyledLink>
-                  <StyledLink to="/bestiary">
+                  {/* <StyledLink to="/bestiary">
                     📖
-                  </StyledLink>
+                  </StyledLink> */}
                   <StyledLink to="/leaderboard">
                     🏅
                   </StyledLink>
-                  <StyledLink to="/achievements">
+                  {/* <StyledLink to="/achievements">
                     🏆
-                  </StyledLink>
+                  </StyledLink> */}
                 </>
               )}
-              {character && character.isAdmin ?
-                (<StyledLink to="/" onClick={handleLogOut}>
-                  🗑️
-                </StyledLink>)
-                : <></>}
-
               <UserInfo />
+                {character && character.isAdmin ?
+                  (<StyledLink to="/" onClick={handleLogOut}>
+                    🗑️
+                  </StyledLink>)
+                  : <></>
+                }
             </>
           ) : null}
         </Nav>

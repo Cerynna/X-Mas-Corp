@@ -1,10 +1,11 @@
 import styled from "styled-components";
-import { SectionTitle } from "../../pages/Dashboard";
+
 import { consumePotionFromInventory, POTIONS, type Potion, type PotionQuality } from "../../types/shop";
 import { PotionIconWithQuality, type ItemQuality } from "../icons";
 import { useCharacter, useTooltip } from "../../contexts";
 import { BuffEffectInfos, type BuffEffect } from "../../types/buffs";
 import type { CharacterInventoryPotion } from "../../types/character";
+import { Card, CardHeader, CardTitle, EmptySlot } from "../../styles";
 
 
 
@@ -22,9 +23,6 @@ const mapPotionQualityToItemQuality = (quality: PotionQuality): ItemQuality => {
 };
 
 
-const PotionsSection = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-`;
 
 const PotionList = styled.div`
   display: grid;
@@ -53,12 +51,6 @@ const PotionCount = styled.div`
   text-align: center;
 `;
 
-const EmptySlot = styled.div`
-  color: ${({ theme }) => theme.colors.text.secondary};
-  font-style: italic;
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  text-align: center;
-`;
 
 
 
@@ -143,8 +135,10 @@ export function Potions() {
         });
     };
 
-    return <PotionsSection>
-        <SectionTitle>🧪 Potions</SectionTitle>
+    return <Card>
+        <CardHeader>
+            <CardTitle>🧪 Potions</CardTitle>
+        </CardHeader>
         {character.inventory?.potions && character.inventory.potions.length > 0 ? (
             <PotionList>
                 {character.inventory.potions.map((inventoryPotion: CharacterInventoryPotion, index: number) => {
@@ -178,7 +172,7 @@ export function Potions() {
                 })}
             </PotionList>
         ) : (
-            <EmptySlot  >Aucune potion</EmptySlot>
+            <EmptySlot>Aucune potion</EmptySlot>
         )}
-    </PotionsSection>
+    </Card>
 }

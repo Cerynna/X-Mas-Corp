@@ -1,19 +1,18 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { useAuth, useCharacter } from './contexts';
+import { BattleProvider, useAuth, useCharacter } from './contexts';
 import { ChatProvider } from './contexts/ChatContext';
 import { MembersProvider } from './contexts/MembersContext';
+import { ShopProvider } from './contexts/ShopContext';
 
 import type { Faction, WowClass, WowRace } from './types/character';
 import { Header, CharacterCreation } from './components';
 
-import { Dashboard } from './pages/Dashboard';
-import { Exploration } from './pages/Exploration';
-import { ShopPage } from './pages/ShopPage';
-import { Bestiary } from './pages/Bestiary';
-import { LeaderBoard } from './pages/LeaderBoard';
-import { ShopProvider } from './contexts/ShopContext';
+import { Dashboard, ExplorationPage, ShopPage, Bestiary, LeaderBoardPage, BattlePage } from './pages';
+
+import { Container } from './styles';
+import { ModalProvider } from './contexts/ModalContext';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -71,7 +70,6 @@ const Subtitle = styled.h2`
 function AppContent() {
   const { user, loading: authLoading } = useAuth();
   const { character, hasCharacter, loading: characterLoading, createNewCharacter } = useCharacter();
-  // console.log('App render - user:', user, 'character:', character, 'hasCharacter:', hasCharacter);
 
   const handleCharacterCreation = async (data: {
     name: string;
@@ -113,23 +111,30 @@ function AppContent() {
   if (user && character) {
     return (
       <AppContainer>
-        <ChatProvider>
-          <MembersProvider>
-            <ShopProvider>
-              <Header showActions={true} />
-              <MainContent>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/exploration" element={<Exploration />} />
-                  <Route path="/shop" element={<ShopPage />} />
-                  <Route path="/bestiary" element={<Bestiary />} />
-                  <Route path="/leaderboard" element={<LeaderBoard />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </MainContent>
-            </ShopProvider>
-          </MembersProvider>
-        </ChatProvider>
+        <BattleProvider>
+          <ModalProvider>
+            <ChatProvider>
+              <MembersProvider>
+                <ShopProvider>
+                  <Header showActions={true} />
+                  <MainContent>
+                    <Container>
+                      <Routes>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/exploration" element={<ExplorationPage />} />
+                        <Route path="/battle" element={<BattlePage />} />
+                        <Route path="/shop" element={<ShopPage />} />
+                        <Route path="/bestiary" element={<Bestiary />} />
+                        <Route path="/leaderboard" element={<LeaderBoardPage />} />
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                      </Routes>
+                    </Container>
+                  </MainContent>
+                </ShopProvider>
+              </MembersProvider>
+            </ChatProvider>
+          </ModalProvider>
+        </BattleProvider>
       </AppContainer>
     );
   }

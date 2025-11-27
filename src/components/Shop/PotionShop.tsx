@@ -9,6 +9,7 @@ import { useCharacter } from "../../contexts";
 import { PotionIconWithQuality } from "../icons";
 import { WowButton } from "../WowButton";
 import Money from "../Money";
+import { Scrollable } from "../../styles";
 
 
 const PotionIconWrapper = styled.div`
@@ -16,7 +17,7 @@ const PotionIconWrapper = styled.div`
 `;
 
 
-const PotionShopGrid = styled.div`
+const PotionShopGrid = styled(Scrollable)`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: ${({ theme }) => theme.spacing.md};

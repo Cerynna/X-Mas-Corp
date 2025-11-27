@@ -1,12 +1,12 @@
 
 import styled from "styled-components";
-import type { BattleState } from "../../types/battle";
+import type { BattleRewards } from "../../types/battle";
 import type { Character } from "../../types/character";
 
 
 interface BattleXpBarProps {
     character: Character;
-    battleState: BattleState;
+    rewards: BattleRewards;
 }
 
 
@@ -20,7 +20,7 @@ const XpBarInfo = styled.div`
     display: flex;
     justify-content: space-between;
     font-size: 0.95rem;
-    color: #aaa;
+    color: ${({ theme }) => theme.colors.winter.snowWhite};
     margin-bottom: 0.2rem;
 `;
 
@@ -76,28 +76,25 @@ const XpBarReward = styled.div`
     font-weight: bold;
 `;
 
-export function BattleXpBar({ character, battleState }: BattleXpBarProps) {
+export function BattleXpBar({ character, rewards }: BattleXpBarProps) {
     const exepriencePercentBefore = (character.experience / character.experienceToNextLevel) * 100
 
-    const experienceGainPercent = battleState.rewards && character.experienceToNextLevel
-        ? (battleState.rewards.experience / character.experienceToNextLevel) * 100
+    const experienceGainPercent = rewards && character.experienceToNextLevel
+        ? (rewards.experience / character.experienceToNextLevel) * 100
         : 0;
 
-    if (battleState.status === 'victory' && battleState.rewards) {
-        return (
-            <XpBarContainer>
-                <XpBarInfo>
-                    <span>Niveau {battleState.rewards.levelUp && battleState.rewards.newLevel ? battleState.rewards.newLevel : character.level}</span>
-                    <span>{character.experience} / {character.experienceToNextLevel} XP</span>
-                </XpBarInfo>
-                <XpBarTrack>
-                    <XpBarFill $percent={exepriencePercentBefore} />
-                    <XpBarGain $percent={experienceGainPercent} $offset={exepriencePercentBefore} />
-                    <XpBarText>{Math.max(0, Math.round(exepriencePercentBefore + experienceGainPercent))}%</XpBarText>
-                </XpBarTrack>
-                <XpBarReward>+{battleState.rewards.experience} XP gagnés</XpBarReward>
-            </XpBarContainer>
-        );
-    }
-    return null;
+    return (
+        <XpBarContainer>
+            <XpBarInfo>
+                <span>Niveau {rewards.levelUp && rewards.newLevel ? rewards.newLevel : character.level}</span>
+                <span>{character.experience} / {character.experienceToNextLevel} XP</span>
+            </XpBarInfo>
+            <XpBarTrack>
+                <XpBarFill $percent={exepriencePercentBefore} />
+                <XpBarGain $percent={experienceGainPercent} $offset={exepriencePercentBefore} />
+                <XpBarText>{Math.max(0, Math.round(exepriencePercentBefore + experienceGainPercent))}%</XpBarText>
+            </XpBarTrack>
+            <XpBarReward>+{rewards.experience} XP gagnés</XpBarReward>
+        </XpBarContainer>
+    );
 }

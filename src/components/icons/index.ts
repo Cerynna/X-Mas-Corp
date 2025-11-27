@@ -1,7 +1,7 @@
 export { ItemIcon } from './ItemIcon';
 export { ItemIconWithQuality } from './ItemIconWithQuality';
 export { PotionIconWithQuality } from './PotionIconWithQuality';
-export { MonsterIconWithLevel } from './MonsterIcon/MonsterIconWithLevel';
+export { MonsterIcon } from './MonsterIcon';
 export { HealthPotionIcon, ManaPotionIcon, GenericPotionIcon } from './PotionIcon';
 export { SwordIcon, StaffIcon, DaggerIcon, AxeIcon, BowIcon } from './WeaponIcon';
 export { HelmetIcon, ChestplateIcon, LeggingsIcon, BootsIcon } from './ArmorIcon';

@@ -14,9 +14,7 @@ createRoot(document.getElementById('root')!).render(
       <AuthProvider>
         <CharacterProvider>
           <TooltipProvider>
-            {/* <ChatProvider> */}
-              <App />
-            {/* </ChatProvider> */}
+            <App />
           </TooltipProvider>
         </CharacterProvider>
       </AuthProvider>

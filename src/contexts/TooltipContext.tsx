@@ -56,7 +56,7 @@ const TooltipBox = styled.div<{ $quality?: string }>`
         }
     }};
   border-radius: ${({ theme }) => theme.borderRadius.md};
-  padding: ${({ theme }) => theme.spacing.md};
+//   padding: ${({ theme }) => theme.spacing.sm};
   min-width: 200px;
   max-width: 350px;
   box-shadow: ${({ theme }) => theme.shadows.xl};
@@ -79,6 +79,7 @@ const TooltipTitle = styled.div<{ $quality?: string }>`
     }};
   margin-bottom: ${({ theme }) => theme.spacing.xs};
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
 `;
 
 const TooltipDescription = styled.div`
@@ -86,14 +87,15 @@ const TooltipDescription = styled.div`
   color: ${({ theme }) => theme.colors.text.secondary};
   margin-bottom: ${({ theme }) => theme.spacing.sm};
   font-style: italic;
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
 `;
 
 const TooltipStats = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing.xs};
+  gap: 0;
   border-top: 1px solid rgba(255, 215, 0, 0.3);
-  padding-top: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
 `;
 
 const TooltipStat = styled.div`
@@ -194,19 +196,20 @@ export function TooltipProvider({ children }: { children: ReactNode }) {
                                         }
                                     </TooltipStat>
                                 ))}
+                                {(content.level && content.level > 0) ? (
+                                    <TooltipStat>
+                                        <TooltipStatKey>level</TooltipStatKey>
+                                        <TooltipStatValue>{content.level}</TooltipStatValue>
+                                        {content.equiped &&
+                                            <TooltipStatEquiped $colorText={Number(content.level) > Number(content.equiped.level) ? 'green' : 'red'}>
+                                                {`${content.equiped.level}`}
+                                            </TooltipStatEquiped>
+                                        }
+                                    </TooltipStat>
+                                ) : ""}
                             </TooltipStats>
                         )}
-                        {(content.level && content.level > 0) ? (
-                            <TooltipStat>
-                                <TooltipStatKey>level</TooltipStatKey>
-                                <TooltipStatValue>{content.level}</TooltipStatValue>
-                                {content.equiped &&
-                                    <TooltipStatEquiped $colorText={Number(content.level) > Number(content.equiped.level) ? 'green' : 'red'}>
-                                        {`${content.equiped.level}`}
-                                    </TooltipStatEquiped>
-                                }
-                            </TooltipStat>
-                        ) : ""}
+
 
                     </TooltipBox>
                 </TooltipContainer>

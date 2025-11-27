@@ -1,4 +1,4 @@
-import type { MonsterIconProps } from "./MonsterIcon";
+import type { MonsterIconProps } from ".";
 
 // Voleur
 export const ThiefIcon: React.FC<MonsterIconProps> = ({ primaryColor = '#4B5563', secondaryColor = '#1F2937', accentColor = '#FBBF24', size = 48 }) => (

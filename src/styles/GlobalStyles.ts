@@ -1,4 +1,4 @@
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle } from "styled-components";
 
 export const GlobalStyles = createGlobalStyle`
   * {
@@ -21,6 +21,7 @@ export const GlobalStyles = createGlobalStyle`
       ${({ theme }) => theme.colors.winter.deepBlue} 50%,
       ${({ theme }) => theme.colors.neutral.darkGray} 100%
     );
+    background-attachment: fixed;
     color: ${({ theme }) => theme.colors.neutral.white};
     line-height: 1.6;
     min-height: 100vh;

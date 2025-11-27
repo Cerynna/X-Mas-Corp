@@ -3,57 +3,17 @@ import styled from 'styled-components';
 
 import { useCharacter } from '../../contexts';
 
+import { Card, Description, Title } from '../../styles';
+
 import { EquipmentShop } from './EquipmentShop';
 import { PotionShop } from './PotionShop';
-import Money from '../Money';
 
-
-const ShopContainer = styled.div`
-  margin: 0 auto;
-  max-width: 1200px;
-  width: 100%;
-  background: linear-gradient(
-    135deg,
-    rgba(30, 58, 95, 0.8),
-    rgba(26, 31, 46, 0.9)
-  );
-  border: ${({ theme }) => theme.borders.medium} solid ${({ theme }) => theme.colors.primary.gold};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  padding: ${({ theme }) => theme.spacing.xl};
-  box-shadow: ${({ theme }) => theme.shadows.xl};
-`;
-
-const ShopHeader = styled.div`
-  text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-`;
-
-const ShopTitle = styled.h2`
-  font-family: ${({ theme }) => theme.fonts.display};
-  font-size: ${({ theme }) => theme.fontSizes['3xl']};
-  color: ${({ theme }) => theme.colors.primary.gold};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-`;
-
-const GoldDisplay = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.xl};
-  color: ${({ theme }) => theme.colors.winter.iceBlue};
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing.md};
-  span {
-    color: ${({ theme }) => theme.colors.primary.gold};
-    font-weight: ${({ theme }) => theme.fontWeights.bold};
-  }
-`;
 
 export const CategoryTabs = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing.md};
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
   justify-content: center;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
 export const CategoryTab = styled.button<{ $active: boolean }>`
@@ -87,29 +47,31 @@ export function ShopComponent() {
   if (!character) return null;
 
   return (
-    <ShopContainer>
-      <ShopHeader>
-        <ShopTitle>🏪 Boutique</ShopTitle>
-        <GoldDisplay>
-          Votre or : <Money amount={character.gold} variant='normal' />
-        </GoldDisplay>
-      </ShopHeader>
-      <CategoryTabs>
-        <CategoryTab $active={category === 'potions'} onClick={() => setCategory('potions')}>
-          🧪 Potions
-        </CategoryTab>
-        <CategoryTab $active={category === 'equipment'} onClick={() => setCategory('equipment')}>
-          ⚔️ Équipement
-        </CategoryTab>
-      </CategoryTabs>
+    <>
+      <Title>🏪 Boutique</Title>
+      <Description>
+        Bienvenue dans la boutique ! Achetez des potions et de l'équipement pour améliorer votre personnage.<br />
+        Toutes les 15 minutes, les stocks d'équipement sont réapprovisionnés.
+      </Description>
+      <Card>
 
-      {category === 'potions' && (
-        <PotionShop />
-      )}
+        <CategoryTabs>
+          <CategoryTab $active={category === 'potions'} onClick={() => setCategory('potions')}>
+            🧪 Potions
+          </CategoryTab>
+          <CategoryTab $active={category === 'equipment'} onClick={() => setCategory('equipment')}>
+            ⚔️ Équipement
+          </CategoryTab>
+        </CategoryTabs>
 
-      {category === 'equipment' && (
-        <EquipmentShop />
-      )}
-    </ShopContainer>
+        {category === 'potions' && (
+          <PotionShop />
+        )}
+
+        {category === 'equipment' && (
+          <EquipmentShop />
+        )}
+      </Card>
+    </>
   );
 }

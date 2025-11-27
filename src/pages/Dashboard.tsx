@@ -6,40 +6,9 @@ import { Potions } from '../components/Dashboard/Potions';
 import { Bags } from '../components/Dashboard/Bags';
 import { XPBar } from '../components/Dashboard/XPBar';
 import { Buffs } from '../components/Dashboard/Buffs';
+import { Flex } from '../styles';
 
 
-
-// Styled Components
-const DashboardContainer = styled.div`
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: ${({ theme }) => theme.spacing.lg};
-`;
-
-export const Card = styled.div`
-  background: linear-gradient(
-    135deg,
-    rgba(30, 58, 95, 0.9) 0%,
-    rgba(26, 31, 46, 0.95) 100%
-  );
-  border: ${({ theme }) => theme.borders.medium} solid ${({ theme }) => theme.colors.primary.gold};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  padding: ${({ theme }) => theme.spacing.md};
-  box-shadow: ${({ theme }) => theme.shadows.xl};
-  backdrop-filter: blur(10px);
-`;
-
-const TopSection = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: ${({ theme }) => theme.spacing.lg};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
-`;
 
 
 export const SectionTitle = styled.div`
@@ -64,21 +33,19 @@ export const SectionTitle = styled.div`
 export function Dashboard() {
 
   return (
-    <DashboardContainer>
+    <Flex direction="column" gap="1rem">
       <XPBar />
-      <TopSection>
-        {/* Colonne Gauche : Équipement + Statistiques */}
-        <div>
+      <Flex direction="row" gap="32px" justify='flex-start' align='flex-start'>
+        <Flex direction="column" gap="1rem">
           <Stuffs />
           <Stats />
-        </div>
-        {/* Colonne Droite : Potions + Sac */}
-        <Card>
+        </Flex>
+        <Flex direction="column" gap="1rem" align='flex-start'>
           <Buffs />
           <Potions />
           <Bags />
-        </Card>
-      </TopSection>
-    </DashboardContainer>
+        </Flex>
+      </Flex>
+    </Flex>
   );
 }

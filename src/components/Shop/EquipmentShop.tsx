@@ -8,16 +8,20 @@ import { useCharacter } from "../../contexts";
 // import { BuffTimer } from "../Dashboard/BuffTimer";
 import type { ShopItem } from "../../types/equipment";
 import { buyItem } from "../../firebase/models/shop";
+import { CategoryTab, CategoryTabs } from "./ShopComponent";
+import { Scrollable } from "../../styles";
 // import { groupBy } from "es-toolkit";
 
 const ItemIconWrapper = styled.div`
   cursor: pointer;
 `;
 
-const EquipmentShopGrid = styled.div`
+const EquipmentShopGrid = styled(Scrollable)`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: ${({ theme }) => theme.spacing.md};
+  overflow-y: auto;
+  padding-bottom: ${({ theme }) => theme.spacing.md};
 
   @media (max-width: 1024px) {
     grid-template-columns: repeat(3, 1fr);
@@ -79,48 +83,55 @@ export function EquipmentShop() {
     // console.log(groupBy(shop, (item) => item.dateAdded));
 
     return (
-        <EquipmentShopGrid>
-            {shop.filter(item => item.level <= character!.level).map((item) => {
-                const canAfford = character!.gold >= item.price;
-                // console.log(item)
-                return (
-                    <EquipmentShopGridCell key={item.id}>
-                        <ItemIconWrapper
-                            onMouseMove={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => showItemTooltip(item, e)}
-                            onMouseLeave={hideTooltip}
-                            style={{ gridArea: 'icon' }}
-                        >
-                            <ItemIconWithQuality
-                                itemType={item.slot}
-                                itemName={item.name}
-                                quality={item.quality}
-                                size={64}
-                            />
-                        </ItemIconWrapper>
-                        <EquipmentShopName>
-                            {item.name}
-                        </EquipmentShopName>
-
-                        <EquipmentShopPurchase>
-                            {/* <BuffTimer expiresAt={item.dateAdded + 15 * 60 * 1000 || 0} /> */}
-                            <span>
-                                Level : {item.level}
-                            </span>
-                            <WowButton
-                                onClick={() => handlePurchase(item, 1.8)}
-                                disabled={!canAfford}
-                                $size="small"
-                                $variant={'secondary'}
+        <>
+            <CategoryTabs>
+                <CategoryTab $active={true} onClick={() => { }}>
+                    Toutes
+                </CategoryTab>
+            </CategoryTabs>
+            <EquipmentShopGrid>
+                {shop.filter(item => item.level <= character!.level).map((item) => {
+                    const canAfford = character!.gold >= item.price;
+                    // console.log(item)
+                    return (
+                        <EquipmentShopGridCell key={item.id}>
+                            <ItemIconWrapper
+                                onMouseMove={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => showItemTooltip(item, e)}
+                                onMouseLeave={hideTooltip}
+                                style={{ gridArea: 'icon' }}
                             >
-                                {canAfford ? (<Money amount={Math.floor(item.price * 1.8)} variant='small' />) : 'Trop cher'}
-                            </WowButton>
-                        </EquipmentShopPurchase>
+                                <ItemIconWithQuality
+                                    itemType={item.slot}
+                                    itemName={item.name}
+                                    quality={item.quality}
+                                    size={64}
+                                />
+                            </ItemIconWrapper>
+                            <EquipmentShopName>
+                                {item.name}
+                            </EquipmentShopName>
+
+                            <EquipmentShopPurchase>
+                                {/* <BuffTimer expiresAt={item.dateAdded + 15 * 60 * 1000 || 0} /> */}
+                                <span>
+                                    Level : {item.level}
+                                </span>
+                                <WowButton
+                                    onClick={() => handlePurchase(item, 1.8)}
+                                    disabled={!canAfford}
+                                    $size="small"
+                                    $variant={'secondary'}
+                                >
+                                    {canAfford ? (<Money amount={Math.floor(item.price * 1.8)} variant='small' />) : 'Trop cher'}
+                                </WowButton>
+                            </EquipmentShopPurchase>
 
 
 
-                    </EquipmentShopGridCell >
-                )
-            })}
-        </EquipmentShopGrid>
+                        </EquipmentShopGridCell >
+                    )
+                })}
+            </EquipmentShopGrid>
+        </>
     )
 }

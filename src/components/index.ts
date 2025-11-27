@@ -1,7 +1,6 @@
-export { WowButton } from './WowButton';
-export { Card, CardHeader, CardTitle, CardSubtitle, CardContent, CardFooter } from './Card';
+export { WowButton } from "./WowButton";
 
-export { Header } from './Header';
-export { CharacterCreation } from './CharacterCreation';
-export { Battle } from "./Battle/BattleContainer";
+export { Header } from "./Header";
+export { CharacterCreation } from "./CharacterCreation";
+export { BattleComponent } from "./Battle/BattleComponent";
 export { ShopComponent } from "./Shop/ShopComponent";

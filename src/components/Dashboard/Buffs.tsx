@@ -1,12 +1,10 @@
 import styled from "styled-components";
 import { BuffTimer } from "./BuffTimer";
 import { useCharacter } from "../../contexts";
-import { SectionTitle } from "../../pages/Dashboard";
 import type { BuffType } from "../../types/buffs";
+import { Card, CardHeader, CardTitle, EmptySlot } from "../../styles";
 
-const BuffSection = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-`;
+
 
 const BuffList = styled.div`
   display: flex;
@@ -29,19 +27,27 @@ const BuffItem = styled.div`
 
 export function Buffs() {
   const { character } = useCharacter();
-  if (!character || !character.buffs) {
-    return null;
-  }
+  // if (!character || !character.buffs) {
+  //   return null;
+  // }
 
-  return <BuffSection>
-    <SectionTitle>🚀 Buff</SectionTitle>
-    <BuffList>
-      {character?.buffs.filter((buff: BuffType) => buff.expiresAt > Date.now()).map((buff: BuffType) => (
-        <BuffItem key={buff.expiresAt + (buff.name || "")}>
-          <span style={{ fontSize: '1.5rem' }}>{buff.icon}</span>
-          <BuffTimer expiresAt={buff.expiresAt} />
-        </BuffItem>
-      ))}
-    </BuffList>
-  </BuffSection>
+  return <Card>
+    <CardHeader>
+      <CardTitle>🚀 Buff</CardTitle>
+    </CardHeader>
+    {!character || !Array.isArray(character.buffs) || character.buffs.length === 0 ? (
+      <EmptySlot>Aucun buff actif</EmptySlot>
+    ) : (
+      <BuffList>
+        {character.buffs
+          .filter((buff: BuffType) => buff.expiresAt > Date.now())
+          .map((buff: BuffType) => (
+            <BuffItem key={buff.expiresAt + (buff.name || "")}>
+              <span style={{ fontSize: '1.5rem' }}>{buff.icon}</span>
+              <BuffTimer expiresAt={buff.expiresAt} />
+            </BuffItem>
+          ))}
+      </BuffList>
+    )}
+  </Card>
 }

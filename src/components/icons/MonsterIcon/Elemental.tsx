@@ -67,7 +67,7 @@ export const EarthElementalIcon: React.FC<MonsterIconProps> = ({
     <ellipse cx="32" cy="56" rx="21" ry="9" fill={primaryColor} opacity="0.08" />
     </svg>
 );
-import type { MonsterIconProps } from "./MonsterIcon";
+import type { MonsterIconProps } from ".";
 
 // Élémentaire de glace
 export const IceElementalIcon: React.FC<MonsterIconProps> = ({ primaryColor = '#60A5FA', secondaryColor = '#3B82F6', accentColor = '#DBEAFE', size = 64 }) => (

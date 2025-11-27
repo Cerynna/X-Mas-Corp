@@ -1,6 +1,6 @@
 // Système de combat au tour par tour
 
-import type { Monster } from "./monsters";
+import { generateMonster, type Monster } from "./monsters";
 import type { ClassAbility } from "./abilities";
 import {
   calculateManaCost,
@@ -18,19 +18,20 @@ import {
   type EquippedItems,
 } from "./equipment";
 import { CLASSES, type Character, type WowClass } from "./character";
+import type { ZoneType } from "./zone";
 
 export type BattleAction = "attack" | "ability" | "defend" | "flee";
 
 export interface BattleState {
   player: Character;
   monster: Monster;
+  zone: ZoneType;
   turn: "player" | "monster";
   turnCount: number;
   playerDefending: boolean;
   monsterDefending: boolean;
   battleLog: BattleLogEntry[];
   status: "ongoing" | "victory" | "defeat" | "fled";
-  rewards?: BattleRewards;
 }
 
 export interface BattleLogEntry {
@@ -114,7 +115,10 @@ export const calculateDamage = (
   //   damageReduction,
   //   defenderArmor: defender.armor,
   // });
-  const finalDamage = Math.max(1, Math.floor(baseDamage - damageReduction));
+  const finalDamage = Math.max(
+    100 * (attacker.level / 2),
+    Math.floor(baseDamage - damageReduction)
+  );
 
   return {
     damage: finalDamage,
@@ -132,8 +136,8 @@ export const playerAttack = (state: BattleState): BattleState => {
   const logEntry: BattleLogEntry = {
     id: `${Date.now()}-player-attack`,
     message: critical
-      ? `💥 Coup critique ! Vous infligez ${damage} dégâts !`
-      : `⚔️ Vous attaquez et infligez ${damage} dégâts.`,
+      ? `💥 Coup critique ! Vous infligez ${Math.floor(damage / 10)} dégâts !`
+      : `⚔️ Vous attaquez et infligez ${Math.floor(damage / 10)} dégâts.`,
     type: critical ? "critical" : "damage",
     timestamp: Date.now(),
   };
@@ -170,10 +174,16 @@ export const monsterAttack = (state: BattleState): BattleState => {
   const logEntry: BattleLogEntry = {
     id: `${Date.now()}-monster-attack`,
     message: critical
-      ? `💀 ${state.monster.name} vous inflige un coup critique de ${finalDamage} dégâts !`
+      ? `💀 ${state.monster.name} vous inflige un coup critique de ${Math.floor(
+          finalDamage / 10
+        )} dégâts !`
       : state.playerDefending
-      ? `🛡️ Vous bloquez partiellement ! ${state.monster.name} inflige ${finalDamage} dégâts.`
-      : `🔴 ${state.monster.name} vous inflige ${finalDamage} dégâts.`,
+      ? `🛡️ Vous bloquez partiellement ! ${
+          state.monster.name
+        } inflige ${Math.floor(finalDamage / 10)} dégâts.`
+      : `🔴 ${state.monster.name} vous inflige ${Math.floor(
+          finalDamage / 10
+        )} dégâts.`,
     type: critical ? "critical" : "damage",
     timestamp: Date.now(),
   };
@@ -244,7 +254,7 @@ export const playerFlee = (state: BattleState): BattleState => {
 };
 
 // Utiliser une compétence de classe
-export const useAbility = (
+export const playerAbility = (
   state: BattleState,
   ability: ClassAbility
 ): BattleState => {
@@ -299,8 +309,8 @@ export const useAbility = (
     newMonsterHealth = Math.max(0, state.monster.health - damage);
 
     const damageMsg = critical
-      ? `${ability.icon}💥 ${ability.name} CRITIQUE ! ${damage} dégâts !`
-      : `${ability.icon} ${ability.name} inflige ${damage} dégâts !`;
+      ? `${ability.icon}💥 ${ability.name} CRITIQUE ! ${damage / 10} dégâts !`
+      : `${ability.icon} ${ability.name} inflige ${damage / 10} dégâts !`;
     logMessages.push(damageMsg);
   }
 
@@ -344,7 +354,7 @@ export const useAbility = (
 };
 
 // Utiliser une potion pendant le combat
-export const usePotion = (
+export const playerPotion = (
   state: BattleState,
   potionId: string
 ): BattleState => {
@@ -446,8 +456,6 @@ export const calculateRewards = (
 
   experience = Math.floor(experience);
 
-  console.log("calculateRewards", { experience, diffLevel });
-
   const gold = monster.goldReward;
 
   // Vérifier si le joueur monte de niveau
@@ -470,19 +478,22 @@ export const calculateRewards = (
 
 // Initialiser un nouveau combat
 export const initBattle = (
-  player: Character,
-  monster: Monster
+  character: Character,
+  level: number,
+  zone: ZoneType
 ): BattleState => {
+  const monster = generateMonster(level, zone);
   const logEntry: BattleLogEntry = {
     id: `${Date.now()}-start`,
-    message: `⚔️ Un ${monster.name} sauvage apparaît !`,
+    message: `⚔️ Un ${monster.name} apparaît !`,
     type: "info",
     timestamp: Date.now(),
   };
 
   return {
-    player,
+    player: character,
     monster,
+    zone,
     turn: "player",
     turnCount: 1,
     playerDefending: false,
@@ -521,8 +532,12 @@ export const processMonsterTurn = (state: BattleState): BattleState => {
     const logEntry: BattleLogEntry = {
       id: `${Date.now()}-monster-ability`,
       message: critical
-        ? `💀✨ ${state.monster.name} utilise ${ability.name} ! Coup critique de ${finalDamage} dégâts !`
-        : `✨ ${state.monster.name} utilise ${ability.name} et inflige ${finalDamage} dégâts !`,
+        ? `💀✨ ${state.monster.name} utilise ${
+            ability.name
+          } ! Coup critique de ${Math.floor(finalDamage / 10)} dégâts !`
+        : `✨ ${state.monster.name} utilise ${
+            ability.name
+          } et inflige ${Math.floor(finalDamage / 10)} dégâts !`,
       type: critical ? "critical" : "damage",
       timestamp: Date.now(),
     };

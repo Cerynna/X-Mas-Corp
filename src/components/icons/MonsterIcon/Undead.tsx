@@ -1,4 +1,4 @@
-import type { MonsterIconProps } from "./MonsterIcon";
+import type { MonsterIconProps } from ".";
 
 // Squelette
 export const SkeletonIcon: React.FC<MonsterIconProps> = ({

@@ -1,7 +1,9 @@
 import styled from "styled-components";
-import { Card, SectionTitle } from "../../pages/Dashboard";
+
 import { useCharacter } from "../../contexts";
 import Money from "../Money";
+import { Card, CardHeader, CardTitle } from "../../styles";
+import { CLASSES } from "../../types/character";
 
 const StatsPanel = styled.div`
   display: grid;
@@ -34,16 +36,19 @@ const StatValue = styled.span`
 export function Stats() {
     const { character } = useCharacter();
     if (!character) return null;
+    const classInfo = CLASSES[character.class];
 
     return <Card>
-        <SectionTitle>📊 Statistiques</SectionTitle>
+        <CardHeader>
+            <CardTitle>📊 Statistiques</CardTitle>
+        </CardHeader>
         <StatsPanel>
             <StatItem>
                 <StatLabel>❤️ Vie</StatLabel>
                 <StatValue>{Math.floor(character.health / 10)} / {Math.floor(character.maxHealth / 10)}</StatValue>
             </StatItem>
             <StatItem>
-                <StatLabel>💙 Mana</StatLabel>
+                <StatLabel>{classInfo.energyName}</StatLabel>
                 <StatValue>{character.mana} / {character.maxMana}</StatValue>
             </StatItem>
             <StatItem>
@@ -52,14 +57,18 @@ export function Stats() {
                     <Money amount={character.gold} />
                 </StatValue>
             </StatItem>
-            <StatItem>
-                <StatLabel>⚔️ Puissance d'attaque</StatLabel>
-                <StatValue>{character.attackPower}</StatValue>
-            </StatItem>
-            <StatItem>
-                <StatLabel>🔮 Puissance magique</StatLabel>
-                <StatValue>{character.spellPower}</StatValue>
-            </StatItem>
+            {(classInfo.primaryStat === 'strength' || classInfo.primaryStat === 'agility') && (
+                <StatItem>
+                    <StatLabel>⚔️ Puissance d'attaque</StatLabel>
+                    <StatValue>{character.attackPower}</StatValue>
+                </StatItem>
+            )}
+            {classInfo.primaryStat === 'intellect' && (
+                <StatItem>
+                    <StatLabel>🔮 Puissance magique</StatLabel>
+                    <StatValue>{character.spellPower}</StatValue>
+                </StatItem>
+            )}
             <StatItem>
                 <StatLabel>🛡️ Armure</StatLabel>
                 <StatValue>{character.armor}</StatValue>
