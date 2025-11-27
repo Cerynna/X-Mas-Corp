@@ -446,7 +446,7 @@ export interface Character {
   id?: string;
   userId: string;
   name: string;
-  faction: "alliance" | "horde";
+  faction: Faction;
   level: number;
   experience: number;
   experienceToNextLevel: number;

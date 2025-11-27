@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { HealthPotionIcon, ManaPotionIcon, GenericPotionIcon } from './PotionIcon';
 import { getQualityColors } from './qualityColors';
 import { mapPotionQualityToItemQuality, type Potion, type PotionQuality, type PotionType } from '../../types/shop';
-import type { BuffEffect } from '../../firebase';
+import type { BuffEffect } from '../../types/buffs';
 
 interface PotionIconWithQualityProps {
   potion: Potion;

@@ -1,6 +1,9 @@
-import type { Character } from "../firebase";
+import type { Character } from "../types/character";
 
-export const CalculateLeaderBoard = (members: Character[] | null, indexOrder: 'score' | 'level') => {
+export const CalculateLeaderBoard = (
+  members: Character[] | null,
+  indexOrder: "score" | "level"
+) => {
   if (!members) return [];
   return members
     .map((member) => {
